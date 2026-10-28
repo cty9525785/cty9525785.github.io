@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Muscle coactivation-inspired stiffness-driven control strategy for antagonistic soft robots | Tianyu Chen</title>
+  <meta name="description" content="A data-driven controller, inspired by how opposing muscles tense together, learns in minutes to control the motion and stiffness of robots driven by opposing actuators.">
+  <link rel="stylesheet" href="../../assets/css/article.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="home" href="../../index.html">Tianyu Chen</a>
+      <span class="topbar-title">Muscle coactivation-inspired stiffness-driven control</span>
+      <nav class="topbar-actions">
+        <a class="btn" href="https://doi.org/10.1126/sciadv.aeg3346" target="_blank" rel="noopener">Paper</a>
+        <button class="btn" type="button" data-copy="bibtex-text" data-label="BibTeX">BibTeX</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="toc" aria-label="Contents">
+      <div class="toc-head">Contents</div>
+      <ol>
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#robot">1&nbsp; Antagonistic soft robot</a></li>
+        <li><a href="#control">2&nbsp; Stiffness-driven control</a></li>
+        <li><a href="#tracking">3&nbsp; Path tracking and disturbance rejection</a></li>
+        <li><a href="#gripper">4&nbsp; A three-finger gripper</a></li>
+        <li><a href="#applications">5&nbsp; Stiffness sensing, a liquid pump and a bridge</a></li>
+        <li><a href="#tendon">6&nbsp; A tendon-driven robot</a></li>
+        <li><a href="#movies">Movies</a></li>
+        <li><a href="#bibtex">BibTeX</a></li>
+      </ol>
+    </aside>
+
+    <main>
+      <header class="paper-head">
+        <h1>Muscle coactivation-inspired stiffness-driven control strategy for antagonistic soft robots</h1>
+        <p class="authors">Jie&nbsp;Pan<sup>†</sup>, <span class="me">Tianyu&nbsp;Chen</span><sup>†</sup>, Junwei&nbsp;Li, Yifan&nbsp;Wang<sup>*</sup></p>
+        <p class="affil">School of Mechanical and Aerospace Engineering, Nanyang Technological University, Singapore</p>
+        <p class="contact"><sup>†</sup>Equal contribution<br><sup>*</sup>Corresponding author: <a href="mailto:yifan.wang@ntu.edu.sg">yifan.wang@ntu.edu.sg</a></p>
+        <p class="venue"><i>Science Advances</i> 12, eaeg3346 (2026)</p>
+      </header>
+
+      <figure class="fig">
+        <video autoplay muted loop playsinline poster="figures/clips/bridge-poster.jpg"><source src="figures/clips/bridge.mp4" type="video/mp4"></video>
+        <figcaption>Two antagonistic soft robots form the halves of a bridge. Under stiffness-driven control, a toy truck crosses it, then both halves bend up to let a ship pass and return flat (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Soft robots are safe to work with and adapt to their surroundings, but they tend to carry little load and to lack precision. Antagonistic soft robots address this with opposing actuators: actuating one side bends the robot, and actuating both sides together stiffens it. Most controllers for such robots treat stiffness as a passive property, and those that do regulate it rely on analytical models of the robot and on measuring its stiffness in real time, which is hard for soft robots.</p>
+        <p>This paper borrows a strategy from human movement, muscle coactivation: tensing opposing muscles together makes a movement more precise. It presents a data-driven controller that regulates stiffness along with motion. The controller learns a Koopman model of the robot from a few minutes of simple motions, and its model predictive control rewards a large sum of the antagonistic inputs, which stiffens the robot. On a pneumatic robot built from scale-inspired layered structures, it tracks paths more accurately and holds its position under added loads better than controllers that ignore stiffness, and it lets the robot grasp objects, sense and sort them by stiffness, pump liquid and act as a reconfigurable bridge. The same strategy also controls a tendon-driven robot.</p>
+      </section>
+
+      <section id="robot">
+        <h2><span class="num">1</span> Antagonistic soft robot <a class="anchor" href="#robot" aria-label="Link to this section">#</a></h2>
+        <p>When a movement has to be precise, people stiffen their limbs by tensing opposing muscles together, and studies of arm movements show that this coactivation improves accuracy. The paper carries the idea to antagonistic soft robots, whose opposing actuators play the part of the muscles: actuating one side bends the robot, and actuating both stiffens it.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig1a.jpg" alt="A human arm pouring water with three muscle strategies beside a soft robot arm grasping an object with three control strategies" loading="lazy">
+          <figcaption>The analogy behind the controller. Left, a human arm pouring water with unregulated activation, coordinated activation and antagonistic coactivation of its muscles, from imprecise to robust. Right, the corresponding strategies for a soft robot grasping an object: open-loop control, stiffness-free control and stiffness-driven control. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The robot is made of two units of the scale-inspired layered structure from an <a href="../scale-inspired-robotic-structures/index.html">earlier paper</a>. Each unit is a base layer with a row of scales, both carrying programmed surface patterns, printed in PLA and covered with 0.05 mm PTFE tape to reduce friction; the same tape attaches the scales to the base layer. Each unit is sealed between latex films with silicone glue, and the two units sit back to back, separated by a latex film, so the robot has two airtight chambers. A negative pressure in either chamber presses that unit's patterns together: the robot bends toward a programmed shape and stiffens at the same time. An inertial measurement unit (IMU) at the free end records the bending angle.</p>
+        <figure class="fig narrow" style="--w: 263px">
+          <img src="figures/sm/figS1.jpg" alt="Exploded view of the robot: two layered structures between latex films, and the IMU" loading="lazy">
+          <figcaption>The robot's layers: two layered structures, each a base layer (yellow) with scales (red), between latex films, and the IMU at the end. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>Finite element simulations map what the two pressures do. In two-dimensional plane strain models in Abaqus/Explicit, the robot hangs from its fixed base under gravity while each chamber holds a negative pressure between 0 and 80 kPa; the moment that turns the tip by a further 1°, divided by that angle, gives the bending stiffness. Across all pressure combinations the stiffness changes 88-fold, from 0.02 to 1.79 Nm/rad, and at a given bending angle it grows with the sum of the two pressures. The robot reaches about 45° with 16 kPa in the left chamber alone, at 0.18 Nm/rad, or with 80 and 24 kPa in the left and right chambers, at 1.56 Nm/rad.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig1b.jpg" alt="Surface of simulated bending angle against the two chamber pressures, colored by bending stiffness, with two states at the same angle but different stiffness" loading="lazy">
+          <figcaption>Simulated bending angle θ (the height of the surface, with white contours) and bending stiffness K<sub>b</sub> (color) against the negative pressures P<sub>L</sub> and P<sub>R</sub> in the left and right chambers. The insets show the two marked states: about the same angle, with one chamber or both depressurized. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The same posture can therefore be soft or stiff. The controller exploits this freedom, but it also makes the motion less certain; together with the delay of pneumatic actuation and the fine input changes that small angles need, it makes such robots hard to control.</p>
+        <p>The simulations also show where the extra stiffness comes from. With both chambers depressurized, the friction forces between the scales and the base layer are about four times higher at three points along the robot than with one chamber, and the scales touch the base layer at more points, so the two engage more firmly.</p>
+        <figure class="fig">
+          <img src="figures/sm/figS15.jpg" alt="Friction force arrows on the base layer for one chamber and for both chambers depressurized" loading="lazy">
+          <figcaption>Friction forces on the base layer, drawn as arrows colored by magnitude, with one chamber depressurized (left: 8 and 16 kPa) and with both (right: 40 and 12 kPa, 80 and 24 kPa); the insets plot the force at the three numbered points. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>The model was checked against the real robot, mounted vertically: its bending angle as one chamber goes from 0 to 80 kPa, and the extra deflection when a 30 g weight hangs from its tip, each measured five times. The simulations follow the measured trends in both tests.</p>
+        <figure class="fig">
+          <img src="figures/sm/figS13.jpg" alt="The finite element mesh, the robot holding a weight, and the simulated weight and moment tests" loading="lazy">
+          <figcaption>The finite element model. In order: the mesh, with close-ups of the latex film; the robot holding a 30 g weight in the validation test; the same test simulated, with negative pressure (red arrows) and the weight (orange arrow); and the stiffness simulation, with a moment at the tip. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/sm/figS14.jpg" alt="Measured and simulated bending angle and deflection under a 30 g weight against negative pressure" loading="lazy">
+          <figcaption>Measured and simulated bending angle against the negative pressure in one chamber (left), and the deflection caused by the 30 g weight (right); shading, standard deviation. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="control">
+        <h2><span class="num">2</span> Stiffness-driven control <a class="anchor" href="#control" aria-label="Link to this section">#</a></h2>
+        <p>The controller needs no model of the robot's mechanics. It learns the robot's dynamics from data: five 50 s trials sampled at 50 Hz, about 12,500 samples in all, in which the inputs follow two one-sided triangular waves and three sinusoids applied to both chambers with different phase offsets. Each sample holds the bending angle, the two inputs and the sampling interval. From these data, extended dynamic mode decomposition identifies a Koopman operator, which describes the nonlinear robot as a linear system in a lifted, higher-dimensional space and predicts its future states.</p>
+        <p>Three parts turn this model into a controller. For a system of mechanically independent robots, such as the gripper below, a decoupled bilinear lifting lifts each robot's own states and inputs separately, with polynomials of its current and past states and products of its states and previous inputs; for three robots, with three past states and polynomials up to third order, it shrinks the lifted space from 479 to 117 dimensions, which keeps the solver fast on embedded hardware. A stiffness-driven solver, a model predictive controller, minimizes the predicted tracking error and the changes of input, while a third term rewards a large sum of the two antagonistic inputs, the robot's counterpart of coactivation; a variant of this term sets a desired input sum, and with it a stiffness level. A deep Koopman feedforward compensator, whose lifting function is a neural network with three hidden layers, predicts the inputs a target state needs and amplifies them for large deflections, where the pneumatic robot responds slowly. It is trained offline on two more 50 s trajectories that start from high coactivation and gradually reduce one input.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig2ab.jpg" alt="Diagram of the control framework: data sampling, Koopman dynamics and prediction, and the controller with feedforward compensator and Koopman-based MPC in a loop with the robot" loading="lazy">
+          <figcaption>The control framework. Top left, states and inputs sampled from the robot give the Koopman dynamics, which lift the state space into a Koopman space where the robot evolves linearly; top right, the learned model predicts the robot's future states for control. Bottom, the controller in a loop with the robot: the deep Koopman feedforward compensator turns the target state s<sub>f</sub> into a feedforward input u<sub>f</sub>, and the Koopman-based MPC, with the bilinear lifting model and the stiffness-driven solver, computes the input u<sub>b</sub> added to it. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The penalty on input changes also gives the robot a sense of touch. In free motion it keeps the inputs steady; when the robot meets an object, the contact resists its motion, and the controller must change its inputs more to stay on its path. An input variation above 0.06% therefore signals contact, with no force sensor.</p>
+        <p>The controller is quick to set up. Collecting 250 s of data and building the Koopman matrices, which takes 39.86 s on a Raspberry Pi 4B, gives the prediction model in about 290 s. With another 100 s of data and 70.60 s to train the compensator on a separate computer, the full controller is ready in about 460 s, under eight minutes. It then runs at 50 Hz, taking 11.61 ms of each 20 ms step on average. More training data mainly helps longer predictions: the prediction error falls as trials are added, most clearly ten steps ahead.</p>
+        <figure class="fig medium">
+          <img src="figures/sm/figS5.jpg" alt="Prediction error one, five and ten steps ahead against the number of training datasets" loading="lazy">
+          <figcaption>Prediction error of Koopman models identified from one to five of the excitation trials and tested on five unseen ones, one, five and ten steps ahead (rows); for each number of trials, every combination of trials was used. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="tracking">
+        <h2><span class="num">3</span> Path tracking and disturbance rejection <a class="anchor" href="#tracking" aria-label="Link to this section">#</a></h2>
+        <p>In the experiments, a Raspberry Pi generates a pulse width modulated signal for each chamber, which a converter turns into the voltage that sets the chamber's proportional pressure valve; the duty cycle is proportional to the chamber's negative pressure. The controller works with the duty cycles directly, so neither the pressure nor the valve needs a model. The robot followed a three-stage path of steps, at low, high and medium deflection, under four controllers: the stiffness-driven one, proportional-derivative (PD) control, Koopman-based MPC without the stiffness term (K-MPC), and reinforcement learning (RL). Over the whole path, the stiffness-driven controller tracked with an average error of 1.58°, against 2.37° for PD control, 3.21° for K-MPC and 5.25° for RL.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig2d.jpg" alt="Bending angle and input sum along a three-stage path of steps for four controllers" loading="lazy">
+          <figcaption>The three-stage path. Top, the bending angle against the target for PD control, K-MPC, RL and the stiffness-driven controller (labeled our work); bottom, the sum of the two inputs, which sets the stiffness. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The gains come from stiffness. At low deflection, the three stiffness-free controllers chatter around their targets, with average angular velocities of 2.09°/s for PD control, 3.45°/s for K-MPC and 1.44°/s for RL, while the stiffness-driven controller moves at 0.43°/s; its input sum averages 157.22%, against 1.41%, 15.52% and 45.45%. PD control actuates only one chamber at a time. At high deflection, the stiffness-driven controller's tracking error is 2.96° (PD 5.83°, K-MPC 7.61°, RL 10.82°), and it reaches a band of ±1° around each target in 2.09 s on average (PD 3.67 s, K-MPC 3.25 s, RL 12.40 s). The RL baseline is a policy trained offline in a neural network model of the robot, fitted to the same data; the supplementary materials describe it as a conservative comparison rather than the best that reinforcement learning could do.</p>
+        <div class="row">
+          <figure class="fig" style="flex: 0.981">
+            <img src="figures/panels/fig2c.jpg" alt="The robot straight with no pressure and bent to either side" loading="lazy">
+            <figcaption>The robot straight at (0, 0) kPa and bent at (80, 0) and (0, 80) kPa, with its bending angle measured from the vertical. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 0.941">
+            <video controls preload="none" playsinline poster="figures/clips/tracking-poster.jpg"><source src="figures/clips/tracking.mp4" type="video/mp4"></video>
+            <figcaption>The robot following the three-stage path (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+        <p>Holding 20° while a 20 g or 50 g weight is attached to its tip, the stiffness-driven controller deviates least: by at most 0.49° and 1.11°, against 3.58° and 6.46° for PD control, 1.18° and 2.59° for K-MPC, and 3.90° and 6.56° for RL. Its feedback and online reoptimization correct the deviation the load causes, while the high input sum, kept before and after the load is added, makes the robot resist it. Feedback partly corrects the deviation of the stiffness-free controllers too, but all three show clear offsets after the weight is added, and RL keeps its offset, because its policy was trained in a model identified without loads.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig2e.jpg" alt="Tracking error over time as a 20 g or 50 g weight is added, for four controllers" loading="lazy">
+          <figcaption>Tracking error while holding 20° as a 20 g (top row) or 50 g (bottom row) weight is added, for PD control, K-MPC, RL and the stiffness-driven controller (columns); the dashed lines mark the largest error. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The input sum can also be given a target value, which sets the stiffness level. In tests at desired input sums of 50%, 100% and 150%, the largest error under either weight shrinks as the input sum rises, and the robot follows a sinusoidal path at fixed input sums of 50% and 100%.</p>
+        <figure class="fig medium">
+          <img src="figures/sm/figS6.jpg" alt="Tracking error under added weights at three desired input sums, and sinusoidal tracking at two input sums" loading="lazy">
+          <figcaption>Top, tracking error while holding 20° as a weight is added, at desired input sums u<sub>d</sub> of 50%, 100% and 150% (columns), with 20 g and 50 g weights (rows). Bottom, a sinusoidal path tracked at input sums of 50% and 100%; the color gives the input sum. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>An ablation study separates the two additions. The stiffness constraint alone cuts K-MPC's tracking error from 3.21° to 1.94°, its largest error under the 50 g weight from 2.59° to 1.13° and its angular velocity at low deflection from 3.45 to 0.43°/s, but slows its response from 3.25 to 4.98 s. The feedforward compensator alone improves tracking (1.68°) and speeds the response to 2.80 s, but resists the weight less well than the stiffness constraint does (2.12°). Together they give 1.58°, 1.11°, 0.43°/s and 2.09 s. Stiffening PD control by hand helps only up to a point. A small fixed input on the opposing chamber, or a moderate symmetric preload on both, improves tracking and reduces vibration and the error under load, at the cost of a slower response; larger ones reduce vibration further but degrade tracking and slow the response more. A 100% symmetric preload, for example, resists the weight almost as well as the stiffness-driven controller (1.15° against 1.11°) but tracks with a 6.04° error and responds in 7.05 s.</p>
+        <figure class="fig medium">
+          <img src="figures/sm/figS4.jpg" alt="Bending angle and input sum along the three-stage path for ablation variants and for PD control with fixed-input and symmetric-preload stiffening" loading="lazy">
+          <figcaption>Bending angle and input sum along the three-stage path for the ablation variants (top: K-MPC alone, with the feedforward compensator, and with the stiffness constraint) and for PD control stiffened by a fixed input on one chamber (middle: 1%, 2% and 5%) or by a symmetric preload on both (bottom: 10%, 50% and 100%). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>Across five measures, the stiffness-driven controller gives the best balance of the controllers compared. One measure comes from a preliminary test in which a model identified on one robot was applied unchanged to the pump and bridge robots of the applications below, which have different dimensions; the paper still recommends identifying each robot from its own data, which takes only minutes.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 0.998" src="figures/panels/fig1c.jpg" alt="Radar chart of five performance measures for five control strategies" loading="lazy">
+            <img style="flex: 1.130" src="figures/panels/fig2f.jpg" alt="Radar chart of angular velocity, input sum and tracking error for six controllers" loading="lazy">
+          </div>
+          <figcaption>Left, five measures for open-loop control, the three stiffness-free controllers and the stiffness-driven controller, scored so that larger is better. Right, angular velocity and input sum at low deflection and tracking error at high deflection, each normalized by its largest value, for PD control, K-MPC, RL and the stiffness-driven controller (labeled our work), and for PD control stiffened by a fixed input (u<sub>c</sub> = 2%) or a symmetric preload (u<sub>s</sub> = 50%). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> Full figures: <a href="figures/fig1.jpg">overview</a>, <a href="figures/fig2.jpg">tracking</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section id="gripper">
+        <h2><span class="num">4</span> A three-finger gripper <a class="anchor" href="#gripper" aria-label="Link to this section">#</a></h2>
+        <p>Three robots, spaced 120° apart on a round mount, make the fingers of a gripper. A power grip tests stiffness most directly: it holds an object by the stiffness of the fingers rather than by squeezing it. Each finger was bent to 20° without touching a rigid 67 g object, and the gripper was then lifted at 20 s, with no further change of input. Under PD control the fingers slid off the object; under stiffness-driven control the gripper lifted it.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig3c.jpg" alt="Photos of the gripper rising around a rigid object: under PD control the fingers slide off it, under stiffness-driven control the object is lifted" loading="lazy">
+          <figcaption>The power grip, with the fingers held at 20° as the gripper is lifted: PD control (top row) and stiffness-driven control (bottom row). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 0.856">
+            <video controls preload="none" playsinline poster="figures/clips/rigid-pd-poster.jpg"><source src="figures/clips/rigid-pd.mp4" type="video/mp4"></video>
+            <figcaption>PD control: the fingers slide off the object as the gripper rises (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 0.856">
+            <video controls preload="none" playsinline poster="figures/clips/rigid-ours-poster.jpg"><source src="figures/clips/rigid-ours.mp4" type="video/mp4"></video>
+            <figcaption>Stiffness-driven control: the gripper lifts the object (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+        <p>The stiffness-driven controller used inputs 17, 9 and 22 times higher than PD control in the three fingers; they differ because each finger's layered structure was assembled by hand. In tests on a universal testing machine (Mark-10), with the object fixed to the ground and the fingers bent to 15°, 20°, 25° or 30° before the gripper tried to lift it, the maximum gripping force rose by 391%, 177%, 58% and 30% over PD control.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig3de.jpg" alt="Change of bending angle during lifting under both controllers, and maximum gripping force at four bending angles" loading="lazy">
+          <figcaption>Left, the tracking error of the bending angle, averaged over the three fingers, as the gripper is lifted from 20 s: PD control (top) and stiffness-driven control (bottom). Right, the maximum gripping force with the fingers bent to 15° to 30°. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/sm/figS7.jpg" alt="Bending angle of each finger and the inputs to its two chambers under PD control and stiffness-driven control" loading="lazy">
+          <figcaption>Top, the bending angle of each finger under PD control and stiffness-driven control. Bottom, the inputs to the two chambers of each finger (columns): PD control (top row) uses only one chamber, stiffness-driven control (bottom row) both. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>Pinching a soft silicone ring calls for precise control of the fingers instead. Direct actuation, simply depressurizing one chamber of each finger, squeezed the ring out of shape within a second. The stiffness-driven controller closed the fingers along a slowly rising target angle, and each finger stopped where it met the ring, through phases of approach, touch and grasp; the grasp phase begins once all three fingers touch. The ring was barely deformed.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.407" src="figures/panels/fig3a.jpg" alt="Photos of a silicone ring pinched by the three fingers, deformed without control and round with stiffness-driven control" loading="lazy">
+            <img style="flex: 1.595" src="figures/panels/fig3b.jpg" alt="Bending angle of each finger against a rising target through approach, touch and grasp" loading="lazy">
+          </div>
+          <figcaption>Left, pinching the ring: direct actuation without control (top row) and stiffness-driven control (bottom row). Right, the bending angle of each finger against the rising target under stiffness-driven control. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 0.947">
+            <video controls preload="none" playsinline poster="figures/clips/ring-direct-poster.jpg"><source src="figures/clips/ring-direct.mp4" type="video/mp4"></video>
+            <figcaption>Direct actuation squeezes the ring out of shape (5× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 0.947">
+            <video controls preload="none" playsinline poster="figures/clips/ring-ours-poster.jpg"><source src="figures/clips/ring-ours.mp4" type="video/mp4"></video>
+            <figcaption>Stiffness-driven control closes the fingers on the ring, barely deforming it (5× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+        <p>Light, delicate objects tip over easily when the fingers push unevenly. Direct actuation lifted a 17 g cup-shaped object, 64 mm across, but tilted it; the stiffness-driven controller lifted it level, even when it was placed at the edge of the gripper's reach, near one finger or between two.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.385" src="figures/panels/fig3f.jpg" alt="Photos of a light cup tilted by the gripper without control and lifted level with stiffness-driven control" loading="lazy">
+            <img style="flex: 1.515" src="figures/panels/fig3gh.jpg" alt="Triangles of the fingers' final bending angles for different object placements" loading="lazy">
+          </div>
+          <figcaption>Left, lifting the cup: direct actuation without control (top row) and stiffness-driven control (bottom row). Right, the final bending angles of the three fingers for the object placed near each finger and between each pair of fingers; each triangle is one placement, and the arrows show the way each finger moves. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>With the same controller, the gripper picks up soft objects such as a sponge and a cake, stiffer ones such as an apple and a ping pong ball, smooth ones that slip easily such as a glass cup and two beakers, and hollow ones such as a transparent box and a PLA sculpture, which it hooks from the inside. For a large toolbox, it first spreads its fingers outward.</p>
+        <figure class="fig">
+          <img src="figures/sm/figS9.jpg" alt="Objects arranged by the fingers' average bending angle and stiffness during each grasp" loading="lazy">
+          <figcaption>Objects grasped under stiffness-driven control, placed by the average bending angle and stiffness of the three fingers during each grasp. Insets, the gripper with the sculpture (left) and with a beaker (right). <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="figures/clips/sponge-poster.jpg"><source src="figures/clips/sponge.mp4" type="video/mp4"></video>
+            <figcaption>A 1 g sponge (10× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="figures/clips/apple-poster.jpg"><source src="figures/clips/apple.mp4" type="video/mp4"></video>
+            <figcaption>A 205 g apple (10× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="figures/clips/glass-poster.jpg"><source src="figures/clips/glass.mp4" type="video/mp4"></video>
+            <figcaption>A 126 g glass cup, whose smooth surface is prone to slipping (10× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="figures/clips/box-poster.jpg"><source src="figures/clips/box.mp4" type="video/mp4"></video>
+            <figcaption>A 10 g transparent box, hooked from the inside (10× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="applications">
+        <h2><span class="num">5</span> Stiffness sensing, a liquid pump and a bridge <a class="anchor" href="#applications" aria-label="Link to this section">#</a></h2>
+        <p>Because the controller keeps the robot on its path and notices contact, the robot can measure stiffness. Mounted horizontally, it follows a predefined path down onto an object; once the input variation signals contact, it keeps following the path, and the object resists according to its stiffness. The tracking error over the next 4 s ranks the objects from stiffest to softest: 3.08° for a PLA block, 2.11° for a sponge, 1.59° for a cotton bag and 0.79° for a silicone ring.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig4a.jpg" alt="One finger pressing on four objects, with its input variation and bending angle against time" loading="lazy">
+          <figcaption>One finger measuring a silicone ring, a cotton bag, a sponge and a PLA block (columns). Rows, top to bottom: the finger at contact; the input variation, with contact detected where it crosses the threshold; and the bending angle against its target, with the tracking error e over the 4 s after contact shaded. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 1.127">
+            <video controls preload="none" playsinline poster="figures/clips/sense-ring-poster.jpg"><source src="figures/clips/sense-ring.mp4" type="video/mp4"></video>
+            <figcaption>The finger follows its path into the silicone ring, which gives way (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 1.127">
+            <video controls preload="none" playsinline poster="figures/clips/sense-pla-poster.jpg"><source src="figures/clips/sense-pla.mp4" type="video/mp4"></video>
+            <figcaption>The PLA block stops the finger (6× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+        <p>A three-finger gripper on a robot arm (Dobot CR3) used the same principle to sort objects while grasping them. It measured a silicone ring and placed it at the position for low stiffness, then found an apple stiffer and placed it at the intermediate position. An expanded polyethylene (EPE) foam block turned out to lie between the two, so the gripper moved the apple to the position for high stiffness and put the foam block in the middle. Over three trials, the tracking errors were 2.38 ± 0.07° for the ring, 2.66 ± 0.05° for the foam and 3.12 ± 0.01° for the apple.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig4b.jpg" alt="Frames of a gripper measuring and sorting a silicone ring, an apple and a foam block by stiffness" loading="lazy">
+          <figcaption>Sorting by stiffness, in order along the arrows: the gripper measures each object as it grasps it, compares it with those already ranked and moves it to its target position; the circles at the bottom of each frame show the ranking so far. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>A robot twice as long as a gripper finger, with a slanted groove along its middle, works as a pump. In each cycle, it bends down to 37° to collect liquid from a lower container, then rises along a target path at 3°/s to 103°, which completes one transfer to a higher container, and returns at the same rate. Repeated, the cycles raise the liquid step by step, and the controller adjusts the collection angle to the current liquid level.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig5a.jpg" alt="Frames of the pump robot dipping into a lower container and lifting liquid, over several cycles" loading="lazy">
+          <figcaption>The pump at work. Left, frames from 21 to 206 s; right, enlarged, the cycle that ends in the outlined frame, from 77 to 95 s. Inset, the slanted groove in cross section. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <video controls preload="none" playsinline poster="figures/clips/pump-poster.jpg"><source src="figures/clips/pump.mp4" type="video/mp4"></video>
+          <figcaption>The pump lifting liquid from the lower container to the higher one, cycle after cycle (10× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <figure class="fig medium">
+          <img src="figures/panels/fig5b.jpg" alt="Bending angle of the pump over six cycles against its triangular target" loading="lazy">
+          <figcaption>The pump's bending angle over six cycles, against its target. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Without control, depressurizing the upper chamber bends the robot down, but the layered structure of the lower chamber can then stick under gravity, so that depressurizing the lower chamber no longer bends the robot back up.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig5c.jpg" alt="The pump robot bent down under one pressure and stuck under the opposite pressure" loading="lazy">
+          <figcaption>The pump without control: (80, 0) kPa bends it down, but (0, 80) kPa does not bend it back up, because its lower layer is stuck (circled and enlarged). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Two robots form the halves of a reconfigurable bridge, shown in the movie at the top of this page. To allow for gravity, the controller holds both halves at 95°, nearly flat, while a 410 g toy truck crosses, then raises them to 125° to let a ship pass beneath and lowers them again. Without control, 16 kPa in one chamber keeps the bridge nearly flat but too soft, and it sinks under the truck. With 80 kPa in one chamber alone, the halves rise to 146° and 152° for the ship, but bringing the opposite chamber to the same pressure returns them only to 119° and 122°, an impassable slope, although the same two pressures held the bridge flat before. The paper attributes this incomplete return to history-dependent behavior, likely due to friction between the scales and the base layer; the controller, which assumes no fixed relation between input and angle, corrects it with feedback.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig5d.jpg" alt="Frames of the bridge letting a toy truck cross and a ship pass, and failing without control" loading="lazy">
+          <figcaption>The bridge. Top two rows, under stiffness-driven control: the truck crosses at 2 s, and the halves rise to let a ship pass at 29.6 s and lie flat again by 51 s. Bottom, without control: at (16, 0) kPa the bridge collapses under the truck; at (80, 0) kPa the halves rise for the ship, but at (80, 80) kPa they fail to flatten. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="tendon">
+        <h2><span class="num">6</span> A tendon-driven robot <a class="anchor" href="#tendon" aria-label="Link to this section">#</a></h2>
+        <p>The strategy is not tied to pneumatic actuation. On a tendon-driven robot with two degrees of freedom, four antagonistic tendons, each pulled by its own motor, run through a column of ring-shaped particles, and an IMU at the tip measures yaw and pitch. Yaw and pitch share the tendons, so the robot is modeled as one coupled Koopman system, with the tendon tensions as first-order terms in the lifting function. Its stiffness depends mainly on the antagonistic force, the sum of the tensions in opposing tendons. A tension sensor on each tendon measures the tensions in real time, the controller's stiffness term is written in terms of them and a desired antagonistic force, and the sensors also guard against the sharp rise in tension that small motor commands can cause.</p>
+        <figure class="fig narrow" style="--w: 276px">
+          <img src="figures/sm/figS12.jpg" alt="The tendon-driven robot: white ring-shaped particles threaded on tendons, with an IMU housing at the tip" loading="lazy">
+          <figcaption>The tendon-driven robot: ring-shaped particles on four tendons, with the IMU in its housing at the tip. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+        </figure>
+        <p>The robot traced a five-pointed star in yaw and pitch at desired antagonistic forces of 0, 10 and 40 N, with no disturbance, with a 100 g load at the tip, or with the tip immersed in silicone oil of 100,000 cSt, three times each, at a control interval of 30 ms. Without disturbance, raising the force from 0 to 10 N cut the position error from 0.260° to 0.107°, and 40 N added little (0.100°). With the tip load, the robot lost the star at 0 N (1.799°) and degraded at 10 N (0.176°), but held it at 40 N (0.101°). In the oil, viscous damping reduced the velocity errors in every configuration, yet the position error at 0 and 10 N grew (0.610° and 0.147°), while 40 N stayed precise (0.106°). Moderate stiffness may suffice under light conditions, but strong disturbances call for high stiffness.</p>
+        <div class="row">
+          <figure class="fig" style="flex: 0.704">
+            <video controls preload="none" playsinline poster="figures/clips/tendon-0n-poster.jpg"><source src="figures/clips/tendon-0n.mp4" type="video/mp4"></video>
+            <figcaption>With a 100 g load at the tip and a desired antagonistic force of 0 N, the robot swings off its path (3× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 0.704">
+            <video controls preload="none" playsinline poster="figures/clips/tendon-40n-poster.jpg"><source src="figures/clips/tendon-40n.mp4" type="video/mp4"></video>
+            <figcaption>At 40 N, the robot follows the star steadily with the same load (3× speed). <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), supplementary materials, CC BY-NC 4.0.</span></figcaption>
+          </figure>
+        </div>
+        <figure class="fig">
+          <img src="figures/panels/fig6a.jpg" alt="Grid of star trajectories in yaw and pitch, colored by tracking error, for three forces and three conditions" loading="lazy">
+          <figcaption>The star traced in yaw and pitch at desired antagonistic forces of 0, 10 and 40 N (columns), with no disturbance, a 100 g tip load and the tip in silicone oil (rows, pictured on the left). The color gives the tracking error, on a separate scale for each row, and the dashed line the target. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig6.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/panels/fig6b.jpg" alt="Bar charts of position, yaw velocity and pitch velocity errors for three forces in three conditions" loading="lazy">
+          <figcaption>Position error and yaw and pitch velocity errors at each force and condition, over three repeats. <span class="credit">Adapted from Pan et al., Science Advances 12, eaeg3346 (2026), CC BY-NC 4.0.</span> <a href="figures/fig6.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The paper also states the method's limits. Learned from finite data, the model may not follow slow changes of the robot, such as material aging and wear, which online learning could address. And stiffness is regulated indirectly, through the actuation inputs and the robot's response, rather than measured in real time; pressure and visual sensing could make it explicit.</p>
+      </section>
+
+      
+      <section id="movies">
+        <h2>Movies <a class="anchor" href="#movies" aria-label="Link to this section">#</a></h2>
+        <p>The paper’s movies in full.</p>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/stiffness-driven-control/poster-s1.jpg"><source src="../../media/stiffness-driven-control/movie-s1.mp4" type="video/mp4"></video>
+            <figcaption>Path tracking with antagonistic soft robots. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/stiffness-driven-control/poster-s2.jpg"><source src="../../media/stiffness-driven-control/movie-s2.mp4" type="video/mp4"></video>
+            <figcaption>Grasping with an antagonistic soft gripper: comparisons with direct actuation and PD control, then soft, rigid, smooth and hollow objects. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/stiffness-driven-control/poster-s3.jpg"><source src="../../media/stiffness-driven-control/movie-s3.mp4" type="video/mp4"></video>
+            <figcaption>Applications enabled by stiffness-driven control, including measuring a silicone ring&#x27;s stiffness while grasping it. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/stiffness-driven-control/poster-s4.jpg"><source src="../../media/stiffness-driven-control/movie-s4.mp4" type="video/mp4"></video>
+            <figcaption>The control strategy applied to a tendon-driven robot. <span class="credit">From Pan et al., Science Advances 12, eaeg3346 (2026).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="bibtex">
+        <h2>BibTeX <a class="anchor" href="#bibtex" aria-label="Link to this section">#</a></h2>
+        <div class="code">
+          <button class="btn" type="button" data-copy="bibtex-text" data-label="Copy">Copy</button>
+          <pre id="bibtex-text">@article{pan2026muscle,
+  title = {Muscle coactivation-inspired stiffness-driven control strategy for antagonistic soft robots},
+  author = {Pan, Jie and Chen, Tianyu and Li, Junwei and Wang, Yifan},
+  journal = {Science Advances},
+  volume = {12},
+  number = {36},
+  pages = {eaeg3346},
+  year = {2026},
+  doi = {10.1126/sciadv.aeg3346}
+}</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>Page design adapted from <a href="https://jonbarron.info/">Jon Barron’s website</a>. Movies and figures are from the papers credited with each one.</footer>
+  <script src="../../assets/js/article.js" defer></script>
+</body>
+</html>

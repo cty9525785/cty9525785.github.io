@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$page_title</title>
+  <meta name="description" content="$description">
+  <link rel="stylesheet" href="../../assets/css/article.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="home" href="../../index.html">$home_name</a>
+      <span class="topbar-title">$short_title</span>
+      <nav class="topbar-actions">
+        <a class="btn" href="$doi_url" target="_blank" rel="noopener">Paper</a>
+        <button class="btn" type="button" data-copy="bibtex-text" data-label="BibTeX">BibTeX</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="toc" aria-label="Contents">
+      <div class="toc-head">Contents</div>
+      <ol>
+$toc
+      </ol>
+    </aside>
+
+    <main>
+      <header class="paper-head">
+        <h1>$title</h1>
+        <p class="authors">$authors</p>
+        <p class="affil">$affiliations</p>
+        <p class="contact">$contact</p>
+        <p class="venue">$venue</p>
+      </header>
+
+$body
+$movies
+      <section id="bibtex">
+        <h2>BibTeX <a class="anchor" href="#bibtex" aria-label="Link to this section">#</a></h2>
+        <div class="code">
+          <button class="btn" type="button" data-copy="bibtex-text" data-label="Copy">Copy</button>
+          <pre id="bibtex-text">$bibtex</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>Page design adapted from <a href="https://jonbarron.info/">Jon Barron’s website</a>. Movies and figures are from the papers credited with each one.</footer>
+  <script src="../../assets/js/article.js" defer></script>
+</body>
+</html>

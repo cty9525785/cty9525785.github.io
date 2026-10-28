@@ -1,0 +1,1 @@
+[0:v]crop=570:570:545:135,scale=480:480,fps=30,format=yuv420p,settb=AVTB[c];[1:v]crop=570:570:545:135,scale=480:480,fps=30,format=yuv420p,settb=AVTB[s];[c][s]xfade=transition=fade:duration=0.4:offset=4.8[out]

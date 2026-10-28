@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shear band multiplication induced strong strain delocalization and high tensile ductility in amorphous thin films by metallic substrates | Tianyu Chen</title>
+  <meta name="description" content="Simulations show that a metal substrate makes a thin metallic glass film form many shear bands instead of one, which raises its tensile ductility.">
+  <link rel="stylesheet" href="../../assets/css/article.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="home" href="../../index.html">Tianyu Chen</a>
+      <span class="topbar-title">Shear band multiplication in amorphous thin films</span>
+      <nav class="topbar-actions">
+        <a class="btn" href="https://doi.org/10.1016/j.ijsolstr.2020.03.011" target="_blank" rel="noopener">Paper</a>
+        <button class="btn" type="button" data-copy="bibtex-text" data-label="BibTeX">BibTeX</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="toc" aria-label="Contents">
+      <div class="toc-head">Contents</div>
+      <ol>
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#model">1&nbsp; Computational model</a></li>
+        <li><a href="#bands">2&nbsp; Shear band multiplication</a></li>
+        <li><a href="#film">3&nbsp; Film thickness and interface strength</a></li>
+        <li><a href="#substrate">4&nbsp; Substrate grain size, thickness and stiffness</a></li>
+        <li><a href="#experiments">5&nbsp; Comparison with experiments</a></li>
+        <li><a href="#bibtex">BibTeX</a></li>
+      </ol>
+    </aside>
+
+    <main>
+      <header class="paper-head">
+        <h1>Shear band multiplication induced strong strain delocalization and high tensile ductility in amorphous thin films by metallic substrates</h1>
+        <p class="authors"><span class="me">Tianyu&nbsp;Chen</span><sup>1,3</sup>, Jianjun&nbsp;Li<sup>1,2,*</sup>, Shaohua&nbsp;Chen<sup>4</sup>, Chun&nbsp;Li<sup>3</sup></p>
+        <p class="affil"><sup>1</sup>College of Mechanical and Electrical Engineering, Central South University, Changsha, China<br>
+          <sup>2</sup>State Key Laboratory of High Performance Complex Manufacturing, Central South University, Changsha, China<br>
+          <sup>3</sup>Department of Engineering Mechanics, School of Mechanics, Civil Engineering and Architecture, Northwestern Polytechnical University, Xi’an, China<br>
+          <sup>4</sup>Institute of Advanced Structure Technology, Beijing Institute of Technology, Beijing, China</p>
+        <p class="contact"><sup>*</sup>Corresponding author: <a href="mailto:mejjli@csu.edu.cn">mejjli@csu.edu.cn</a></p>
+        <p class="venue"><i>International Journal of Solids and Structures</i> 195, 1–12 (2020)</p>
+      </header>
+
+      <figure class="fig">
+        <video class="light" autoplay muted loop playsinline poster="figures/clips/strain-sequence-poster.jpg"><source src="figures/clips/strain-sequence.mp4" type="video/mp4"></video>
+        <figcaption>A 5&nbsp;μm metallic glass film, freestanding (top) and on a Ni substrate (bottom). Freestanding, it fractures at 3.79% strain along a single shear band; on the substrate, more bands keep forming and it lasts until 8%. Colors show the free volume, and dashed outlines mark shear bands. The bottom row steps through four snapshots of one simulation, each held in turn rather than played in real time, while the top row stays at the freestanding film's fracture; only the top of the 735&nbsp;μm substrate is shown. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Metallic glasses are strong, but in tension at room temperature they usually fail after about 1% elongation, along a single dominant shear band. Experiments have shown that a ductile metal substrate can make a metallic glass film form many shear bands and stretch much further, but the mechanism remained unclear, and how the bands evolve and how much stress the film carries are hard to measure in experiments. This paper builds a computational model of a Ni-P metallic glass film on a Ni substrate: the free volume theory for the film, a plasticity model based on dislocation density for the substrate, and a cohesive zone law for the interface between them.</p>
+        <p>In the simulations, a film 10&nbsp;μm thick or thinner forms more than one shear band on the substrate, and the thinner the film, the more bands it forms. Spread over many bands, the deformation no longer localizes, and a thin film avoids the sudden loss of strength that ends a freestanding one. A 2.5&nbsp;μm film fractures at 9.55% strain on the substrate against 3.1% freestanding, and at 13.3% on a substrate with 500&nbsp;nm grains. A three-dimensional version of the model agrees with published stress-strain curves of a Ni-P film on a Ni substrate.</p>
+      </section>
+
+      <section id="model">
+        <h2><span class="num">1</span> Computational model <a class="anchor" href="#model" aria-label="Link to this section">#</a></h2>
+        <p>The model is a metallic glass film on a substrate, stretched along its length. The film is 2.5 to 30&nbsp;μm thick, the substrate 735&nbsp;μm, and the model 200&nbsp;μm long. Most results come from two-dimensional plane strain simulations in Abaqus; a three-dimensional model, 80&nbsp;μm wide, is used to compare with experiments.</p>
+        <p>The film follows the free volume theory, which captures how shear bands form in a metallic glass and how it softens. Free volume measures how far the glass departs from an ideally ordered structure: shear creates it, and the glass flows faster where it has more. The theory runs in Abaqus as a user material, with a Young's modulus of 217&nbsp;GPa, a Poisson's ratio of 0.37 and a measured yield strength of 2&nbsp;GPa. A random initial free volume, with a mean of 0.05, gives the bands places to start.</p>
+        <p>The interface is a cohesive zone. Its traction rises with separation until it reaches the interface strength, at 0.1&nbsp;μm, and then falls to zero at 0.2&nbsp;μm, when the interface has failed. The interface strength is varied from a tenth of the film's yield strength to five times it. The three-dimensional model is perfectly bonded instead, which the paper justifies by the small effect of the interface on films thicker than 10&nbsp;μm.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 2.074" src="figures/fig1.jpg" alt="A metallic glass film of thickness h_f on a substrate of thickness h_s, joined by an interface and stretched along its length" loading="lazy">
+            <img style="flex: 1.884" src="figures/fig3.jpg" alt="The interface's traction rising linearly with separation to its strength, then falling linearly to zero" loading="lazy">
+          </div>
+          <figcaption>Left, the model: a metallic glass film of thickness <em>h</em><sub>f</sub> on a substrate of thickness <em>h</em><sub>s</sub>, joined by an interface and stretched along its length <em>L</em>; <em>W</em> is the width of the three-dimensional model. Right, the interface's traction against separation, in the normal or the shear direction. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>The Ni substrate follows a plasticity model based on dislocation density: a Kocks-Mecking model whose dynamic recovery depends on grain size. Fitted to measured stress-strain curves, it covers grains from 200&nbsp;nm to 27&nbsp;μm; unless stated otherwise, the substrate's grains are 3.9&nbsp;μm. Polymer substrates, studied as well, are modeled as neo-Hookean solids.</p>
+        <figure class="fig narrow">
+          <img src="figures/panels/ni-curves.jpg" alt="True stress against true strain of Ni with grains from 200 nm to 27 μm, the model against measurements" loading="lazy">
+          <figcaption>True stress against true strain of Ni with grain sizes from 200&nbsp;nm to 27&nbsp;μm: the model (lines) against measurements (symbols) by Wu et al. (2015) and Lu et al. (2016). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="bands">
+        <h2><span class="num">2</span> Shear band multiplication <a class="anchor" href="#bands" aria-label="Link to this section">#</a></h2>
+        <p>Free volume marks where shear bands form. Followed across the band in a freestanding 5&nbsp;μm film, it hardly changes outside the band, while inside it rises slowly until the strain nears 3.5% and then jumps, from 0.079 at 3.4% strain to 0.221 at 3.62%. The paper takes a free volume of 0.16, within that jump, as the sign of a shear band, and 0.23 as fracture.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.222" src="figures/panels/fv-path.jpg" alt="Free volume along a path across the shear band at strains from 0 to 4.5%, peaking inside the band" loading="lazy">
+            <img style="flex: 1.259" src="figures/panels/fv-peak.jpg" alt="The highest free volume on the path against the applied strain, jumping near 3.5% strain" loading="lazy">
+          </div>
+          <figcaption>Left, the free volume along a path across the band (the yellow arrow in the inset) at strains from 0 to 4.5%. Right, the highest free volume on that path against the applied strain, with the values taken for a shear band, 0.16, and for fracture, 0.23. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>A freestanding 5&nbsp;μm film forms a single shear band and fractures at 3.79% strain. On the substrate, the same film forms one band at 5.8%, six by 6.43%, and fractures at 8%, more than twice the strain. Multiple shear bands like these have been observed in experiments on such films.</p>
+        <figure class="fig">
+          <img src="figures/fig5.jpg" alt="Free volume in a freestanding film with one shear band, and in the film on a substrate with more bands at each larger strain" loading="lazy">
+          <figcaption>Free volume in a freestanding 5&nbsp;μm film at fracture (top), and in the same film on a Ni substrate at strains of 0.058, 0.0604, 0.0643 and 0.08, where it fractures. Dashed outlines mark shear bands, where the free volume exceeds 0.16; the interface strength equals the film's yield strength. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>Spread over several bands, the deformation no longer localizes. The simulations give the stress in the film itself, which is hard to measure in experiments. A freestanding film loses strength suddenly once its band forms; on the substrate, this drop is eased in a 30&nbsp;μm film and gone in a 2.5&nbsp;μm film, which fractures at 9.55% strain, over three times the 3.1% of the same film freestanding.</p>
+        <figure class="fig feature">
+          <img src="figures/fig6.jpg" alt="Engineering stress against strain of films 2.5 to 30 μm thick, freestanding and on the substrate; the thinnest film on the substrate lasts longest" loading="lazy">
+          <figcaption>Engineering stress against strain in films 2.5 to 30&nbsp;μm thick, freestanding (dashed) and on the substrate (solid); crosses mark fracture. The interface strength equals the film's yield strength. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="film">
+        <h2><span class="num">3</span> Film thickness and interface strength <a class="anchor" href="#film" aria-label="Link to this section">#</a></h2>
+        <p>Thinner films gain the most. A 30&nbsp;μm film on the substrate fractures at 5.56% strain, close to the 4.7% of the same film freestanding. The number of shear bands explains it: at fracture, a 2.5&nbsp;μm film has nine bands, a 10&nbsp;μm film two, and films 20&nbsp;μm thick or more only one. In films thinner than 20&nbsp;μm, new bands keep forming as the strain grows; the 2.5&nbsp;μm film has five at 6.25% strain and nine at 9.55%.</p>
+        <figure class="fig">
+          <img src="figures/fig7.jpg" alt="Free volume at fracture in films 2.5 to 30 μm thick on the substrate, with fewer shear bands in thicker films" loading="lazy">
+          <figcaption>Free volume at fracture in films on the substrate, 2.5, 5, 10, 20 and 30&nbsp;μm thick from top to bottom, each labeled with its fracture strain. Dashed outlines mark shear bands; the interface strength equals the film's yield strength. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <figure class="fig narrow">
+          <img src="figures/fig8.jpg" alt="The number of shear bands against the applied strain in films 2.5, 5 and 10 μm thick" loading="lazy">
+          <figcaption>The number of shear bands against the applied strain, in films 2.5, 5 and 10&nbsp;μm thick. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>The interface has to hold the film down. When it is weak, the film delaminates from the substrate and fewer bands form: a 5&nbsp;μm film forms two when the interface strength is a tenth of the film's yield strength. From half the yield strength up, it forms six bands and fractures at about 8% strain, as with a perfectly bonded interface.</p>
+        <figure class="fig">
+          <img src="figures/fig10.jpg" alt="Free volume at fracture in a 5 μm film for interface strengths from 0.1 to 3 times the film's yield strength and for a perfectly bonded interface" loading="lazy">
+          <figcaption>Free volume at fracture in a 5&nbsp;μm film, with the interface strength at 0.1, 0.2, 0.5, 1 and 3 times the film's yield strength and with a perfectly bonded interface, from top to bottom. At the two lowest strengths, the film comes away from the substrate next to a band. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>In thin films, the fracture strain and the number of bands both rise with the interface strength and then level off above a critical strength: about twice the film's yield strength for a 2.5&nbsp;μm film, and half of it for a 10&nbsp;μm film. In thicker films the interface hardly matters: a 20&nbsp;μm film forms one band whatever its strength, and fractures at about 5.5% strain.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.218" src="figures/panels/interface-strain.jpg" alt="Fracture strain against interface strength for films 2.5 to 20 μm thick" loading="lazy">
+            <img style="flex: 1.176" src="figures/panels/interface-bands.jpg" alt="Number of shear bands at fracture against interface strength for films 2.5 to 20 μm thick" loading="lazy">
+          </div>
+          <figcaption>The fracture strain (left) and the number of shear bands at fracture (right) against the interface strength over the film's yield strength, for films 2.5 to 20&nbsp;μm thick; the gray band marks a perfectly bonded interface. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig11.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="substrate">
+        <h2><span class="num">4</span> Substrate grain size, thickness and stiffness <a class="anchor" href="#substrate" aria-label="Link to this section">#</a></h2>
+        <p>The substrate's grain size changes how much it helps. Among Ni substrates with grains from 200&nbsp;nm to 27&nbsp;μm, 500&nbsp;nm grains give the most ductile film: a 2.5&nbsp;μm film fractures at 13.3% strain, 50% more than on 27&nbsp;μm grains, and forms 16 shear bands, against 7 on 27&nbsp;μm grains.</p>
+        <figure class="fig narrow">
+          <img src="figures/fig14.jpg" alt="Fracture strain of films 2.5 and 5 μm thick against the substrate's grain size, peaking at 500 nm" loading="lazy">
+          <figcaption>The film's fracture strain against the substrate's grain size, for films 2.5 and 5&nbsp;μm thick; the interface strength equals the film's yield strength. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/fig15.jpg" alt="Free volume at fracture in a 2.5 μm film on substrates with grains from 200 nm to 27 μm, with the most shear bands at 500 nm" loading="lazy">
+          <figcaption>Free volume at fracture in a 2.5&nbsp;μm film on substrates with grains of 200&nbsp;nm, 500&nbsp;nm, 1&nbsp;μm, 3.9&nbsp;μm and 27&nbsp;μm, from top to bottom, each labeled with its fracture strain. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>The optimum comes from the substrate's own trade-off between strength and ductility. Coarse grains make it weak: at 27&nbsp;μm, its yield strength of 61.45&nbsp;MPa is 1.9&nbsp;GPa below the film's 2&nbsp;GPa. Fine grains make it strong, but it then hardens less and stretches less: its uniform elongation at 200&nbsp;nm is 0.079, about a quarter of the 0.31 at 27&nbsp;μm. Both weaken the substrate's support for multiple shear bands, and 500&nbsp;nm grains give the best balance.</p>
+        <figure class="fig narrow">
+          <img src="figures/panels/ni-strength-ductility.jpg" alt="Uniform elongation of Ni against its yield strength for grain sizes from 200 nm to 27 μm, modeled and measured" loading="lazy">
+          <figcaption>The substrate's uniform elongation against its yield strength, for grain sizes from 200&nbsp;nm to 27&nbsp;μm: the model (filled symbols) and measurements (open symbols) by Wu et al. (2015) and Lu et al. (2016). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The substrate must also be thick enough. In these simulations the bottom of the model is left free. A substrate as thick as the film barely restrains it: a single band forms and runs on across the thin substrate, and a 2.5&nbsp;μm film fractures at 3.7% strain, close to the 3.1% of a freestanding film. The fracture strain rises with the substrate's thickness and levels off once the substrate is about 50 times as thick as the film. For a 5&nbsp;μm film, the number of bands grows from two to six as the substrate goes from 10 to 1000 times the film's thickness.</p>
+        <figure class="fig narrow">
+          <img src="figures/fig12.jpg" alt="Fracture strain of films 2.5 and 5 μm thick against the substrate's thickness over the film's, leveling off above 50" loading="lazy">
+          <figcaption>The film's fracture strain against the substrate's thickness over the film's, for films 2.5 and 5&nbsp;μm thick. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/fig13.jpg" alt="Free volume at fracture in a 5 μm film on substrates 1, 10 and 1000 times as thick as the film" loading="lazy">
+          <figcaption>Free volume at fracture in a 5&nbsp;μm film on substrates 1, 10 and 1000 times as thick as the film, from top to bottom; the arrow marks where the band runs on across the thinnest substrate. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>Polymer substrates help only if they are stiff enough. Modeled with moduli from 20&nbsp;MPa to 10&nbsp;GPa, they barely raise the fracture strain of a 5&nbsp;μm film until the modulus passes a hundredth of the film's, 2.17&nbsp;GPa; beyond that it rises steeply, to 32% strain at 10&nbsp;GPa. A 20&nbsp;MPa substrate carries only 0.82&nbsp;MPa at 4% strain, far below the film's 2&nbsp;GPa strength, so the film forms a single band and fractures at 4%, as a freestanding film does at 3.8%. At 10&nbsp;GPa, dense shear bands spread along the whole film.</p>
+        <figure class="fig narrow">
+          <img src="figures/fig16.jpg" alt="Fracture strain of a 5 μm film against the polymer substrate's modulus over the film's, rising steeply above 0.01" loading="lazy">
+          <figcaption>The fracture strain of a 5&nbsp;μm film against the polymer substrate's modulus over the film's. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/fig17.jpg" alt="Free volume at fracture in a 5 μm film on polymer substrates from 20 MPa to 10 GPa, with dense shear bands on the stiffest" loading="lazy">
+          <figcaption>Free volume at fracture in a 5&nbsp;μm film on polymer substrates with moduli of 20&nbsp;MPa, 2&nbsp;GPa, 4&nbsp;GPa, 5&nbsp;GPa and 10&nbsp;GPa, from top to bottom, each labeled with its fracture strain. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="experiments">
+        <h2><span class="num">5</span> Comparison with experiments <a class="anchor" href="#experiments" aria-label="Link to this section">#</a></h2>
+        <p>Lu et al. (2016) measured stress-strain curves of a 14.3&nbsp;μm Ni-P film on a Ni substrate, and of the bare substrate. A three-dimensional model with that film thickness reproduces both. It predicts a tensile ductility of 21.18% for the film on its substrate and 23.17% for the bare substrate, against 21.82% and 25.36% measured, and it holds only until the specimens fracture. The two-dimensional model gives higher stresses, because plane strain adds a tensile stress across the width.</p>
+        <figure class="fig narrow">
+          <img src="figures/fig18.jpg" alt="Engineering stress against strain of the film on its Ni substrate and of the bare substrate, measured and simulated" loading="lazy">
+          <figcaption>Engineering stress against strain for the 14.3&nbsp;μm film on its Ni substrate and for the bare substrate: measurements by Lu et al. (2016) (symbols), and the three-dimensional (solid) and two-dimensional (dashed) models. <span class="credit">From Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span></figcaption>
+        </figure>
+        <p>At the uniform elongation, 21.2%, the film in the three-dimensional model has four shear bands. They run at 45° to the tensile axis and straight through the film's thickness. The free volume peaks at the film's edge, so a crack would form there first, as seen in the experiments.</p>
+        <figure class="fig medium">
+          <img src="figures/panels/3d-view.jpg" alt="The film on its substrate in three dimensions, with the highest free volume at its edge, and the film from above with four shear bands" loading="lazy">
+          <figcaption>Top, the free volume in the 14.3&nbsp;μm film on its substrate at its uniform elongation, 0.212, seen at an angle; the arrow marks the highest value, at the film's edge. Bottom, the film seen from above, showing only free volume above 0.08; dashed lines mark the four shear bands. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig19.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>In the two-dimensional models, the bands run at 45° through the film's thickness instead. Plane strain adds a tensile stress across the width, which changes the direction of the largest shear stress, where bands form. Experiments show bands in both directions.</p>
+        <figure class="fig medium">
+          <img src="figures/panels/band-directions.jpg" alt="Two blocks of film under tension, one with a band inclined through its thickness and one with a band crossing its width at 45 degrees" loading="lazy">
+          <figcaption>The two directions of a shear band. Top, at 45° to both the tensile axis and the film's thickness, as in the two-dimensional models. Bottom, through the thickness and at 45° to the tensile axis, as in the three-dimensional model. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 195, 1–12 (2020).</span> <a href="figures/fig20.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      
+
+      <section id="bibtex">
+        <h2>BibTeX <a class="anchor" href="#bibtex" aria-label="Link to this section">#</a></h2>
+        <div class="code">
+          <button class="btn" type="button" data-copy="bibtex-text" data-label="Copy">Copy</button>
+          <pre id="bibtex-text">@article{chen2020shear,
+  title = {Shear band multiplication induced strong strain delocalization and high tensile ductility in amorphous thin films by metallic substrates},
+  author = {Chen, Tianyu and Li, Jianjun and Chen, Shaohua and Li, Chun},
+  journal = {International Journal of Solids and Structures},
+  volume = {195},
+  pages = {1--12},
+  year = {2020},
+  doi = {10.1016/j.ijsolstr.2020.03.011}
+}</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>Page design adapted from <a href="https://jonbarron.info/">Jon Barron’s website</a>. Movies and figures are from the papers credited with each one.</footer>
+  <script src="../../assets/js/article.js" defer></script>
+</body>
+</html>

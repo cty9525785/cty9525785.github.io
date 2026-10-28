@@ -1,0 +1,310 @@
+/* Home page styles, adapted from Jon Barron's stylesheet.css
+   (https://github.com/jonbarron/jonbarron.github.io).
+   Changes: Lato served from assets/fonts instead of Google's servers, layout moved from inline
+   styles into classes, and added rules for phones, placeholders and draft badges. */
+
+/* Lato's latin and latin-ext subsets from Google Fonts, under the SIL Open Font License
+   (../fonts/lato/OFL.txt). */
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-ext-400-italic.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-400-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-ext-700-italic.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-700-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-ext-700-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/lato/lato-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+a {
+  color: #1772d0;
+  text-decoration: none;
+}
+
+a:focus,
+a:hover {
+  color: #f09228;
+  text-decoration: none;
+}
+
+body,
+td,
+th,
+tr,
+p,
+a,
+li,
+strong {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #000;
+}
+
+h2 {
+  margin: 0;
+  padding: 16px 16px 0;
+  font-weight: normal;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 26px;
+}
+
+.page {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border: 0;
+  border-collapse: separate;
+}
+
+.header {
+  border-spacing: 0;
+}
+
+.intro {
+  padding: 2.5%;
+  width: 70%;
+  vertical-align: middle;
+}
+
+/* A modest photo, about 175 px wide (Tianyu found 255 px too big). */
+.photo {
+  padding: 2.5%;
+  width: 30%;
+  max-width: 30%;
+}
+
+.photo img {
+  display: block;
+  width: 175px;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.name {
+  padding-top: 20px;
+  margin: 0;
+  text-align: center;
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 36px;
+}
+
+.tagline {
+  text-align: center;
+  font-size: 19px;
+}
+
+.links {
+  text-align: center;
+}
+
+.papers {
+  border-spacing: 0 10px;
+}
+
+.paper-row.highlight {
+  background-color: #ffffd0;
+}
+
+.paper-row .media {
+  padding: 16px;
+  width: 20%;
+  vertical-align: middle;
+}
+
+.paper-row .media video,
+.paper-row .media img {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #f4f4f4;
+}
+
+/* A paper's figure is shown whole, since cropping it to a square cuts through its labels. */
+.paper-row .media img {
+  object-fit: contain;
+  background: #fff;
+}
+
+.paper-row .media .placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+  padding: 12px;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 13px;
+}
+
+.paper-row .media a {
+  position: relative;
+  display: block;
+  width: 160px;
+}
+
+.paper-row .text {
+  padding: 8px;
+  width: 80%;
+  vertical-align: middle;
+}
+
+.papertitle {
+  font-family: 'Lato', Verdana, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.placeholder {
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+.draft {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.footer {
+  padding: 24px 16px;
+  text-align: right;
+  font-size: 14px;
+  color: #555;
+}
+
+@media (max-width: 600px) {
+  .intro,
+  .photo,
+  .paper-row .media,
+  .paper-row .text {
+    display: block;
+    width: auto;
+    max-width: none;
+  }
+
+  .photo img {
+    width: 120px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .paper-row .media {
+    padding: 16px 16px 0;
+  }
+
+  .paper-row .media a {
+    width: auto;
+  }
+
+  .paper-row .media video {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .paper-row .media img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .paper-row .text {
+    padding: 8px 16px 16px;
+  }
+
+  .footer {
+    text-align: left;
+  }
+}

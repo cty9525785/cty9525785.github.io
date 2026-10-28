@@ -1,0 +1,575 @@
+# Papers Tianyu wrote as first or co-first author, each with its own page ([[paper]], each with its
+# [[paper.movie]] entries), and the other papers, listed at the bottom of the home page ([[other]]).
+# "TODO:" marks text still to be written.
+# media_mode: embed (movies on the page) or link (movies on the journal's site).
+
+[[paper]]
+slug = "scale-inspired-robotic-structures"
+title = "Scale-inspired programmable robotic structures with concurrent shape morphing and stiffness variation"
+short_title = "Scale-inspired programmable robotic structures"
+authors = ["Tianyu Chen", "Xudong Yang", "Bojian Zhang", "Junwei Li", "Jie Pan", "Yifan Wang"]
+me = 1
+equal_contribution = []
+affiliations = ["School of Mechanical and Aerospace Engineering, Nanyang Technological University, Singapore"]
+affiliation_of = [[1], [1], [1], [1], [1], [1]]
+corresponding = { "Yifan Wang" = "yifan.wang@ntu.edu.sg" }
+citation = "Science Robotics 9, eadl0307 (2024)"
+date = "2024-07"
+doi = "10.1126/scirobotics.adl0307"
+highlight = true
+media_mode = "embed"
+supplementary_url = "https://www.science.org/doi/10.1126/scirobotics.adl0307#supplementary-materials"
+summary_status = "confirmed"
+one_line = "A structure inspired by fish and pangolin scales takes a designed shape as it stiffens under vacuum, used in an amphibious robot and drone landing gear."
+bibtex = '''
+@article{chen2024scale,
+  title = {Scale-inspired programmable robotic structures with concurrent shape morphing and stiffness variation},
+  author = {Chen, Tianyu and Yang, Xudong and Zhang, Bojian and Li, Junwei and Pan, Jie and Wang, Yifan},
+  journal = {Science Robotics},
+  volume = {9},
+  number = {92},
+  pages = {eadl0307},
+  year = {2024},
+  doi = {10.1126/scirobotics.adl0307}
+}'''
+
+[paper.tile]
+kind = "clip"
+graph = "scale-inspired-robotic-structures.graph"
+inputs = [
+  { movie = "S11", start = 7.0, duration = 8.0 },
+  { movie = "S11", start = 29.0, duration = 18.0 },
+  { movie = "S4", start = 8.2, duration = 11.2 },
+  { movie = "S5", start = 29.5, duration = 11.2 },
+  { movie = "S6", start = 4.5, duration = 11.2 },
+]
+segments = [{ at = 0.0, speed = 4.0 }, { at = 5.82, speed = 2.0 }]
+
+[[paper.movie]]
+id = "S1"
+source = "scirobotics.adl0307_movie_s1.mp4"
+process = "remux"
+caption = "Fabrication and actuation of the scale-inspired layered structure (SAILS)."
+
+[[paper.movie]]
+id = "S2"
+source = "scirobotics.adl0307_movie_S2.mp4"
+process = "remux"
+caption = "Structures with developable surfaces morphing into their target shapes, with simulations alongside the experiments."
+
+[[paper.movie]]
+id = "S3"
+source = "scirobotics.adl0307_movie_S3.mp4"
+process = "remux"
+poster_at = 42.0
+caption = "Deployment of a dome-shaped structure, which then holds a 50 g load."
+
+[[paper.movie]]
+id = "S4"
+source = "scirobotics.adl0307_movie_S4.mp4"
+process = "remux"
+caption = "The amphibious robot crawling on the ground and swimming in water."
+
+[[paper.movie]]
+id = "S5"
+source = "scirobotics.adl0307_movie_S5.mp4"
+process = "remux"
+caption = "The robot climbing over an obstacle and moving from land into water."
+
+[[paper.movie]]
+id = "S6"
+source = "scirobotics.adl0307_movie_S6.mp4"
+process = "remux"
+caption = "The robot passing through gaps that narrow from 20 mm to 8 mm."
+
+[[paper.movie]]
+id = "S7"
+source = "scirobotics.adl0307_movie_S7.mp4"
+process = "remux"
+caption = "The robot carrying a 50 g load and climbing a 22° slope."
+
+[[paper.movie]]
+id = "S8"
+source = "scirobotics.adl0307_movie_S8.mp4"
+process = "remux"
+caption = "A larger robot crawling over an obstacle, stiffening into a bridge for a toy car, shielding a quail egg from a falling ball and carrying a heavier load."
+
+[[paper.movie]]
+id = "S9"
+source = "scirobotics.adl0307_movie_S9.mp4"
+process = "remux"
+caption = "Drop tests of the drone with its landing gear, released from 3 cm and 20 cm."
+
+[[paper.movie]]
+id = "S10"
+source = "scirobotics.adl0307_movie_S10.mp4"
+process = "remux"
+caption = "Setting the negative pressure in the landing gear with the onboard control system."
+
+[[paper.movie]]
+id = "S11"
+source = "scirobotics.adl0307_movie_S11.mp4"
+process = "remux"
+caption = "The landing gear deploying in flight, followed by the drone landing on it."
+
+[[paper.movie]]
+id = "S12"
+source = "scirobotics.adl0307_movie_S12.mp4"
+process = "remux"
+caption = "The landing gear working as a gripper to lift a 225 g load."
+
+[[paper]]
+slug = "stiffness-driven-control"
+title = "Muscle coactivation-inspired stiffness-driven control strategy for antagonistic soft robots"
+short_title = "Muscle coactivation-inspired stiffness-driven control"
+authors = ["Jie Pan", "Tianyu Chen", "Junwei Li", "Yifan Wang"]
+me = 2
+equal_contribution = ["Jie Pan", "Tianyu Chen"]
+affiliations = ["School of Mechanical and Aerospace Engineering, Nanyang Technological University, Singapore"]
+affiliation_of = [[1], [1], [1], [1]]
+corresponding = { "Yifan Wang" = "yifan.wang@ntu.edu.sg" }
+citation = "Science Advances 12, eaeg3346 (2026)"
+date = "2026-09"
+doi = "10.1126/sciadv.aeg3346"
+highlight = true
+media_mode = "embed"
+supplementary_url = "https://www.science.org/doi/10.1126/sciadv.aeg3346#supplementary-materials"
+summary_status = "confirmed"
+one_line = "A data-driven controller, inspired by how opposing muscles tense together, learns in minutes to control the motion and stiffness of robots driven by opposing actuators."
+bibtex = '''
+@article{pan2026muscle,
+  title = {Muscle coactivation-inspired stiffness-driven control strategy for antagonistic soft robots},
+  author = {Pan, Jie and Chen, Tianyu and Li, Junwei and Wang, Yifan},
+  journal = {Science Advances},
+  volume = {12},
+  number = {36},
+  pages = {eaeg3346},
+  year = {2026},
+  doi = {10.1126/sciadv.aeg3346}
+}'''
+
+[paper.tile]
+kind = "clip"
+graph = "stiffness-driven-control.graph"
+inputs = [{ movie = "S2", start = 76.0, duration = 32.0 }]
+segments = [{ at = 0.0, speed = 50.0 }]
+
+[[paper.movie]]
+id = "S1"
+source = "sciadv.aeg3346_movie_s1.mp4"
+process = "remux"
+caption = "Path tracking with antagonistic soft robots."
+
+[[paper.movie]]
+id = "S2"
+source = "sciadv.aeg3346_movie_s2.mp4"
+process = "remux"
+source_speed = 10.0
+caption = "Grasping with an antagonistic soft gripper: comparisons with direct actuation and PD control, then soft, rigid, smooth and hollow objects."
+
+[[paper.movie]]
+id = "S3"
+source = "sciadv.aeg3346_movie_s3.mp4"
+process = "remux"
+caption = "Applications enabled by stiffness-driven control, including measuring a silicone ring's stiffness while grasping it."
+
+[[paper.movie]]
+id = "S4"
+source = "sciadv.aeg3346_movie_s4.mp4"
+process = "remux"
+caption = "The control strategy applied to a tendon-driven robot."
+
+[[paper]]
+slug = "programmable-morphing-structure"
+title = "Design and modeling of a programmable morphing structure with variable stiffness capability"
+short_title = "Programmable morphing structure with variable stiffness"
+authors = ["Tianyu Chen", "Xudong Yang", "Yifan Wang"]
+me = 1
+equal_contribution = []
+affiliations = ["School of Mechanical and Aerospace Engineering, Nanyang Technological University, Singapore"]
+affiliation_of = [[1], [1], [1]]
+corresponding = { "Yifan Wang" = "yifan.wang@ntu.edu.sg" }
+citation = "International Journal of Mechanical Sciences 284, 109699 (2024)"
+date = "2024-09"
+doi = "10.1016/j.ijmecsci.2024.109699"
+highlight = false
+media_mode = "embed"
+supplementary_url = ""
+summary_status = "confirmed"
+one_line = "Geometric analysis and simulations give design rules for a scale structure: friction above a threshold hinders morphing, and reshaping the scales’ surface eases the trade-off between morphing and stiffening."
+bibtex = '''
+@article{chen2024design,
+  title = {Design and modeling of a programmable morphing structure with variable stiffness capability},
+  author = {Chen, Tianyu and Yang, Xudong and Wang, Yifan},
+  journal = {International Journal of Mechanical Sciences},
+  volume = {284},
+  pages = {109699},
+  year = {2024},
+  doi = {10.1016/j.ijmecsci.2024.109699}
+}'''
+
+[paper.tile]
+kind = "clip"
+graph = "programmable-morphing-structure.graph"
+inputs = [{ movie = "4", start = 3.8, duration = 5.2 }, { movie = "4", start = 3.8, duration = 0.6 }]
+segments = [{ at = 0.0, speed = 1.0 }]
+
+[[paper.movie]]
+id = "1"
+source = "MVI_7784.MP4"
+process = "silent1080"
+caption = "The gripper's fingers curl into a quarter circle under a negative pressure of 90 kPa, then open again when the pressure is released."
+credit = "Recorded for the paper."
+publish = false
+
+[[paper.movie]]
+id = "2"
+source = "MVI_7787.MP4"
+process = "silent1080"
+caption = "The gripper picks up a 147 g load."
+credit = "Recorded for the paper."
+publish = false
+
+[[paper.movie]]
+id = "3"
+source = "MVI_7615.MP4"
+process = "silent1080"
+caption = "A flat strip morphs into the phone stand under a negative pressure of 90 kPa."
+credit = "Recorded for the paper."
+publish = false
+
+[[paper.movie]]
+id = "4"
+source = "MVI_7208.MP4"
+process = "silent1080"
+caption = "A flat sheet folds into a box within one second under a negative pressure of 90 kPa."
+credit = "Recorded for the paper."
+publish = false
+
+[[paper]]
+slug = "shear-banding-gradient-metals"
+title = "Modelling the Shear Banding in Gradient Nano-Grained Metals"
+short_title = "Shear banding in gradient nanograined metals"
+authors = ["Tianyu Chen", "Jianjun Li"]
+me = 1
+equal_contribution = []
+affiliations = [
+  "College of Mechanical and Electrical Engineering, Central South University, Changsha, China",
+  "State Key Laboratory of High Performance Complex Manufacturing, Central South University, Changsha, China",
+]
+affiliation_of = [[1], [1, 2]]
+corresponding = { "Jianjun Li" = "mejjli@csu.edu.cn" }
+citation = "Nanomaterials 11, 2468 (2021)"
+date = "2021-09"
+doi = "10.3390/nano11102468"
+highlight = false
+media_mode = "embed"
+supplementary_url = ""
+summary_status = "confirmed"
+one_line = "A computational model of gradient nanograined copper shows that its coarse-grained core makes shear bands form early and multiply at the surface, explaining its ductility."
+bibtex = '''
+@article{chen2021modelling,
+  title = {Modelling the Shear Banding in Gradient Nano-Grained Metals},
+  author = {Chen, Tianyu and Li, Jianjun},
+  journal = {Nanomaterials},
+  volume = {11},
+  number = {10},
+  pages = {2468},
+  year = {2021},
+  doi = {10.3390/nano11102468}
+}'''
+
+[paper.tile]
+kind = "drawing"
+drawing = "gradient"
+poster_at = 5.5
+
+[[paper]]
+slug = "amorphous-thin-films"
+title = "Shear band multiplication induced strong strain delocalization and high tensile ductility in amorphous thin films by metallic substrates"
+short_title = "Shear band multiplication in amorphous thin films"
+authors = ["Tianyu Chen", "Jianjun Li", "Shaohua Chen", "Chun Li"]
+me = 1
+equal_contribution = []
+affiliations = [
+  "College of Mechanical and Electrical Engineering, Central South University, Changsha, China",
+  "State Key Laboratory of High Performance Complex Manufacturing, Central South University, Changsha, China",
+  "Department of Engineering Mechanics, School of Mechanics, Civil Engineering and Architecture, Northwestern Polytechnical University, Xi’an, China",
+  "Institute of Advanced Structure Technology, Beijing Institute of Technology, Beijing, China",
+]
+affiliation_of = [[1, 3], [1, 2], [4], [3]]
+corresponding = { "Jianjun Li" = "mejjli@csu.edu.cn" }
+citation = "International Journal of Solids and Structures 195, 1–12 (2020)"
+date = "2020-03"
+doi = "10.1016/j.ijsolstr.2020.03.011"
+highlight = false
+media_mode = "embed"
+supplementary_url = ""
+summary_status = "confirmed"
+one_line = "Simulations show that a metal substrate makes a thin metallic glass film form many shear bands instead of one, which raises its tensile ductility."
+bibtex = '''
+@article{chen2020shear,
+  title = {Shear band multiplication induced strong strain delocalization and high tensile ductility in amorphous thin films by metallic substrates},
+  author = {Chen, Tianyu and Li, Jianjun and Chen, Shaohua and Li, Chun},
+  journal = {International Journal of Solids and Structures},
+  volume = {195},
+  pages = {1--12},
+  year = {2020},
+  doi = {10.1016/j.ijsolstr.2020.03.011}
+}'''
+
+[paper.tile]
+kind = "drawing"
+drawing = "films"
+poster_at = 5.0
+
+[[paper]]
+slug = "graded-substrate-thin-films"
+title = "Tailoring tensile ductility of thin film by grain size graded substrates"
+short_title = "Tensile ductility of thin films on grain size graded substrates"
+authors = ["Tianyu Chen", "Wenjun Lu", "Jianjun Li", "Shaohua Chen", "Chun Li", "George J. Weng"]
+me = 1
+equal_contribution = []
+affiliations = [
+  "Department of Engineering Mechanics, School of Mechanics, Civil Engineering and Architecture, Northwestern Polytechnical University, Xi’an, China",
+  "Department of Structure and Nano-/Micromechanics of Materials, Max-Planck-Institut für Eisenforschung GmbH, Düsseldorf, Germany",
+  "State Key Laboratory of High Performance Complex Manufacturing, Central South University, Changsha, China",
+  "College of Mechanical and Electrical Engineering, Central South University, Changsha, China",
+  "Institute of Advanced Structure Technology, Beijing Institute of Technology, Beijing, China",
+  "Department of Mechanical and Aerospace Engineering, Rutgers University, New Brunswick, NJ, USA",
+]
+affiliation_of = [[1], [2], [3, 4], [5], [1], [6]]
+corresponding = { "Jianjun Li" = "mejjli@csu.edu.cn" }
+citation = "International Journal of Solids and Structures 166, 124–134 (2019)"
+date = "2019-02"
+doi = "10.1016/j.ijsolstr.2019.02.011"
+highlight = false
+media_mode = "embed"
+supplementary_url = ""
+summary_status = "confirmed"
+one_line = "Simulations show that a substrate whose grains coarsen with depth can let a thin film stretch further before necking than a uniform coarse-grained substrate does."
+bibtex = '''
+@article{chen2019tailoring,
+  title = {Tailoring tensile ductility of thin film by grain size graded substrates},
+  author = {Chen, Tianyu and Lu, Wenjun and Li, Jianjun and Chen, Shaohua and Li, Chun and Weng, George J.},
+  journal = {International Journal of Solids and Structures},
+  volume = {166},
+  pages = {124--134},
+  year = {2019},
+  doi = {10.1016/j.ijsolstr.2019.02.011}
+}'''
+
+[paper.tile]
+kind = "drawing"
+drawing = "necking"
+poster_at = 6.0
+
+# Co-authored papers: rows that point to the publisher, with no page of their own, newest first.
+# thumb is empty when media/<slug>/thumb.jpg exists.
+
+[[other]]
+slug = "suture-interlocking-metamaterials"
+authors = ["Yu Chen", "Xudong Yang", "Junwei Li", "Tianyu Chen", "Yuzhe Wang", "Yifan Wang"]
+me = 4
+equal_contribution = ["Yu Chen", "Xudong Yang"]
+title = "Suture-inspired interlocking metamaterials for energy-efficient morphing"
+citation = "Advanced Functional Materials 36, e78343 (2026)"
+doi = "10.1002/adfm.78343"
+one_line = "Bistable joints modeled on natural sutures let metamaterials built from particles morph and then hold their shape under load without continuous actuation."
+summary_status = "confirmed"
+thumb = ""
+
+[other.tile]
+kind = "clip"
+graph = "suture-interlocking-metamaterials.graph"
+inputs = [{ movie = "S5", start = 8.3, duration = 3.5 }, { movie = "S5", start = 11.8, duration = 33.2 }]
+segments = [{ at = 0.0, speed = 1.0 }, { at = 3.25, speed = 5.0 }]
+poster_at = 8.5
+
+[[other.movie]]
+id = "S5"
+source = "Chen 2026 Adv Funct Mater - Movie S5.mp4"
+
+[[other]]
+slug = "thermally-responsive-actuators"
+authors = ["Yu Chen", "Xudong Yang", "Tianyu Chen", "Junwei Li", "Yifan Wang"]
+me = 3
+title = "Thermally responsive architected actuators with programmable shape morphing and tunable stiffness"
+citation = "Advanced Intelligent Systems 7, 2500123 (2025)"
+doi = "10.1002/aisy.202500123"
+one_line = "Tessellated particles joined by shape memory alloy springs change shape and stiffen together when heated electrically."
+summary_status = "confirmed"
+thumb = ""
+
+[other.tile]
+kind = "clip"
+graph = "thermally-responsive-actuators.graph"
+inputs = [{ movie = "S10", start = 49.0, duration = 12.0 }]
+segments = [{ at = 0.0, speed = 10.0 }]
+poster_at = 3.0
+
+[[other.movie]]
+id = "S10"
+source = "Chen 2025 Adv Intell Syst - Movie S10 - Snake robot.mp4"
+source_speed = 5.0
+
+[[other]]
+slug = "muscle-impedance-sensors"
+authors = ["Junwei Li", "Kunlin Wu", "Jingcheng Xiao", "Tianyu Chen", "Xudong Yang", "Jie Pan", "Yu Chen", "Yifan Wang"]
+me = 4
+title = "Flexible multichannel muscle impedance sensors for collaborative human-machine interfaces"
+citation = "Science Advances 11, eadv3359 (2025)"
+doi = "10.1126/sciadv.adv3359"
+one_line = "A thin, soft impedance sensor that conforms to skin reads the contractions of several deep muscles, for gesture recognition, force prediction, human-robot collaboration and exoskeleton control."
+summary_status = "confirmed"
+
+[[other]]
+slug = "negative-pressure-actuators"
+authors = ["Zeyu Fu", "Tianyu Chen", "Haoran Zou", "Zhiwei Zhu", "Zichen Deng", "Yifan Wang"]
+me = 2
+title = "Negative-pressure soft pneumatic actuators enabled by asymmetrically distributed bending units"
+citation = "Extreme Mechanics Letters 77, 102340 (2025)"
+doi = "10.1016/j.eml.2025.102340"
+one_line = "Silicone actuators bend under vacuum in directions set by the layout of their holes, and drive grippers and a crawling robot."
+summary_status = "confirmed"
+
+[[other]]
+slug = "multistable-soft-robots"
+authors = ["Bojian Zhang", "Zhiqiang Meng", "Xudong Yang", "Yiran Zhang", "Tianyu Chen", "Yu Chen", "Yifan Wang"]
+me = 5
+title = "Multistable soft robots assembled from bistable auxetic building blocks"
+citation = "Advanced Intelligent Systems 7, 2400529 (2025)"
+doi = "10.1002/aisy.202400529"
+one_line = "Building blocks that snap between two stable shapes form a robot arm and a tube crawler that hold their shapes when the air supply is cut."
+summary_status = "confirmed"
+thumb = ""
+
+[other.tile]
+kind = "clip"
+graph = "multistable-soft-robots.graph"
+inputs = [{ movie = "S1", start = 52.5, duration = 9.0 }]
+segments = [{ at = 0.0, speed = 1.0 }]
+poster_at = 3.0
+
+[[other.movie]]
+id = "S1"
+source = "Zhang 2025 Adv Intell Syst - Video S1.mp4"
+
+[[other]]
+slug = "active-fabrics"
+authors = ["Xudong Yang", "Yu Chen", "Tianyu Chen", "Junwei Li", "Yifan Wang"]
+me = 3
+equal_contribution = ["Xudong Yang", "Yu Chen"]
+title = "Active Fabrics With Controllable Stiffness for Robotic Assistive Interfaces"
+citation = "Advanced Materials 36, 2404502 (2024)"
+doi = "10.1002/adma.202404502"
+one_line = "Rigid tiles linked by actuated fibers form fabrics that switch from soft to stiff around the body, for exosuits and body armor."
+summary_status = "confirmed"
+
+[other.tile]
+kind = "clip"
+graph = "active-fabrics.graph"
+inputs = [{ movie = "S5", start = 9.0, duration = 6.0 }]
+segments = [{ at = 0.0, speed = 2.0 }]
+poster_at = 4.5
+
+[[other.movie]]
+id = "S5"
+source = "Yang 2024 Adv Mater - Movie S5.mp4"
+source_speed = 2.0
+
+[[other]]
+slug = "hierarchical-tessellation"
+authors = ["Xudong Yang", "Mingchao Liu", "Bojian Zhang", "Ziqi Wang", "Tianyu Chen", "Yuan Zhou", "Yu Chen", "K. Jimmy Hsia", "Yifan Wang"]
+me = 5
+title = "Hierarchical tessellation enables programmable morphing matter"
+citation = "Matter 7, 603–619 (2024)"
+doi = "10.1016/j.matt.2023.11.002"
+one_line = "A design method divides a curved 3D surface into rigid particles laid out flat, which tendons pull into that shape with tunable stiffness."
+summary_status = "confirmed"
+
+[[other]]
+slug = "architectured-composites"
+authors = ["Xudong Yang", "Mingchao Liu", "Tianyu Chen", "Yu Chen", "Yifan Wang"]
+me = 3
+title = "Tunable mechanics of architectured composites from particle assemblies"
+citation = "Extreme Mechanics Letters 67, 102121 (2024)"
+doi = "10.1016/j.eml.2024.102121"
+one_line = "Rigid particles held by prestressed soft ligaments form beams whose bending load capacity is set by particle shape and prestress, and can be tuned by electrical heating."
+summary_status = "confirmed"
+
+[[other]]
+slug = "droplet-energy-harvester"
+authors = ["Hai Lu Wang", "Bojian Zhang", "Tianyu Chen", "Weining Mao", "Yifan Wang"]
+me = 3
+title = "High-efficiency single-droplet energy harvester for self-sustainable environmental intelligent networks"
+citation = "Advanced Energy Materials 13, 2302858 (2023)"
+doi = "10.1002/aenm.202302858"
+one_line = "A droplet energy generator coated on a recycled DVD turns single falling droplets into electricity for self-powered environmental sensors."
+summary_status = "confirmed"
+thumb = ""
+
+[[other]]
+slug = "dual-responsive-skin"
+authors = ["Hai Lu Wang", "Tianyu Chen", "Bojian Zhang", "Guohui Wang", "Xudong Yang", "Kunlin Wu", "Yifan Wang"]
+me = 2
+title = "A dual-responsive artificial skin for tactile and touchless interfaces"
+citation = "Small 19, 2206830 (2023)"
+doi = "10.1002/smll.202206830"
+one_line = "A flexible capacitive skin senses both touch pressure and approaching objects, and can tell metals, polymers and human skin apart before contact."
+summary_status = "confirmed"
+thumb = ""
+
+[[other]]
+slug = "self-sensing-structures"
+authors = ["Xudong Yang", "Zongzheng Wang", "Bojian Zhang", "Tianyu Chen", "Changhong Linghu", "Kunlin Wu", "Guohui Wang", "Hailu Wang", "Yifan Wang"]
+me = 4
+title = "Self-sensing robotic structures from architectured particle assemblies"
+citation = "Advanced Intelligent Systems 5, 2200250 (2023)"
+doi = "10.1002/aisy.202200250"
+one_line = "Rigid particles sealed in a rubber envelope form structures that change shape and stiffen under vacuum, and sense their own deformation through conductive coatings."
+summary_status = "confirmed"
+thumb = ""
+
+# Two authors named T. Chen: me follows the given names in the Crossref record.
+
+[other.tile]
+kind = "clip"
+graph = "self-sensing-structures.graph"
+inputs = [{ movie = "S1", start = 16.2, duration = 9.2 }, { movie = "S1", start = 15.8, duration = 0.4 }]
+segments = [{ at = 0.0, speed = 1.0 }]
+poster_at = 4.0
+
+[[other.movie]]
+id = "S1"
+source = "Yang 2023 Adv Intell Syst - Movie S1 - Shape morphing ability.mp4"
+
+[[other]]
+slug = "bimodal-friction"
+authors = ["Jianjun Li", "Tianyu Chen", "Tingting Chen", "Zhong Yun", "Xiaodong Xia"]
+me = 2
+title = "Computational modelling of frictional deformation of bimodal nanograined metals"
+citation = "International Journal of Mechanical Sciences 222, 107220 (2022)"
+doi = "10.1016/j.ijmecsci.2022.107220"
+one_line = "Finite element scratch tests show why bimodal nanograined copper has lower friction than uniform copper: its mixed grain sizes restrain strain localization."
+summary_status = "confirmed"
+
+[[other]]
+slug = "gradient-friction"
+authors = ["Jianjun Li", "Tingting Chen", "Tianyu Chen", "Wenjun Lu"]
+me = 3
+title = "Enhanced frictional performance in gradient nanostructures by strain delocalization"
+citation = "International Journal of Mechanical Sciences 201, 106458 (2021)"
+doi = "10.1016/j.ijmecsci.2021.106458"
+one_line = "Finite element scratch tests show that gradient nanograined copper has lower friction because its layers deform together and spread the strain."
+summary_status = "confirmed"
+
+[[other]]
+slug = "gradient-nanolayers"
+authors = ["Jianjun Li", "Wenjun Lu", "James Gibson", "Siyuan Zhang", "Tianyu Chen", "Sandra Korte-Kerzel", "Dierk Raabe"]
+me = 5
+title = "Eliminating deformation incompatibility in composites by gradient nanolayer architectures"
+citation = "Scientific Reports 8, 16216 (2018)"
+doi = "10.1038/s41598-018-34369-9"
+one_line = "Copper–zirconium nanolayers with graded spacing deform compatibly in micropillar compression, removing the mismatch between their soft and hard layers."
+summary_status = "confirmed"

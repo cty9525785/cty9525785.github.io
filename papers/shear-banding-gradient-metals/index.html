@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modelling the Shear Banding in Gradient Nano-Grained Metals | Tianyu Chen</title>
+  <meta name="description" content="A computational model of gradient nanograined copper shows that its coarse-grained core makes shear bands form early and multiply at the surface, explaining its ductility.">
+  <link rel="stylesheet" href="../../assets/css/article.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="home" href="../../index.html">Tianyu Chen</a>
+      <span class="topbar-title">Shear banding in gradient nanograined metals</span>
+      <nav class="topbar-actions">
+        <a class="btn" href="https://doi.org/10.3390/nano11102468" target="_blank" rel="noopener">Paper</a>
+        <button class="btn" type="button" data-copy="bibtex-text" data-label="BibTeX">BibTeX</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="toc" aria-label="Contents">
+      <div class="toc-head">Contents</div>
+      <ol>
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#gradient">1&nbsp; Gradient nanograined metals</a></li>
+        <li><a href="#constitutive">2&nbsp; Constitutive model</a></li>
+        <li><a href="#model">3&nbsp; Microstructure and finite element model</a></li>
+        <li><a href="#bands">4&nbsp; Shear band multiplication</a></li>
+        <li><a href="#effects">5&nbsp; Effects of the grain size gradient</a></li>
+        <li><a href="#experiments">6&nbsp; Comparison with experiments</a></li>
+        <li><a href="#bibtex">BibTeX</a></li>
+      </ol>
+    </aside>
+
+    <main>
+      <header class="paper-head">
+        <h1>Modelling the Shear Banding in Gradient Nano-Grained Metals</h1>
+        <p class="authors"><span class="me">Tianyu&nbsp;Chen</span><sup>1</sup>, Jianjun&nbsp;Li<sup>1,2,*</sup></p>
+        <p class="affil"><sup>1</sup>College of Mechanical and Electrical Engineering, Central South University, Changsha, China<br>
+          <sup>2</sup>State Key Laboratory of High Performance Complex Manufacturing, Central South University, Changsha, China</p>
+        <p class="contact"><sup>*</sup>Corresponding author: <a href="mailto:mejjli@csu.edu.cn">mejjli@csu.edu.cn</a></p>
+        <p class="venue"><i>Nanomaterials</i> 11, 2468 (2021)</p>
+      </header>
+
+      <figure class="fig">
+        <video class="light" autoplay muted loop playsinline poster="figures/clips/strain-sequence-poster.jpg"><source src="figures/clips/strain-sequence.mp4" type="video/mp4"></video>
+        <figcaption>Gradient copper stretched in the 2D model, in snapshots from 4.5% to 31.69% applied strain, each held for about a second. Shear bands, outlined in dashed black where the equivalent plastic strain exceeds 1, appear at the nanograined surface and multiply, while the coarse-grained core below the yellow line stays free of them; the lower part of the core is not shown. <span class="credit">Made from simulation snapshots rendered for Chen and Li, Nanomaterials 11, 2468 (2021).</span></figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Metals whose grains grow from tens of nanometers at the surface to tens of micrometers inside are both strong and ductile, yet how their nanograined surface deforms has been debated. Nanograined metal on its own fails early through shear bands, narrow zones of concentrated strain, and experiments have found shear bands on the surface of gradient metals even at small strains, where earlier studies had assumed uniform deformation.</p>
+        <p>This paper models gradient copper with a constitutive law based on dislocation density and a finite element model whose irregular grains, built from Voronoi polygons, grow in size from the surface inward. In the simulations, a shear band forms at the surface at a small strain, as in nanograined copper, but the coarse-grained core stops it, and more bands form as the load grows. The more shear bands form, the larger the uniform elongation, and a smaller grain size distribution index, a thinner gradient layer or larger surface grains give more of them. The model reproduces measured stress–strain curves and shear band patterns, and the paper concludes that gradient metals owe their ductility to shear bands that the gradient keeps stable.</p>
+      </section>
+
+      <section id="gradient">
+        <h2><span class="num">1</span> Gradient nanograined metals <a class="anchor" href="#gradient" aria-label="Link to this section">#</a></h2>
+        <p>In metals, strength usually comes at the cost of ductility. Gradient nanostructures, inspired by materials such as bamboo and shells, offer a way out. In a gradient nanograined metal, the grain size changes gradually from tens of nanometers at the surface to tens of micrometers at the center. In pioneering experiments, gradient nanograined copper made by surface mechanical grinding reached a yield strength of 129 MPa, twice that of coarse-grained copper, while keeping a comparable ductility.</p>
+        <p>How the nanograined surface layer deforms has remained unclear. On its own, nanograined metal has little ductility and often fails through shear bands that can start at a plastic strain as small as 0.3%. Earlier studies held that the surface layer of a gradient metal deforms uniformly, but closer inspection found shear bands there too. In gradient interstitial-free steel, two shear bands formed at the surface at an applied strain of only 1%; instead of spreading across the sample, they stabilized, and the steel reached a uniform elongation of 20.6%, comparable to its coarse-grained counterpart. Gradient nickel showed dense, dispersed shear bands and still reached a uniform elongation of 30.6%.</p>
+        <p>This paper builds a computational model to follow how shear bands form and evolve in gradient copper, and how the features of the gradient shape them.</p>
+        <figure class="fig">
+          <img src="figures/fig1.jpg" alt="A block of copper whose grains are fine at the top surface and coarse below, pulled from both ends" loading="lazy">
+          <figcaption>The modeled material: the grains grow in size from the top surface toward the core, and the block is stretched along <em>x</em>. <span class="credit">From Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="constitutive">
+        <h2><span class="num">2</span> Constitutive model <a class="anchor" href="#constitutive" aria-label="Link to this section">#</a></h2>
+        <p>The model treats gradient copper as a composite: a coarse-grained core under a gradient surface layer, which is split into many thin layers, each with one grain size. Every layer, and the core, follows the same law: elastic deformation by Hooke's law and plastic flow by J<sub>2</sub> flow theory, with a flow stress from a modified Kocks–Mecking–Estrin model that Li and coworkers developed for gradient nanostructures. The flow stress adds three terms: the lattice friction, a Taylor hardening term that grows with the density of stored dislocations, and a Hall–Petch term that rises as the grain size falls. The dislocation density evolves with plastic strain through storage and dynamic recovery, with an extra recovery term for nanograins.</p>
+        <p>Two sets of parameters cover the grain sizes: one for nanocrystalline grains, below 0.5 µm, and one for microcrystalline grains, from 0.5 to 36 µm. Some come from earlier measurements; the rest were fitted to measured stress–strain curves of copper with 30 nm, 200 nm, 500 nm and 36 µm grains. Because surface treatments leave the nanocrystalline layer with far more dislocations than the untreated core, usually two orders of magnitude more, the nanocrystalline set starts with a dislocation density of 7 × 10<sup>13</sup> m<sup>−2</sup> and the microcrystalline set with none.</p>
+        <p>Experiments show that the nanograined surface of gradient copper softens as it deforms, so once the nanocrystalline layers pass their uniform elongation, they soften linearly, with a slope of 0.1 GPa, at the low end of the 0.1 to 1 GPa measured for nanocrystalline copper. With these parameters, the model reproduces the measured curves for each grain size.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.276" src="figures/panels/flow-nc.jpg" alt="Model and measured true stress–strain curves of copper with 30, 200 and 500 nm grains, with the softening enlarged in an inset" loading="lazy">
+            <img style="flex: 1.241" src="figures/panels/flow-mc.jpg" alt="Model and measured true stress–strain curves of copper with 500 nm and 36 µm grains, and the predicted curve for 5 µm" loading="lazy">
+          </div>
+          <figcaption>The model (lines) against measured true stress–strain curves (symbols) of copper. Left, the nanocrystalline set, for grains of 30, 200 and 500 nm; the inset enlarges the linear softening after uniform elongation, with its slope of 0.1 GPa. Right, the microcrystalline set, for 500 nm and 36 µm, and its prediction for 5 µm. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig2.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="model">
+        <h2><span class="num">3</span> Microstructure and finite element model <a class="anchor" href="#model" aria-label="Link to this section">#</a></h2>
+        <p>Shear bands tend to form where stress concentrates, and in a gradient metal that is mainly at the boundaries between grains of different sizes. The model therefore builds its grains explicitly, by Voronoi tessellation. Seeds are placed at the centers of ideally arranged grains, one row per layer, then perturbed so that the grain boundaries come out irregular, and the Voronoi cell of each seed becomes a grain.</p>
+        <p>The grain size follows a profile fitted to measurements, lg <em>d</em> = <em>a</em><sub>g</sub><em>h</em><sup><em>n</em></sup> + <em>b</em><sub>g</sub>, where <em>h</em> is the depth below the surface, <em>n</em> the grain size distribution index, and <em>a</em><sub>g</sub> and <em>b</em><sub>g</sub> constants. Each layer is one grain thick, and its grain size is the value of the profile at the middle of the layer. Choosing the surface grain size <em>d</em><sub>1</sub>, the core grain size <em>d</em><sub>c</sub>, the index <em>n</em> and the number of layers then fixes the constants and the grain size of every layer.</p>
+        <figure class="fig">
+          <img src="figures/panels/voronoi-steps.jpg" alt="Three steps from regularly placed seeds, layer by layer, to irregular grains that grow from the surface to the core" loading="lazy">
+          <figcaption>Building the grains. Left, seeds at the centers of ideally arranged grains, one row per layer, from size <em>d</em><sub>1</sub> at the surface to <em>d</em><sub>c</sub> in the core; <em>h</em><sub>g</sub> and <em>h</em><sub>c</sub> are the thicknesses of the gradient layer and the core. Middle, the seeds perturbed. Right, the irregular grains they generate. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The finite element model keeps only the boundaries between layers of different grain sizes and removes those within each layer, to save computation. The paper's simulations show that this does not change the results, because the boundaries between layers are what induce strain localization and then the shear bands.</p>
+        <figure class="fig medium">
+          <img src="figures/fig4.jpg" alt="A finite element model whose top region is divided into many thin layers of different grain sizes above a coarse-grained core" loading="lazy">
+          <figcaption>A typical model, with 28 layers of different grain sizes; the boundaries between the layers are modeled. <span class="credit">From Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span></figcaption>
+        </figure>
+        <p>The 2D model is 200 µm long and 150 µm thick, with symmetry conditions on its left and bottom edges and a displacement applied to its right edge, and it is meshed in Abaqus with 568,916 four-node and 1308 three-node plane strain elements. Across the 2D simulations, the gradient layer is 25 to 100 µm thick, the surface grains are 100 to 300 nm, the core grains 36 µm, and <em>n</em> ranges from 0.1 to 2. A 3D model, only 4 µm long, 50 µm thick and 1 µm wide because of its cost, with periodic conditions along its length and width, served to check the approach against experiments, below.</p>
+      </section>
+
+      <section id="bands">
+        <h2><span class="num">4</span> Shear band multiplication <a class="anchor" href="#bands" aria-label="Link to this section">#</a></h2>
+        <p>The paper first stretches three models: nanograined copper with 100 nm grains, coarse-grained copper with 36 µm grains, and gradient copper with 100 nm grains at the surface and 36 µm in the core, a 50 µm gradient layer and <em>n</em> = 1. Each has a small notch at its top left corner, 0.5 µm deep and 5 µm wide, to trigger nonuniform deformation in the two uniform materials. The nanograined copper is strong but brittle, with a yield strength of 606.88 MPa and a uniform elongation of 1.2%; the coarse-grained copper is ductile but weak, with 61.81 MPa and 44.28%. The gradient copper combines the two, with a yield strength of 131.68 MPa and a uniform elongation of 31.69%, comparable to that of the coarse-grained copper.</p>
+        <p>They also deform very differently. In the nanograined copper, two shear bands have already crossed nearly the whole model at an applied strain of 4.8%, which explains its low ductility. The coarse-grained copper deforms without visible localization up to its uniform elongation and then fails by necking. The gradient copper forms many short shear bands along its surface.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 0.730" src="figures/panels/three-curves.jpg" alt="Engineering stress–strain curves of nanograined, gradient and coarse-grained copper" loading="lazy">
+            <img style="flex: 1.431" src="figures/panels/three-maps.jpg" alt="Plastic strain in the nanograined, gradient and coarse-grained models at two strains each" loading="lazy">
+          </div>
+          <figcaption>Left, engineering stress–strain curves of nanograined, gradient and coarse-grained copper; × marks the uniform elongation. Right, from top to bottom, the nanograined, gradient and coarse-grained models at their uniform elongation (left column) and at a larger strain (right column). Dashed lines enclose the regions where the equivalent plastic strain exceeds 1, white arrows point to shear bands, and the red crosses mark the points tracked in the plot further down. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Snapshots of the gradient copper, also shown in the sequence at the top of the page, follow its shear bands. The first band appears at an applied strain of only 4.5%, much as in the nanograined copper and in line with experiments on gradient steel, where a band appeared on the surface at about 1%. But the coarse grains of the core stop it inside the gradient layer, and new bands form instead: from one at 4.5% to six at 9%, until the number levels off at nine after 14%. Experiments on gradient nickel showed the same trend, a density of shear bands that first rises and then stays almost constant.</p>
+        <figure class="fig">
+          <img src="figures/panels/band-evolution.jpg" alt="The gradient model at six applied strains, with more and more shear bands along its surface" loading="lazy">
+          <figcaption>The gradient copper at applied strains of 4.5%, 7% and 9% (top row, left to right) and 14%, 20% and 31.69% (bottom row). White arrows point to shear bands, dashed lines enclose the regions where the equivalent plastic strain exceeds 1, and the yellow line divides the gradient layer from the coarse-grained core. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig6.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The bands also grow more slowly in the gradient copper. Inside a band, the equivalent plastic strain starts to climb at an applied strain of about 0.012 in the nanograined copper but only at about 0.028 in the gradient copper. Raising it from 1 to 4 then takes an extra applied strain of 0.02 in the nanograined copper and 0.19 in the gradient copper, 9.5 times as much. Stabilized by this multiplication of shear bands, the nanograined surface carries large strains instead of failing early, so the gradient copper gains a high ductility while keeping the strength of its nanograined surface.</p>
+        <figure class="fig medium">
+          <img src="figures/fig7.jpg" alt="Equivalent plastic strain inside a shear band against applied strain, rising early and steeply in nanograined copper and later and slowly in gradient copper" loading="lazy">
+          <figcaption>The equivalent plastic strain at the red crosses above, inside a shear band, against the applied strain, in nanograined and gradient copper. The inset enlarges the onset, with the delay in the gradient copper marked. <span class="credit">From Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="effects">
+        <h2><span class="num">5</span> Effects of the grain size gradient <a class="anchor" href="#effects" aria-label="Link to this section">#</a></h2>
+        <p>Across the gradients simulated, ductility follows the number of shear bands. With 100 nm grains at the surface, 36 µm grains in the core, <em>n</em> of 0.5, 1, 1.5 and 2 and gradient layers from 25 to 100 µm thick, the uniform elongation rises with the number of shear bands. The most ductile of these cases, with <em>n</em> = 0.5 and a 25 µm layer, formed 50 shear bands and reached a uniform elongation of 38.58%.</p>
+        <figure class="fig feature">
+          <img src="figures/fig11.jpg" alt="Uniform elongation against the number of shear bands, rising together for four values of the grain size distribution index" loading="lazy">
+          <figcaption>Uniform elongation against the number of shear bands, for <em>n</em> = 0.5, 1, 1.5 and 2, each with gradient layers from 25 to 100 µm thick. <span class="credit">From Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span></figcaption>
+        </figure>
+        <p>Three features of the gradient set how many bands form, and each trades strength against ductility. A larger index <em>n</em> keeps the grains fine deeper below the surface. With a 75 µm gradient layer, raising <em>n</em> from 0.1 to 2 nearly triples the yield strength, from 79.9 to 222.06 MPa, but more than halves the uniform elongation, from 40.58% to 17.63%. At <em>n</em> = 0.1 a large number of shear bands form along the surface; at <em>n</em> = 2, only three.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 0.777" src="figures/panels/n-curves.jpg" alt="Engineering stress–strain curves for grain size distribution indices from 0.1 to 2, with the grain size profiles in an inset" loading="lazy">
+            <img style="flex: 1.567" src="figures/panels/n-maps.jpg" alt="Shear bands at uniform elongation for grain size distribution indices from 0.1 to 2" loading="lazy">
+          </div>
+          <figcaption>Left, engineering stress–strain curves for <em>n</em> from 0.1 to 2, with 100 nm surface grains, 36 µm core grains and a 75 µm gradient layer; × marks the uniform elongation, and the inset shows the grain size against depth. Right, the shear bands at uniform elongation for <em>n</em> = 0.1 (top, with the surface enlarged), 0.5 and 1.0 (middle), and 1.5 and 2.0 (bottom); each map has its own color scale. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig8.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>A thicker gradient layer has the same effect. With <em>n</em> = 1, going from a 25 µm to a 100 µm layer raises the yield strength from 106.56 to 187.81 MPa and lowers the uniform elongation from 35.24% to 22.31%; 24 shear bands form with the thin layer and 10 with the thick one.</p>
+        <figure class="fig study hg">
+          <div class="panels flex">
+            <img style="flex: 0.693" src="figures/panels/hg-curves.jpg" alt="Engineering stress–strain curves for gradient layers from 25 to 100 µm thick, with the grain size profiles in an inset" loading="lazy">
+            <img style="flex: 0.614" src="figures/panels/hg-maps.jpg" alt="Shear bands at uniform elongation for gradient layers from 25 to 100 µm thick" loading="lazy">
+          </div>
+          <figcaption>Left, engineering stress–strain curves for gradient layers 25 to 100 µm thick, with <em>n</em> = 1, 100 nm surface grains and 36 µm core grains; the inset shows the grain size against depth. Right, top to bottom, the shear bands at uniform elongation for layers 25, 50, 75 and 100 µm thick. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig9.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Larger surface grains work the other way. With <em>n</em> = 1.5 and a 50 µm layer, going from 100 to 300 nm grains at the surface lowers the yield strength from 155.65 to 128.2 MPa and raises the uniform elongation from 26.98% to 31.68%, with 13 shear bands instead of 5. In every case, more shear bands spread the plastic strain over more of the nanograined layer, which raises the ductility.</p>
+        <figure class="fig study d1">
+          <div class="panels flex">
+            <img style="flex: 0.787" src="figures/panels/d1-curves.jpg" alt="Engineering stress–strain curves for surface grains of 100, 200 and 300 nm, with the grain size profiles in an inset" loading="lazy">
+            <img style="flex: 0.777" src="figures/panels/d1-maps.jpg" alt="Shear bands at uniform elongation for surface grains of 100, 200 and 300 nm" loading="lazy">
+          </div>
+          <figcaption>Left, engineering stress–strain curves for surface grains of 100, 200 and 300 nm, with <em>n</em> = 1.5, a 50 µm gradient layer and 36 µm core grains; the inset shows the grain size against depth. Right, top to bottom, the shear bands at uniform elongation for 100, 200 and 300 nm. <span class="credit">Adapted from Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0.</span> <a href="figures/fig10.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="experiments">
+        <h2><span class="num">6</span> Comparison with experiments <a class="anchor" href="#experiments" aria-label="Link to this section">#</a></h2>
+        <p>The 3D model checks the approach against tensile tests on gradient copper. With the surface grain size (120 nm), core grain size (36 µm) and volume fraction of the gradient layer (25%) of the tested material, and <em>n</em> = 1.13, the simulated true stress–strain curve follows the measured one: a yield strength of 127.24 MPa and a uniform elongation of 28.73%, against 150.48 MPa and 29.51% measured. The model leaves out fracture, such as the growth of microcracks, so it does not show the drop in stress after uniform elongation.</p>
+        <p>On the top surface, at an applied strain of about 12.5%, the simulated plastic strain reproduces the shear band pattern of the strain map measured on the sample. The paper finds the model in good agreement with experiments both in the stress–strain response and in how shear bands evolve, including the early bands seen in gradient steel and the band density that levels off in gradient nickel. It notes that strain rate may also affect shear banding in gradient metals, which it leaves for future work.</p>
+        <figure class="fig medium">
+          <img src="figures/fig12.jpg" alt="Simulated and measured true stress–strain curves of gradient copper, with simulated and measured strain maps of the top surface in an inset" loading="lazy">
+          <figcaption>True stress–strain curves of gradient copper from the 3D model and from experiments, with × at the uniform elongation. Inset, the strain on the top surface at applied strains of 12.28% in the simulation (left) and 12.5% in the experiment (right). <span class="credit">From Chen and Li, Nanomaterials 11, 2468 (2021), CC BY 4.0, except the experimental strain map, which is from Wang et al., Materials Science and Engineering A 752, 217 (2019), reprinted in the paper with permission from Elsevier; the measured curve is from the same study.</span></figcaption>
+        </figure>
+      </section>
+
+      
+
+      <section id="bibtex">
+        <h2>BibTeX <a class="anchor" href="#bibtex" aria-label="Link to this section">#</a></h2>
+        <div class="code">
+          <button class="btn" type="button" data-copy="bibtex-text" data-label="Copy">Copy</button>
+          <pre id="bibtex-text">@article{chen2021modelling,
+  title = {Modelling the Shear Banding in Gradient Nano-Grained Metals},
+  author = {Chen, Tianyu and Li, Jianjun},
+  journal = {Nanomaterials},
+  volume = {11},
+  number = {10},
+  pages = {2468},
+  year = {2021},
+  doi = {10.3390/nano11102468}
+}</pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>Page design adapted from <a href="https://jonbarron.info/">Jon Barron’s website</a>. Movies and figures are from the papers credited with each one.</footer>
+  <script src="../../assets/js/article.js" defer></script>
+</body>
+</html>

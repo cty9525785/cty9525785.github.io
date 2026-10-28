@@ -1,0 +1,144 @@
+      <figure class="fig feature loop">
+        <video class="light" autoplay muted loop playsinline poster="../../media/graded-substrate-thin-films/loop-poster.jpg"><source src="../../media/graded-substrate-thin-films/loop.mp4" type="video/mp4"></video>
+        <figcaption><span class="tag">Illustration</span>The same notched film on a coarse-grained substrate (top) and on a gradient substrate (bottom), both pulled to a strain of 0.33. The gradient layer takes the colors of the model drawing below, darkest where the grains are finest. With an interface at least 2.5 times as strong as the film, the film on the coarse-grained substrate necks sharply at the notch from a strain of about 0.20; on the gradient substrate it stretches to 0.32 before a broad, shallow neck forms. As in the simulations, the film thins from both faces and the substrate’s surface rises into the neck. The film is drawn far thicker than in the model, and the notch is enlarged.</figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Thin metal and metallic glass films break at small tensile strains, because a neck or a shear band forms and grows. Bonding a film to a deformable substrate can delay this, but a soft, homogeneous substrate lowers the strength of the pair, and the strong contrast between film and substrate can make the interface debond and crack. Experiments have shown that a substrate with a grain size gradient, nanometer-sized grains at its surface over coarse grains inside, gives a film both strength and ductility, but why it does was not understood.</p>
+        <p>This paper models a notched thin film on such a graded substrate with finite elements. Each layer of the substrate follows a dislocation density-based model that depends on its grain size, the interface follows a cohesive law, and the film’s ductility is the strain at which it necks. The simulations find three deformation modes, set by the grain size at the surface and the thickness of the graded layer. With the right gradient, the substrate lets the film stretch further than a coarse-grained substrate does, although the graded substrate is itself less ductile, and film and substrate together reach better combinations of strength and ductility than on homogeneous substrates.</p>
+      </section>
+
+      <section id="model">
+        <h2><span class="num">1</span> Finite element model <a class="anchor" href="#model" aria-label="Link to this section">#</a></h2>
+        <p>The model is a thin film bonded to a thick substrate and stretched along its length in plane strain: a 5 μm film on a 400 μm substrate, 160 μm long. The substrate is interstitial-free (IF) steel. Its grain size gradient surface layer (GSL), of thickness <em>h</em><sub>g</sub> between 30 and 380 μm, sits on a coarse-grained (CG) phase with 35 μm grains. The GSL is built from homogeneous layers 0.83 μm thick, so its grain size changes almost continuously, from <em>d</em><sub>1</sub> at the surface (204 nm at most) to 35 μm at its base, growing with depth <em>h</em> as <em>d</em> = 10<sup><em>a</em><sub>g</sub><em>h</em>² + <em>b</em><sub>g</sub></sup>, the trend measured in such materials. A V-shaped notch, 2 μm wide and 0.1 μm deep, at the center of the film’s surface triggers nonuniform deformation, and by symmetry only the right half is computed.</p>
+        <figure class="fig">
+          <img src="figures/fig1.jpg" alt="A thin film with a notch on a substrate made of a grain size gradient surface layer over a coarse-grained phase, stretched along its length" loading="lazy">
+          <figcaption>The model: a film with a notch, bonded at an interface to a substrate made of a grain size gradient surface layer (GSL) of thickness <em>h</em><sub>g</sub> over a coarse-grained (CG) phase of thickness <em>h</em><sub>c</sub>, stretched along <em>x</em>. <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+        <p>The film stands for a stiff, strong film with little ductility, metal or metallic glass. It is elastic and perfectly plastic, with a Young’s modulus of 160 GPa, a yield strength of 1.1 GPa and a Poisson’s ratio of 0.3. The interface is a cohesive zone, <a href="#interface">described below</a>. In Abaqus, the film and the substrate are meshed with four-node plane strain elements, 75 of them through the film’s thickness near the notch, and the interface with cohesive elements.</p>
+        <figure class="fig">
+          <img src="figures/fig5.jpg" alt="The finite element mesh near the notch, with the film on top and each layer of the gradient surface layer in its own color, and a close-up of the fine mesh at the notch" loading="lazy">
+          <figcaption>The mesh near the notch: the film at the top and each layer of the gradient surface layer in its own color, with a close-up of the fine mesh in the film at the notch (left). <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+        <p>The film’s tensile ductility is its necking strain: the applied strain at which the film’s thinnest point has thinned to a fifth of its original thickness. The criterion was set against experimental uniform elongations. For coarse-grained IF steel it gives 24.9%, against an experimental uniform elongation of 26.6% and 25.9% from the Considère criterion. Unlike the Considère criterion, which assumes uniform deformation, it can capture how a substrate spreads out the strain in the film.</p>
+      </section>
+
+      <section id="substrate">
+        <h2><span class="num">2</span> Substrate plasticity <a class="anchor" href="#substrate" aria-label="Link to this section">#</a></h2>
+        <p>Each layer of the substrate follows J<sub>2</sub> flow theory with a dislocation density-based model from earlier work by Li and coworkers on gradient nanostructured metals (Li and Soh, 2012; Li et al., 2017), which this paper extends to a film on a graded substrate; the parameters for IF steel come from Li et al. (2017). A layer’s flow stress adds a lattice friction stress, a Taylor term from its dislocation density <em>ρ</em> and a Hall–Petch term from its grain size <em>d</em>: <em>σ</em> = <em>σ</em><sub>0</sub> + <em>Mαμb</em>√<em>ρ</em> + <em>k</em><sub>HP</sub>/√<em>d</em>. Without the Hall–Petch term, the model cannot reproduce how the yield strength measured by Wu et al. (2014) rises as the grains shrink.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/yield-strength.jpg" alt="Yield strength of homogeneous IF steel against the inverse square root of grain size, for the model with and without the Hall–Petch term and for experimental data" loading="lazy">
+            <img src="figures/panels/elongation.jpg" alt="Uniform elongation against yield strength for homogeneous IF steel, model and experimental data" loading="lazy">
+          </div>
+          <figcaption>Left, the yield strength of homogeneous IF steel against the inverse square root of grain size, for grains from 96 nm to 35 μm: the model with and without its Hall–Petch term, and experimental data (Wu et al., 2014). Right, uniform elongation against yield strength, model and experimental data (Wu et al., 2014). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> Full figures: <a href="figures/fig2.jpg">yield strength</a>, <a href="figures/fig3.jpg">dislocation density and elongation</a>.</figcaption>
+        </figure>
+        <p>The dislocation density evolves by a Kocks–Mecking law modified for grain size, with a storage term from the grain boundaries, <em>k</em><sub>3</sub>/(<em>bd</em>), and a grain size dependent recovery term, (<em>d</em><sub>e</sub>/<em>d</em>)²<em>ρ</em>. As a result, small grains store few dislocations and harden little. In grains of 2 μm and smaller, the dislocation density levels off, and the uniform elongation of homogeneous IF steel falls from about 0.26 to about 0.01 as its yield strength rises, as in the experiments. Each layer of a graded substrate gets its own stress–strain curve from this model, and these curves are the finite element model’s input.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/dislocation.jpg" alt="Dislocation density against plastic strain for grain sizes from 100 nm to 35 μm, and without the grain size terms" loading="lazy">
+            <img src="figures/panels/phases.jpg" alt="Stress against plastic strain for every layer of a gradient substrate, from the surface layer to the coarse-grained phase" loading="lazy">
+          </div>
+          <figcaption>Left, dislocation density against plastic strain for grain sizes from 100 nm to 35 μm, and without the grain size terms (dashed). Right, stress against plastic strain for every layer of a gradient substrate with <em>h</em><sub>g</sub> = 50 μm and <em>d</em><sub>1</sub> = 28 nm, from the surface layer (top) to the coarse-grained phase (bottom). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> Full figures: <a href="figures/fig3.jpg">dislocation density and elongation</a>, <a href="figures/fig6.jpg">the layers’ curves</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section id="modes">
+        <h2><span class="num">3</span> Three deformation modes <a class="anchor" href="#modes" aria-label="Link to this section">#</a></h2>
+        <p>With the interface as strong as the film’s yield strength, 1.1 GPa, the film necks in one of three ways, depending on the surface grain size <em>d</em><sub>1</sub> and the gradient layer’s thickness <em>h</em><sub>g</sub>. In type A, a neck forms at the notch and deepens quickly, so the film necks early: at a strain of 0.078 for <em>h</em><sub>g</sub> = 300 μm and <em>d</em><sub>1</sub> = 112 nm. A film on a coarse-grained substrate necks the same way, but later, at 0.193. In types B and C, the strain spreads along the film instead. In type B the film finally necks beside the notch, at 0.22 for <em>h</em><sub>g</sub> = 50 μm and <em>d</em><sub>1</sub> = 26 nm, where the interface under the neck has broken and the film has come away from the substrate. In type C it necks at the notch, as in type A, but much later.</p>
+        <figure class="fig">
+          <div class="snaps">
+            <div class="cols" aria-hidden="true"><span style="flex: 1">Earlier strain</span><span style="flex: 1">Necking strain</span></div>
+            <h3>Type A<span><em>h</em><sub>g</sub> = 300 μm, <em>d</em><sub>1</sub> = 112 nm</span></h3>
+            <div class="two-snaps">
+              <img style="flex: 1" src="figures/panels/modes-a-early.jpg" alt="Type A at a strain of 0.045: the film starts to thin at the notch" loading="lazy">
+              <img style="flex: 1" src="figures/panels/modes-a-neck.jpg" alt="Type A at the necking strain of 0.078: a sharp neck at the notch" loading="lazy">
+            </div>
+            <h3>Type B<span><em>h</em><sub>g</sub> = 50 μm, <em>d</em><sub>1</sub> = 26 nm</span></h3>
+            <div class="two-snaps">
+              <img style="flex: 1" src="figures/panels/modes-b-early.jpg" alt="Type B at a strain of 0.172: a broad, shallow neck over wavy substrate layers" loading="lazy">
+              <img style="flex: 1" src="figures/panels/modes-b-neck.jpg" alt="Type B at the necking strain of 0.220: the film necks beside the notch, over a gap where the interface has broken" loading="lazy">
+            </div>
+            <h3>Type C<span><em>h</em><sub>g</sub> = 100 μm, <em>d</em><sub>1</sub> = 14 nm</span></h3>
+            <div class="two-snaps">
+              <img style="flex: 1" src="figures/panels/modes-c-early.jpg" alt="Type C at a strain of 0.153: a broad, shallow neck at the notch" loading="lazy">
+              <img style="flex: 1" src="figures/panels/modes-c-neck.jpg" alt="Type C at the necking strain of 0.189: the film necks at the notch" loading="lazy">
+            </div>
+            <h3>Coarse-grained substrate</h3>
+            <div class="two-snaps">
+              <img style="flex: 1" src="figures/panels/modes-cg-early.jpg" alt="The film on a coarse-grained substrate at a strain of 0.100, still uniform" loading="lazy">
+              <img style="flex: 1" src="figures/panels/modes-cg-neck.jpg" alt="The film on a coarse-grained substrate at the necking strain of 0.193, necked at the notch" loading="lazy">
+            </div>
+          </div>
+          <figcaption>The film and the top of the substrate in the three modes and on a coarse-grained substrate. The film and the substrate begin, at the left, at the notch’s center line, since only the right half is modeled, and each colored band is one layer of the gradient surface layer. In each row, the first image is at an earlier strain and the second at the necking strain; in type B, the white gap under the neck is where the interface has broken. The first images of the three modes mark the film’s thickness away from the neck (<em>h</em><sub>U</sub>) and in it (<em>h</em><sub>N</sub>) and the neck’s width (<em>l</em><sub>N</sub>). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> <a href="figures/fig7.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>A localization parameter measures how sharp the neck is: <em>ξ</em> = (<em>h</em><sub>U</sub> − <em>h</em><sub>N</sub>)/<em>l</em><sub>N</sub>, the thickness the film has lost in the neck over the neck’s width. In type A it climbs steeply, to 1.08 when the film reaches its necking strain of 0.078. In types B and C it rises slowly and then drops to nearly zero, as the graded substrate spreads the strain along the film and the neck widens instead of deepening. In type B, <em>ξ</em> peaks at 0.32 at a strain of 0.09, then drops to about 0.05, more than an order of magnitude below type A’s, and stays there until the interface breaks.</p>
+        <p>Mapping the modes over <em>h</em><sub>g</sub> and <em>d</em><sub>1</sub> shows that types B and C occur when <em>d</em><sub>1</sub> is 28 nm or less, where the surface layer’s yield strength is close to or above the film’s: type B on gradient layers thinner than about 80 μm, type C on thicker ones. Coarser surface grains give type A. The gradient gives the substrate a surface as strong as the film, which a coarse-grained substrate cannot, while a homogeneous nanograined substrate strong enough would lose the ductility it needs to hold back the neck. The substrates on which the film stretches further than on a coarse-grained one all lie where the modes meet.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/localization.jpg" alt="The localization parameter against applied strain for the three modes, rising steeply for type A and dropping to nearly zero for types B and C" loading="lazy">
+            <img src="figures/panels/mode-map.jpg" alt="A map of the deformation mode of every simulated substrate against the gradient layer thickness and the surface grain size" loading="lazy">
+          </div>
+          <figcaption>Left, the localization parameter against the applied strain for type A (<em>h</em><sub>g</sub> = 300 μm, <em>d</em><sub>1</sub> = 112 nm), type B (50 μm, 26 nm) and type C (100 μm, 16 nm); the arrows mark the drops. Right, the mode of every simulated substrate, by <em>h</em><sub>g</sub> and <em>d</em><sub>1</sub>. The arrows on the axes mark <em>d</em><sub>1</sub> = 28 nm and <em>h</em><sub>g</sub> = 80 μm, and the dashed line encloses the substrates on which the film stretches further than on the coarse-grained substrate. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> Full figures: <a href="figures/fig8.jpg">localization</a>, <a href="figures/fig9.jpg">map</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section id="ductility">
+        <h2><span class="num">4</span> Tensile ductility <a class="anchor" href="#ductility" aria-label="Link to this section">#</a></h2>
+        <p>With the interface at 1.1 GPa, the necking strain rises with the surface grain size <em>d</em><sub>1</sub> to a peak near 28 nm, the boundary between type A and the other two modes, and then falls. On gradient layers thinner than 200 μm, the peak is higher than the 0.193 of a film on a coarse-grained substrate. With <em>h</em><sub>g</sub> = 100 μm, the film necks at up to 0.23, and it stretches further than on the coarse-grained substrate for every <em>d</em><sub>1</sub> from 16 to 32 nm.</p>
+        <figure class="fig feature">
+          <img src="figures/fig10.jpg" alt="Necking strain against surface grain size for four gradient layer thicknesses, peaking near 28 nm above the coarse-grained substrate's 0.193" loading="lazy">
+          <figcaption>The necking strain against the surface grain size <em>d</em><sub>1</sub>, for gradient layers from 50 to 380 μm thick; the dashed line is the film on a coarse-grained substrate. <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+        <p>The gradient layer’s thickness matters too. With coarser surface grains, in type A, the necking strain falls as the gradient layer thickens, because the substrate itself becomes less ductile. With <em>d</em><sub>1</sub> = 20 or 28 nm it first rises and then falls, as the mode changes from type B to type C; with <em>d</em><sub>1</sub> = 28 nm it reaches 0.256 at <em>h</em><sub>g</sub> = 80 μm.</p>
+        <p>The same results can be read against the strength of the substrate’s surface relative to the film’s. With <em>h</em><sub>g</sub> = 100 μm and the surface grain size chosen to give ratios of the film’s yield strength to the surface layer’s from 0.65 to 1.35, the necking strain peaks near a ratio of 0.85 for three film strengths. There the mode changes from type C to type A, as the map shows.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/necking-hg.jpg" alt="Necking strain against gradient layer thickness for five surface grain sizes" loading="lazy">
+            <img src="figures/panels/strength-ratio.jpg" alt="Necking strain against the ratio of the film's yield strength to the surface layer's, for three film strengths, peaking near 0.85" loading="lazy">
+          </div>
+          <figcaption>Left, the necking strain against the gradient layer’s thickness <em>h</em><sub>g</sub>, for five surface grain sizes; the dashed line is the film on a coarse-grained substrate. Right, the necking strain against the ratio of the film’s yield strength to the surface layer’s, for films of 800, 950 and 1100 MPa on gradient layers 100 μm thick. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> Full figures: <a href="figures/fig11.jpg">thickness</a>, <a href="figures/fig12.jpg">strength ratio</a>.</figcaption>
+        </figure>
+      </section>
+
+      <section id="interface">
+        <h2><span class="num">5</span> Film–substrate interface <a class="anchor" href="#interface" aria-label="Link to this section">#</a></h2>
+        <p>The interface follows a bilinear traction–separation law. It starts to soften when the traction reaches the interfacial strength <em>σ</em><sup>0</sup>, at a separation <em>δ</em><sup>0</sup>, and breaks at <em>δ</em><sup>max</sup>; normal and shear loads combine through a quadratic criterion. Both directions share one strength, and <em>δ</em><sup>0</sup> and <em>δ</em><sup>max</sup> are 50 and 100 nm, 1% and 2% of the film’s thickness. In the sections above, the interface is as strong as the film’s yield strength. No interfacial strength has been measured for this system, but metallic glass films deposited on metal substrates have shown no delamination even after the film fractured (Lu et al., 2013, 2016), which suggests a strong interface. Here the strength ranges from 0.2 to 10 times the film’s yield strength, 220 MPa to 11 GPa.</p>
+        <figure class="fig medium">
+          <img src="figures/fig4.jpg" alt="A bilinear traction–separation law: traction rises to the interfacial strength, then falls to zero at the maximum separation" loading="lazy">
+          <figcaption>The bilinear traction–separation law of the interface. The green area is the fracture energy Γ, the work needed to separate a unit area of the interface. <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+        <p>On the coarse-grained substrate, and on graded substrates with coarse surface grains or a thick gradient layer, such as <em>h</em><sub>g</sub> = 100 μm with <em>d</em><sub>1</sub> = 144 nm, the necking strain rises with the interfacial strength up to about the film’s yield strength and then levels off. With fine surface grains and a thin gradient layer it jumps instead: for <em>h</em><sub>g</sub> = 50 μm and <em>d</em><sub>1</sub> = 24 nm, from 0.22 to 0.32 once the interface is 2.5 times as strong as the film, 1.6 times the necking strain of a film on a coarse-grained substrate. At such strengths the interface no longer debonds, so the film deforms with the substrate and stretches further.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.348" src="figures/panels/interface-plot.jpg" alt="Necking strain against normalized interfacial strength for four gradient substrates and a coarse-grained one, with the jump above 2.5 marked by an ellipse" loading="lazy">
+            <img style="flex: 0.892" src="figures/panels/interface-snaps.jpg" alt="The film on a gradient substrate with a strong interface at strains of 0.177 and 0.291, bonded, with a broad neck" loading="lazy">
+          </div>
+          <figcaption>Left, the necking strain against the interfacial strength over the film’s yield strength, for four gradient substrates and the coarse-grained one; the ellipse marks the jump, and the arrow comes from the case on the right. Right, the film on the substrate with <em>h</em><sub>g</sub> = 50 μm and <em>d</em><sub>1</sub> = 24 nm and an interface five times as strong as the film, at strains of 0.177 and 0.291: it stays bonded, and its neck is broad. <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> <a href="figures/fig13.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The ratio <em>δ</em><sup>max</sup>/<em>δ</em><sup>0</sup> has little effect: from 2 to 11, the necking strain barely changes for three substrates.</p>
+        <figure class="fig narrow">
+          <img src="figures/fig14.jpg" alt="Necking strain against the ratio of maximum to critical interfacial separation, nearly flat for three substrates" loading="lazy">
+          <figcaption>The necking strain against <em>δ</em><sup>max</sup>/<em>δ</em><sup>0</sup> for three gradient substrates, with the interface at 1.1 GPa. <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="strength">
+        <h2><span class="num">6</span> Strength and ductility <a class="anchor" href="#strength" aria-label="Link to this section">#</a></h2>
+        <p>The paper also computes the yield strength of film and substrate together and plots it against the necking strain, for gradient layers 30 to 380 μm thick with surface grains from 16 to 144 nm and the interface as strong as the film. Films on homogeneous substrates, with grain sizes from 100 nm to 34 μm, trade strength for ductility. Each gradient layer thickness instead has a peak, its best combination of strength and ductility, and every peak lies outside the region the homogeneous substrates reach, further out for thicker gradient layers. With <em>h</em><sub>g</sub> = 380 μm, the film necks at 0.165 with a yield strength of 600 MPa, where a homogeneous substrate of the same strength gives 0.072.</p>
+        <figure class="fig feature">
+          <img src="figures/fig15.jpg" alt="Necking strain against yield strength: curves for gradient substrates rise above the region reached by homogeneous substrates" loading="lazy">
+          <figcaption>Necking strain against the yield strength of film and substrate together, for gradient substrates with <em>h</em><sub>g</sub> from 30 to 380 μm (blue region; <em>d</em><sub>1</sub> varies along each curve) and for homogeneous substrates with grain sizes from 100 nm to 34 μm (open circles, orange region). <span class="credit">From Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span></figcaption>
+        </figure>
+        <p>Finally, the paper compares whole stress–strain curves with experiments. This run differs from those above: the film is 40 μm thick, on a gradient substrate with <em>h</em><sub>g</sub> = 180 μm and <em>d</em><sub>1</sub> = 40 nm, and its end is marked where the film has thinned to 60% of its thickness rather than to a fifth. Alone, the film reaches a strain of only 0.04, typical of thin metal and metallic glass films, and softens after yielding as it necks. On the gradient substrate it reaches 0.16, a gain of 0.12. In experiments, a gradient Ni substrate raised the uniform elongation of a Ni-P metallic glass film by 0.11 (Lu et al., 2013), a gain of the same size.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/curves-sim.jpg" alt="Simulated engineering stress against strain for the film alone, the gradient IF steel substrate alone, and the film on the substrate" loading="lazy">
+            <img src="figures/panels/curves-exp.jpg" alt="Experimental engineering stress against strain for a Ni-P film alone, a gradient Ni substrate alone, and the film on the substrate" loading="lazy">
+          </div>
+          <figcaption>Engineering stress against strain. Left, simulations of the film alone, the gradient IF steel substrate alone, and the film on the substrate; each X marks where the film has thinned to 60% of its thickness. Right, experimental data for a Ni-P metallic glass film alone (Ziewiec et al., 2012), and for a gradient Ni substrate with and without the film (Lu et al., 2013). <span class="credit">Adapted from Chen et al., International Journal of Solids and Structures 166, 124–134 (2019).</span> <a href="figures/fig16.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      
