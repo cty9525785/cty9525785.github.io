@@ -42,7 +42,16 @@ class RenderPaperTest(unittest.TestCase):
         self.assertIn('<meta name="viewport" content="width=device-width, initial-scale=1">', page)
         self.assertIn("<title>Tailoring tensile ductility of thin film by grain size graded substrates | Tianyu Chen</title>",
                       page)
-        self.assertEqual([t.get("href") for t in tags(page, "link")], ["../../assets/css/article.css"])
+        links = tags(page, "link")
+        self.assertEqual([t.get("href") for t in links if t.get("rel") == "stylesheet"], ["../../assets/css/article.css"])
+        preloads = [t for t in links if t.get("rel") == "preload"]
+        self.assertEqual({t.get("href") for t in preloads},
+                         {"../../assets/fonts/source-serif-4/source-serif-4-latin-normal.woff2",
+                          "../../assets/fonts/lato/lato-latin-400-normal.woff2",
+                          "../../assets/fonts/lato/lato-latin-700-normal.woff2"})
+        for t in preloads:
+            self.assertEqual((t.get("as"), t.get("type")), ("font", "font/woff2"))
+            self.assertIn("crossorigin", t)
         self.assertEqual([t.get("src") for t in tags(page, "script")], ["../../assets/js/article.js"])
 
     def test_top_bar(self):

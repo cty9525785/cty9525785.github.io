@@ -67,6 +67,16 @@ class RenderHomeTest(unittest.TestCase):
         page = render_home(replace(self.site, bio=bio), self.papers, self.others)
         self.assertIn('I work in <a href="https://example.invalid/lab?a=1&amp;b=2">the lab</a> &lt;here&gt;.', page)
 
+    def test_fonts_preloaded(self):
+        # Tianyu saw the text change font a moment after opening: preloaded fonts are ready before the first paint.
+        preloads = [t for t in tags(self.page, "link") if t.get("rel") == "preload"]
+        self.assertEqual({t.get("href") for t in preloads},
+                         {"assets/fonts/lato/lato-latin-400-normal.woff2", "assets/fonts/lato/lato-latin-700-normal.woff2",
+                          "assets/fonts/lato/lato-latin-400-italic.woff2"})
+        for t in preloads:
+            self.assertEqual((t.get("as"), t.get("type")), ("font", "font/woff2"))
+            self.assertIn("crossorigin", t)  # fonts load in CORS mode; without it the preload is fetched twice
+
     def test_cv_link(self):
         bar = link_bar(self.page)
         self.assertIn('<a href="files/Tianyu-Chen-CV.pdf">CV</a>', bar)

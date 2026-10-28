@@ -78,6 +78,13 @@ class SiteTest(unittest.TestCase):
                 if not first.startswith("var("):
                     self.assertIn(first, GENERIC_FAMILIES | OS_FONTS | shipped, f"{css.name}: {stack.strip()}")
 
+    def test_fonts_do_not_swap_in_late(self):
+        # "swap" draws the page in a fallback font and switches when the font arrives, which Tianyu saw;
+        # "fallback" waits briefly for the (preloaded) font instead.
+        for css in sorted((ROOT / "assets" / "css").glob("*.css")):
+            for face in FONT_FACE.findall(css.read_text(encoding="utf-8")):
+                self.assertIn("font-display: fallback", face, css.name)
+
     def test_shipped_fonts_carry_their_license(self):
         # The SIL Open Font License asks that its text travel with every copy of the font.
         for font in (ROOT / "assets").rglob("*"):
