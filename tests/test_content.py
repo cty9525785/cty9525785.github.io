@@ -236,6 +236,10 @@ class ContentTest(unittest.TestCase):
 
 
 class SiteTest(unittest.TestCase):
+    def test_site_url(self):
+        # Link previews need absolute addresses; the site's own address has no trailing slash.
+        self.assertEqual(load_site(SITE).url, "https://tianyuchen.com")
+
     def test_bio_status(self):
         self.assertIn(load_site(SITE).bio_status, {"draft", "confirmed"})
         with tempfile.TemporaryDirectory() as d:

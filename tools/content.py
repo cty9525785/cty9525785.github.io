@@ -111,6 +111,7 @@ class Site:
     photo: str
     links: dict[str, str]
     bio_status: str = "draft"  # a drafted bio stays a draft until Tianyu confirms it
+    url: str = ""  # the site's own address, for link previews; no trailing slash
 
 
 def _read(path: Path) -> dict:
@@ -125,8 +126,10 @@ def _check(ok: bool, message: str) -> None:
 def load_site(path: Path) -> Site:
     data = _read(path)
     site = Site(data["name"], data["tagline"], data["bio"], data["photo"], dict(data["links"]),
-                data.get("bio_status", "draft"))
+                data.get("bio_status", "draft"), data.get("url", ""))
     _check(site.bio_status in SUMMARY_STATUSES, f"site: unknown bio_status {site.bio_status!r}")
+    _check(not site.url or (site.url.startswith("https://") and not site.url.endswith("/")),
+           f"site: url {site.url!r} must start with https:// and have no trailing slash")
     return site
 
 

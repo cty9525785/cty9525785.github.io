@@ -145,6 +145,9 @@ def render_paper(paper: Paper, site: Site, body: str) -> str:
         page_title=esc(f"{paper.title} | {site.name}"),
         description=esc(description),
         home_name=esc(site.name),
+        page_url=esc(f"{site.url}/papers/{paper.slug}/index.html"),
+        image_url=esc(f"{site.url}/media/{paper.slug}/loop-poster.jpg" if paper.tile else
+                      f"{site.url}/assets/img/social-card.jpg"),
         short_title=esc(paper.short_title),
         doi_url=esc(f"https://doi.org/{paper.doi}"),
         toc=toc,
@@ -235,6 +238,7 @@ def _other_row(pub: OtherPub) -> str:
 def render_home(site: Site, papers: list[Paper], others: list[OtherPub]) -> str:
     return _template("home.html").substitute(
         name=esc(site.name),
+        site_url=esc(site.url),
         tagline=_text_or_placeholder(site.tagline),
         tagline_text=esc(site.tagline),
         bio=_text_or_placeholder(site.bio) if _is_placeholder(site.bio) else _with_links(site.bio) + _badge(site.bio_status),

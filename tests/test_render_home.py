@@ -67,6 +67,19 @@ class RenderHomeTest(unittest.TestCase):
         page = render_home(replace(self.site, bio=bio), self.papers, self.others)
         self.assertIn('I work in <a href="https://example.invalid/lab?a=1&amp;b=2">the lab</a> &lt;here&gt;.', page)
 
+    def test_link_preview(self):
+        # LinkedIn, Slack and Teams build a link's preview card from these tags (Tianyu asked for a thumbnail).
+        meta = {t.get("property") or t.get("name"): t.get("content") for t in tags(self.page, "meta")}
+        self.assertEqual(meta["og:title"], "Tianyu Chen")
+        self.assertEqual(meta["og:description"], self.site.tagline)
+        self.assertEqual(meta["og:url"], "https://tianyuchen.com/")
+        self.assertEqual(meta["og:image"], "https://tianyuchen.com/assets/img/social-card.jpg")
+        self.assertEqual((meta["og:image:width"], meta["og:image:height"]), ("1200", "630"))
+        self.assertEqual(meta["twitter:card"], "summary_large_image")
+        from PIL import Image
+        with Image.open(ROOT / "assets" / "img" / "social-card.jpg") as card:
+            self.assertEqual(card.size, (1200, 630))
+
     def test_fonts_preloaded(self):
         # Tianyu saw the text change font a moment after opening: preloaded fonts are ready before the first paint.
         preloads = [t for t in tags(self.page, "link") if t.get("rel") == "preload"]

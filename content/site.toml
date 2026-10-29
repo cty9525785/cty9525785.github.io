@@ -1,5 +1,6 @@
 # Site owner details. Every "TODO:" value is a placeholder Tianyu supplies before publishing.
 name = "Tianyu Chen"
+url = "https://tianyuchen.com"  # the site's own address, for link previews
 tagline = "I design and build robots, guided by finite element simulation."
 # Drafted from Tianyu’s academic CV and confirmed by Tianyu. [label](https://...) makes a link.
 bio = "I’m a research associate at the Bristol Robotics Laboratory, University of Bristol, in the [VIVO Hub for Enhanced Independent Living](https://www.thevivohub.com/), where I research electrostatic actuators as a lightweight replacement for the bulky motors and pneumatic systems in exosuits. Previously, I did my PhD at Nanyang Technological University in Prof. Yifan Wang’s [Robotic Materials Group](https://www.yifanwangntu.com/), where I developed a scale-inspired layered structure whose inversely designed surface patterns let it morph into a target shape and change its stiffness at the same time, and built an amphibious robot and a drone landing gear from it. Before that, I used finite element models to study how thin films and nanostructured metals deform."

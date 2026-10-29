@@ -54,6 +54,16 @@ class RenderPaperTest(unittest.TestCase):
             self.assertIn("crossorigin", t)
         self.assertEqual([t.get("src") for t in tags(page, "script")], ["../../assets/js/article.js"])
 
+    def test_link_preview(self):
+        for slug, page in self.html.items():
+            with self.subTest(slug):
+                meta = {t.get("property") or t.get("name"): t.get("content") for t in tags(page, "meta")}
+                self.assertEqual(meta["og:title"], self.p[slug].title)
+                self.assertEqual(meta["og:url"], f"https://tianyuchen.com/papers/{slug}/index.html")
+                image = meta["og:image"]
+                self.assertEqual(image, f"https://tianyuchen.com/media/{slug}/loop-poster.jpg")
+                self.assertTrue((ROOT / image.removeprefix("https://tianyuchen.com/")).is_file())
+
     def test_top_bar(self):
         page = self.html[SAILS]
         bar = re.search(r'<header class="topbar">.*?</header>', page, re.S).group(0)
