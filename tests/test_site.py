@@ -78,6 +78,10 @@ class SiteTest(unittest.TestCase):
                 if not first.startswith("var("):
                     self.assertIn(first, GENERIC_FAMILIES | OS_FONTS | shipped, f"{css.name}: {stack.strip()}")
 
+    def test_custom_domain(self):
+        # GitHub Pages serves the site at the domain named in CNAME; Tianyu registered tianyuchen.com (2026-10-29).
+        self.assertEqual((ROOT / "CNAME").read_text(encoding="utf-8"), "tianyuchen.com\n")
+
     def test_fonts_do_not_swap_in_late(self):
         # "swap" draws the page in a fallback font and switches when the font arrives, which Tianyu saw;
         # "fallback" waits briefly for the (preloaded) font instead.
