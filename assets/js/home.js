@@ -74,20 +74,20 @@
       return onScreen && !document.hidden;
     };
 
-    // A clip plays once it can: playing earlier hides its poster and leaves the slide blank. canplay also comes
-    // after a rewind, which loadeddata (once per clip) does not.
+    // A clip plays as soon as its slide shows: a phone loads a clip only when asked to play it (an iPhone never
+    // preloads one). Its poster lies over it until it plays (home.css), so a clip still loading, or one a phone will
+    // not play, shows a still rather than a black frame.
     var start = function (video) {
-      if (video.readyState >= 3) {
-        play(video);
-        return;
-      }
-      video.preload = "auto";
-      video.addEventListener("canplay", function () {
-        if (video === clip(at) && !paused && visible()) {
-          play(video);
-        }
-      }, { once: true });
+      play(video);
     };
+    slides.forEach(function (slide) {
+      var video = slide.querySelector("video");
+      if (video) {
+        video.addEventListener("playing", function () {
+          video.parentNode.classList.add("playing");
+        });
+      }
+    });
 
     var schedule = function () {
       window.clearTimeout(timer);
@@ -119,7 +119,7 @@
       at = i;
       var video = clip(i);
       if (video && !paused && visible()) {
-        if (video.readyState >= 1) {
+        if (video.readyState >= 2) {  // only a clip with frames rewinds: rewinding one without hides Safari's poster
           video.currentTime = 0;
         }
         start(video);

@@ -389,6 +389,7 @@ html:not(.js) .slide + .slide {
 }
 
 .hl-media {
+  position: relative;
   display: block;
   aspect-ratio: 1 / 1;
   background: #0b0b0b;
@@ -400,6 +401,24 @@ html:not(.js) .slide + .slide {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* The clip's poster as an image over it until it plays (home.js): a phone loads a clip only when it plays, and
+   Safari shows a black frame, not the poster, while it loads or if it will not play. Without scripts the clip's own
+   poster serves. */
+.hl-media .hl-poster {
+  display: none;
+}
+
+.js .hl-media .hl-poster {
+  display: block;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.3s;
+}
+
+.hl-media.playing .hl-poster {
+  opacity: 0;
 }
 
 .hl-media.still {

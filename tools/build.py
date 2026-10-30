@@ -1,4 +1,5 @@
 """Render the site's pages from content/*.toml into static HTML."""
+import hashlib
 import html
 import re
 import sys
@@ -36,6 +37,14 @@ def esc(text: str) -> str:
 
 def _template(name: str) -> Template:
     return Template((TEMPLATES / name).read_text(encoding="utf-8"))
+
+
+def _versioned(path: str) -> str:
+    """A stylesheet's or script's address (from the site's root) with its file's hash. GitHub Pages lets a browser
+    keep a file ten minutes, so a changed file needs a new address to arrive with the page that needs it (Tianyu saw
+    the new page in the old stylesheet)."""
+    data = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")  # the hash of the file as committed
+    return f"{path}?v={hashlib.sha256(data).hexdigest()[:8]}"
 
 
 def _badge(status: str) -> str:
@@ -194,6 +203,8 @@ def render_paper(paper: Paper, site: Site, body: str) -> str:
         movies=movies,
         bibtex=esc(paper.bibtex.strip()),
         counter=_counter(site, "../../"),
+        article_css="../../" + _versioned("assets/css/article.css"),
+        article_js="../../" + _versioned("assets/js/article.js"),
     ), site.url)
 
 
@@ -201,7 +212,8 @@ def _counter(site: Site, root: str = "") -> str:
     """GoatCounter's script, the site's own reviewed copy, once its count address is set (Tianyu chose it)."""
     if not site.goatcounter:
         return ""
-    return f'<script data-goatcounter="{esc(site.goatcounter)}" async src="{root}assets/js/count.js"></script>'
+    return (f'<script data-goatcounter="{esc(site.goatcounter)}" async '
+            f'src="{root}{_versioned("assets/js/count.js")}"></script>')
 
 
 def _link(key: str, value: str, label: str, cls: str = "") -> str:
@@ -315,8 +327,11 @@ def _slide(n: int, pub: Paper | OtherPub, own: bool) -> str:
         kind = "hl-media still"
     else:  # only the first slide's clip plays at once; the script plays each other one as its slide shows
         play = "autoplay" if n == 1 else 'preload="none"'
+        # The poster again as an image over the clip, which the script lifts once the clip plays: a phone that has not
+        # loaded the clip yet, or will not play it, shows the still rather than a black frame.
         media = (f'<video {play} muted loop playsinline poster="{media_dir}loop-poster.jpg">'
-                 f'<source src="{media_dir}loop.mp4" type="video/mp4"></video>')
+                 f'<source src="{media_dir}loop.mp4" type="video/mp4"></video>'
+                 f'<img class="hl-poster" src="{media_dir}loop-poster.jpg" alt="">')
         kind = "hl-media"
     label = '<p class="label">Co-authored</p>' if not own else ""
     more = ((_named(link, "Read the explainer", title) if own else "")
@@ -514,6 +529,8 @@ def render_home(site: Site, papers: list[Paper], others: list[OtherPub], news: l
         news=_news(list(news), papers, others),
         footer=_footer(site),
         counter=_counter(site),
+        home_css=_versioned("assets/css/home.css"),
+        home_js=_versioned("assets/js/home.js"),
     ), site.url)
 
 
@@ -529,8 +546,9 @@ def _page(site: Site, page: str, title: str, description: str, main: str, script
         nav=_nav(site, page),
         main=main,
         footer=_footer(site),
-        script=f'<script src="{script}" defer></script>' if script else "",
+        script=f'<script src="{_versioned(script)}" defer></script>' if script else "",
         counter=_counter(site),
+        home_css=_versioned("assets/css/home.css"),
     ), site.url)
 
 

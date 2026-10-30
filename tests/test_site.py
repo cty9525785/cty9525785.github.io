@@ -44,6 +44,7 @@ class SiteTest(unittest.TestCase):
                 if not ref or ref.startswith(("http:", "https:", "mailto:", "#", "data:")):
                     continue
                 path, _, anchor = ref.partition("#")
+                path = path.split("?")[0]  # a stylesheet's or script's version tag
                 target = (page.parent / path).resolve()
                 self.assertTrue(target.is_file(), f"{page.relative_to(ROOT)}: {ref}")
                 if anchor:

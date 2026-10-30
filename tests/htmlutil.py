@@ -1,6 +1,10 @@
 """Small HTML helpers for the tests (stdlib html.parser and regex)."""
+import hashlib
 import re
 from html.parser import HTMLParser
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class _Collector(HTMLParser):
@@ -27,3 +31,10 @@ def section(html: str, id: str) -> str:
     """The <section id="..."> element with that id, or "" if there is none."""
     match = re.search(rf'<section id="{re.escape(id)}"[^>]*>.*?</section>', html, re.S)
     return match.group(0) if match else ""
+
+
+def versioned(path: str) -> str:
+    """A stylesheet's or script's address as the pages give it: its path (from the site's root) and the first 8 hex
+    digits of the file's hash, line endings as committed."""
+    data = (ROOT / path).read_bytes().replace(b"\r\n", b"\n")
+    return f"{path}?v={hashlib.sha256(data).hexdigest()[:8]}"

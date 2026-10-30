@@ -3,7 +3,7 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from tests.htmlutil import section, tags
+from tests.htmlutil import section, tags, versioned
 from tools.build import author_html, read_body, render_paper, venue_html
 from tools.content import load_papers, load_site
 
@@ -43,7 +43,8 @@ class RenderPaperTest(unittest.TestCase):
         self.assertIn("<title>Tailoring tensile ductility of thin film by grain size graded substrates | Tianyu Chen</title>",
                       page)
         links = tags(page, "link")
-        self.assertEqual([t.get("href") for t in links if t.get("rel") == "stylesheet"], ["../../assets/css/article.css"])
+        self.assertEqual([t.get("href") for t in links if t.get("rel") == "stylesheet"],
+                         ["../../" + versioned("assets/css/article.css")])
         preloads = [t for t in links if t.get("rel") == "preload"]
         self.assertEqual({t.get("href") for t in preloads},
                          {"../../assets/fonts/source-serif-4/source-serif-4-latin-normal.woff2",
@@ -53,7 +54,8 @@ class RenderPaperTest(unittest.TestCase):
             self.assertEqual((t.get("as"), t.get("type")), ("font", "font/woff2"))
             self.assertIn("crossorigin", t)
         self.assertEqual([t.get("src") for t in tags(page, "script")],
-                         ["../../assets/js/article.js", "../../assets/js/count.js"])  # the page's own, the counter
+                         ["../../" + versioned("assets/js/article.js"),  # the page's own, then the counter
+                          "../../" + versioned("assets/js/count.js")])
 
     def test_link_preview(self):
         for slug, page in self.html.items():
@@ -184,7 +186,7 @@ class RenderPaperTest(unittest.TestCase):
         # line); with no count address, no script.
         for page in self.html.values():
             self.assertIn('<script data-goatcounter="https://cty9525785.goatcounter.com/count" async '
-                          'src="../../assets/js/count.js"></script>', page)
+                          f'src="../../{versioned("assets/js/count.js")}"></script>', page)
             self.assertNotIn("GoatCounter", re.search(r"<footer>.*?</footer>", page, re.S).group(0))
         off = render_paper(self.p[SAILS], replace(self.site, goatcounter=""), self.body[SAILS])
         self.assertNotIn("goatcounter", off.lower())

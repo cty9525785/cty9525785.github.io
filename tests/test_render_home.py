@@ -6,7 +6,7 @@ from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
-from tests.htmlutil import section, tags
+from tests.htmlutil import section, tags, versioned
 from tools.build import build, render_experience, render_home, render_publications
 from tools.content import Segment, Tile, TileInput, load_news, load_papers, load_site
 
@@ -345,17 +345,43 @@ class RenderHomeTest(unittest.TestCase):
         self.assertNotIn("advancing", js)
         tab_click = re.search(r'tab\.addEventListener\("click", function \(event\) \{(.*?)\}\);', js, re.S).group(1)
         self.assertNotIn("paused", tab_click)
-        # A shown slide's clip rewinds and waits for "canplay": "loadeddata" fires once per clip, never after a rewind,
-        # so slides 2 onward stood still (seen in a real-time run).
-        self.assertIn('addEventListener("canplay"', js)
+        # Waiting for "loadeddata", which fires once per clip and never after a rewind, once stopped slides 2 onward.
         self.assertNotIn('"loadeddata"', js)
         self.assertNotIn(".mosaic", js)
+
+    def test_highlight_clips_on_phones(self):
+        # Tianyu: "Why the research highlight videos is black on my phone". A phone loads a clip only when asked to play
+        # it (an iPhone never preloads one), so the slideshow waited for clips that never loaded, and it rewound clips
+        # with no frames yet, which on Safari hides the poster over the near-black frame. Each clip's poster now lies
+        # over it as an image until the clip plays, a clip plays as soon as its slide shows, and only a clip that has
+        # frames rewinds.
+        hl = section(self.page, "highlights")
+        clips = re.findall(r'data-slug="([a-z0-9-]+)"><a class="hl-media"[^>]*>(.*?)</a>', hl, re.S)
+        self.assertEqual(len(clips), 7)
+        for slug, body in clips:
+            self.assertIn(f'<img class="hl-poster" src="media/{slug}/loop-poster.jpg" alt="">', body)
+            self.assertLess(body.index("<video"), body.index('class="hl-poster"'))  # drawn over the clip
+        css = (ROOT / "assets" / "css" / "home.css").read_text(encoding="utf-8")
+        rules = css_rules(css)
+        self.assertIn("position: relative", [body for selectors, body in rules if ".hl-media" in selectors][0])
+        # Without scripts nothing hides it, so the image waits for them; the clip's own poster serves until then.
+        self.assertIn("display: none", [body for selectors, body in rules if ".hl-media .hl-poster" in selectors][0])
+        self.assertRegex(css, r"\.js \.hl-media \.hl-poster \{[^}]*display: block;[^}]*position: absolute")
+        self.assertRegex(css, r"\.hl-media\.playing \.hl-poster \{[^}]*opacity: 0")
+        js = (ROOT / "assets" / "js" / "home.js").read_text(encoding="utf-8")
+        slideshow = js[js.index('var box = document.querySelector(".highlights")'):js.index("// The other clips")]
+        self.assertIn('addEventListener("playing"', slideshow)
+        self.assertIn('classList.add("playing")', slideshow)
+        self.assertIn("video.readyState >= 2", slideshow)
+        self.assertNotIn("readyState >= 1", slideshow)
+        self.assertNotIn("canplay", slideshow)
 
     def test_visit_counter(self):
         # Tianyu chose GoatCounter (2026-10-30) and made the site cty9525785. Every page loads the site's own reviewed
         # copy of count.js (nothing loads from another site); with no count address, nothing. The footer says nothing
         # of it: Tianyu asked to delete the line that did.
-        tag = '<script data-goatcounter="https://cty9525785.goatcounter.com/count" async src="assets/js/count.js"></script>'
+        tag = (f'<script data-goatcounter="https://cty9525785.goatcounter.com/count" async '
+               f'src="{versioned("assets/js/count.js")}"></script>')
         for page in (self.page, self.pubs, self.xp):
             self.assertEqual(page.count("data-goatcounter"), 1)
             self.assertIn(tag, page)
@@ -369,6 +395,17 @@ class RenderHomeTest(unittest.TestCase):
         self.assertEqual(hashlib.sha256(script).hexdigest(),
                          "792b7abd26c1fb6ae62906833e09a301251e2641816e69e4f95aba518f3fe3f0")
 
+    def test_assets_carry_their_version(self):
+        # Tianyu saw the new page in the old stylesheet: GitHub Pages lets a browser keep a file ten minutes, and the
+        # old site's stylesheet had the same name. Each stylesheet and script address carries its file's hash, so a
+        # changed file has a new address and arrives with the page that needs it.
+        for page in (self.page, self.pubs, self.xp):
+            refs = ([t.get("href") for t in tags(page, "link") if t.get("rel") == "stylesheet"]
+                    + [t.get("src") for t in tags(page, "script") if t.get("src")])
+            self.assertEqual(len(refs), len([r for r in refs if "?v=" in r]))
+            for ref in refs:
+                self.assertEqual(ref, versioned(ref.split("?")[0]))
+
     def test_experience_page(self):
         # The roles, degrees and skills under the shared menu, styles and footer; with no clips or filters, no script
         # but the visit counter.
@@ -377,8 +414,8 @@ class RenderHomeTest(unittest.TestCase):
         self.assertEqual(meta["description"], "Tianyu Chen’s roles, education and skills.")
         self.assertEqual(meta["og:url"], "https://tianyuchen.com/experience.html")
         self.assertEqual([t.get("href") for t in tags(self.xp, "link") if t.get("rel") == "stylesheet"],
-                         ["assets/css/home.css"])
-        self.assertEqual([t.get("src") for t in tags(self.xp, "script")], ["assets/js/count.js"])
+                         [versioned("assets/css/home.css")])
+        self.assertEqual([t.get("src") for t in tags(self.xp, "script")], [versioned("assets/js/count.js")])
         main = re.search(r"<main>(.*?)</main>", self.xp, re.S).group(1)
         self.assertEqual(re.findall(r'<section id="([a-z-]+)"', main), ["experience"])
         self.assertIn("<h1>Experience", main)
@@ -395,8 +432,9 @@ class RenderHomeTest(unittest.TestCase):
         self.assertEqual(meta["og:url"], "https://tianyuchen.com/publications.html")
         self.assertEqual(meta["og:image"], "https://tianyuchen.com/assets/img/social-card.jpg")
         self.assertEqual([t.get("href") for t in tags(self.pubs, "link") if t.get("rel") == "stylesheet"],
-                         ["assets/css/home.css"])
-        self.assertEqual([t.get("src") for t in tags(self.pubs, "script")], ["assets/js/home.js", "assets/js/count.js"])
+                         [versioned("assets/css/home.css")])
+        self.assertEqual([t.get("src") for t in tags(self.pubs, "script")],
+                         [versioned("assets/js/home.js"), versioned("assets/js/count.js")])
         main = re.search(r"<main>(.*?)</main>", self.pubs, re.S).group(1)
         self.assertEqual(re.findall(r'<section id="([a-z-]+)"', main), ["publications"])
         self.assertIn("<h1>Publications</h1>", main)
@@ -442,7 +480,8 @@ class RenderHomeTest(unittest.TestCase):
                     self.assertNotIn(text, page)
         # The page's own script file and the visit counter, plus the one-line class setter in the head that the
         # slideshow's layout needs.
-        self.assertEqual([t.get("src") for t in tags(self.page, "script")], [None, "assets/js/home.js", "assets/js/count.js"])
+        self.assertEqual([t.get("src") for t in tags(self.page, "script")],
+                         [None, versioned("assets/js/home.js"), versioned("assets/js/count.js")])
         self.assertEqual(self.page.count("<script>"), 1)
 
     def test_experience(self):
