@@ -1,242 +1,904 @@
-/* Home page styles, adapted from Jon Barron's stylesheet.css
-   (https://github.com/jonbarron/jonbarron.github.io).
-   Changes: Lato served from assets/fonts instead of Google's servers, layout moved from inline
-   styles into classes, and added rules for phones, placeholders and draft badges. */
-
-/* Lato's latin and latin-ext subsets from Google Fonts, under the SIL Open Font License
-   (../fonts/lato/OFL.txt). */
-/* latin-ext */
+/* Home page: a light portfolio layout (redesign, 2026-10-30), set in Inter. */
+/* Inter, SIL Open Font License (../fonts/inter/OFL.txt), served with the page. */
 @font-face {
-  font-family: 'Lato';
-  font-style: italic;
-  font-weight: 400;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
   font-display: fallback;
-  src: url('../fonts/lato/lato-latin-ext-400-italic.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: italic;
-  font-weight: 400;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-400-italic.woff2') format('woff2');
+  src: url('../fonts/inter/inter-latin-wght-normal.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* latin-ext */
 @font-face {
-  font-family: 'Lato';
+  font-family: 'Inter';
   font-style: italic;
-  font-weight: 700;
+  font-weight: 100 900;
   font-display: fallback;
-  src: url('../fonts/lato/lato-latin-ext-700-italic.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: italic;
-  font-weight: 700;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-700-italic.woff2') format('woff2');
+  src: url('../fonts/inter/inter-latin-wght-italic.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* latin-ext */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 400;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-ext-400-normal.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+:root {
+  --ink: #0f172a;
+  --body: #475569;
+  --muted: #64748b;
+  --line: #e5e7eb;
+  --soft: #f6f7f9;
+  --accent: #2563eb;
 }
 
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 400;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-400-normal.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* latin-ext */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 700;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-ext-700-normal.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 700;
-  font-display: fallback;
-  src: url('../fonts/lato/lato-latin-700-normal.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-a {
-  color: #1772d0;
-  text-decoration: none;
-}
-
-a:focus,
-a:hover {
-  color: #f09228;
-  text-decoration: none;
-}
-
-body,
-td,
-th,
-tr,
-p,
-a,
-li,
-strong {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
 }
 
 body {
   margin: 0;
   background: #fff;
-  color: #000;
+  color: var(--ink);
+  font: 16px/1.6 'Inter', 'Segoe UI', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-h2 {
-  margin: 0;
-  padding: 16px 16px 0;
-  font-weight: normal;
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 26px;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.page {
-  width: 100%;
-  max-width: 800px;
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Rounds the ring on plain links only: the pill buttons and chips keep their own round shape when focused. */
+a:not(.btn):not(.chip):focus-visible {
+  border-radius: 6px;
+}
+
+svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wrap {
+  max-width: 1160px;
   margin: 0 auto;
+  padding: 0 32px;
 }
 
-table {
-  width: 100%;
-  border: 0;
-  border-collapse: separate;
+/* Menu bar: ground glass (Tianyu: "add some glass feeling on this banner", "like the ground glass"). A thin white
+   wash over a strong blur turns whatever scrolls under it into soft color, a faint grain gives the glass its tooth,
+   and a hairline and a soft shadow lift it off the page. */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  background-color: rgba(255, 255, 255, 0.72);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.35);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
 }
 
-.header {
-  border-spacing: 0;
+.nav .wrap {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 68px;
 }
 
-.intro {
-  padding: 2.5%;
-  width: 70%;
-  vertical-align: middle;
+.brand {
+  margin-right: auto;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
 }
 
-/* A modest photo, about 175 px wide (Tianyu found 255 px too big). */
-.photo {
-  padding: 2.5%;
-  width: 30%;
-  max-width: 30%;
+.nav nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 15px;
+  color: #334155;  /* darker than the muted gray: 4.8:1 even with the darkest clip under the glass */
 }
 
-.photo img {
+.nav nav a:hover {
+  color: var(--ink);
+}
+
+.nav nav a[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.nav a.cv {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nav a.cv:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+/* Hero */
+/* The round photo with the contact buttons under it, beside the name, headline and bio (Tianyu chose option A). */
+.hero {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  padding-top: 48px;
+  padding-bottom: 40px;
+}
+
+.portrait {
   display: block;
-  width: 175px;
-  max-width: 100%;
-  margin: 0 auto;
-  object-fit: cover;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
 }
 
-.name {
-  padding-top: 20px;
+/* The photo column is shorter than the text beside it and stretches to its height: the photo at the top, the
+   buttons at the foot, level with the letters of the bio's last line (Tianyu: "these two should align"). */
+.hero .side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  padding-bottom: 4px;
+}
+
+.hero .links {
+  flex-direction: column;
+  margin-top: 26px;
+}
+
+.hero .btn {
+  justify-content: center;
+}
+
+.who {
+  margin: 4px 0 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #5e6e85;
+}
+
+.who b,
+.who .role {
+  display: block;
+}
+
+.who b {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+h1 {
+  margin: 0 0 18px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+h1 span {
+  color: #768599;
+}
+
+.bio {
+  max-width: 36em;
   margin: 0;
-  text-align: center;
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 36px;
+  font-size: 17px;
+  color: var(--muted);
 }
 
-.tagline {
-  text-align: center;
-  font-size: 19px;
+.bio p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.bio p + p {
+  margin-top: 14px;
+}
+
+/* "Read more" under the bio, for phones only (see the phone rules). */
+.bio-more {
+  display: none;
+  margin: 0 0 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.bio a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: #cbd5e1;
+  text-underline-offset: 3px;
+}
+
+.bio a:hover {
+  text-decoration-color: var(--accent);
 }
 
 .links {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
 }
 
-.papers {
-  border-spacing: 0 10px;
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.paper-row.highlight {
-  background-color: #ffffd0;
+.btn:hover {
+  border-color: #cbd5e1;
+  background: var(--soft);
 }
 
-.paper-row .media {
-  padding: 16px;
-  width: 20%;
-  vertical-align: middle;
+.btn.primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
 }
 
-.paper-row .media video,
-.paper-row .media img {
+.btn.primary:hover {
+  background: #1e293b;
+}
+
+/* On a wide screen the bio's 36em left a blank strip in its 800 px column (Tianyu: "why it feels a bit blank on
+   this side"): the photo grows and the bio fills the column, so the intro reaches the right edge like the menu and
+   the slideshow. At 19 px its lines stay near 75 characters. The photo stays small enough for its column to end
+   level with the text (nine lines, 451 px). */
+@media (min-width: 1080px) {
+  .hero {
+    grid-template-columns: 264px minmax(0, 1fr);
+    gap: 80px;
+  }
+
+  .portrait {
+    width: 264px;
+    height: 264px;
+  }
+
+  .who b {
+    font-size: 22px;
+  }
+
+  .bio {
+    max-width: none;
+    font-size: 19px;
+  }
+}
+
+/* Research highlights: one captioned slide at a time with numbered tabs (home.js). Without scripts the slides
+   show one under another and the tabs jump to them. */
+.highlights {
+  padding-top: 8px;
+  padding-bottom: 96px;
+}
+
+.hl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.hl-head h2 {
+  margin: 0;
+}
+
+.hl-pause {
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.hl-pause:hover {
+  border-color: #cbd5e1;
+  background: var(--soft);
+}
+
+html:not(.js) .hl-pause {
+  display: none;
+}
+
+.hl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 12px;
+  align-items: start;
+}
+
+.slide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--soft);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+}
+
+html:not(.js) .slide + .slide {
+  margin-top: 20px;
+}
+
+.js .hl-slides {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The slides share one grid cell, which takes the tallest slide's height. */
+.js .slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+.js .slide.on {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hl-media {
   display: block;
-  width: 160px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 4px;
-  background: #f4f4f4;
+  aspect-ratio: 1 / 1;
+  background: #0b0b0b;
 }
 
-/* A paper's figure is shown whole, since cropping it to a square cuts through its labels. */
-.paper-row .media img {
+.hl-media img,
+.hl-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hl-media.still {
+  background: #fff;
+}
+
+.hl-media.still img {
+  object-fit: contain;
+  padding: 28px;
+}
+
+.hl-text {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 44px;
+}
+
+.hl-text h3 {
+  margin: 4px 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.hl-text h3 a:hover {
+  color: var(--accent);
+}
+
+.hl-text .one {
+  margin: 0 0 16px;
+  font-size: 16.5px;
+}
+
+.hl-text .venue {
+  margin-bottom: 18px;
+}
+
+.hl-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hl-tab {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #e5e7eb;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.hl-tab:hover {
+  background: #d7dce3;
+}
+
+.hl-tab[aria-current="true"] {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* In the news: dated stories, newest first; the older ones open under All coverage. */
+.news {
+  padding-bottom: 88px;
+}
+
+.news h2 {
+  margin: 0 0 18px;
+}
+
+.news-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.news-item {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.news-item p {
+  margin: 0;
+}
+
+.news-item .when {
+  padding-top: 2px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.news-item .headline {
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.news-item .headline:hover {
+  color: var(--accent);
+}
+
+.news-item .tr {
+  display: block;
+  font-size: 14.5px;
+  color: var(--body);
+}
+
+.news-item .where {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.news-item .where a,
+.news-item .also a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: #cbd5e1;
+  text-underline-offset: 3px;
+}
+
+/* The same story on other sites. */
+.news-item .also {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.news-more summary {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* Gray bands and section heads. The band starts right under the menu bar, whose edge is its top. */
+.band {
+  padding: 84px 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+h2,
+.head h1,
+#experience h1 {
+  margin: 0;
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+
+/* Publication thumbnails */
+.pub .thumb {
+  display: block;
+  overflow: hidden;
+  background: #0b0b0b;
+}
+
+.pub .thumb img,
+.pub .thumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A paper's figure is shown whole, since cropping it cuts through its labels; clips fill their frame. */
+.pub .thumb img {
   object-fit: contain;
   background: #fff;
 }
 
-.paper-row .media .placeholder {
+.label {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+a.title:hover,
+.more a:hover {
+  color: var(--accent);
+}
+
+.authors {
+  margin: 0 0 4px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.authors strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.venue {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.one {
+  margin: 10px 0 14px;
+  font-size: 14.5px;
+  color: var(--body);
+}
+
+.more {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 160px;
-  height: 160px;
-  padding: 12px;
-  box-sizing: border-box;
-  text-align: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: auto 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Experience, education and skills */
+#experience {
+  padding-top: 84px;
+  padding-bottom: 88px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 72px;
+}
+
+.edu-h {
+  margin: 40px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.edu,
+.xp {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edu li {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.edu b {
+  display: block;
+  font-weight: 600;
+}
+
+.edu span {
+  color: var(--muted);
+}
+
+.xp li {
+  position: relative;
+  padding: 0 0 30px 36px;
+}
+
+.xp li::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: -6px;
+  left: 7px;
+  width: 2px;
+  background: var(--line);
+}
+
+.xp li:last-child::before {
+  display: none;
+}
+
+.xp li::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.when {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.xp h3 {
+  margin: 2px 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.org {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.xp li > p:last-child {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--body);
+}
+
+.skills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 56px;
+}
+
+.skill {
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.skill h4 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.skill span {
+  display: inline-block;
+  margin: 0 6px 8px 0;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  font-size: 14px;
+}
+
+/* Publications, by topic */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  color: var(--muted);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.chip:hover {
+  border-color: #cbd5e1;
+  color: var(--ink);
+}
+
+.chip.on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.topic + .topic {
+  margin-top: 52px;
+}
+
+.topic[data-off] {
+  display: none;
+}
+
+.topic h3 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.pubs {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pub {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 22px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.pub .thumb {
+  align-self: start;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+}
+
+.pub .title {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.pub .one {
+  margin: 8px 0;
+}
+
+.pub .more {
+  font-size: 13.5px;
+}
+
+.more a.license {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.co-label {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5e6e85;
+}
+
+/* Footer */
+footer {
+  padding: 32px 0 56px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+footer p {
+  margin: 0 0 6px;
+}
+
+footer a {
+  color: var(--ink);
+}
+
+footer a:hover {
+  color: var(--accent);
+}
+
+/* The closing invitation, with the address itself to copy. */
+footer .contact {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+footer .contact a {
+  color: var(--accent);
+}
+
+.credit {
   font-size: 13px;
 }
 
-.paper-row .media a {
-  position: relative;
-  display: block;
-  width: 160px;
-}
-
-.paper-row .text {
-  padding: 8px;
-  width: 80%;
-  vertical-align: middle;
-}
-
-.papertitle {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-}
-
+/* Text Tianyu has yet to supply or confirm */
 .placeholder {
   color: #92400e;
   background: #fef3c7;
@@ -244,67 +906,212 @@ table {
   padding: 0 4px;
 }
 
+/* A pill whose link Tianyu has yet to supply keeps its shape but takes the placeholder colors. */
+.btn.placeholder,
+.btn.primary.placeholder {
+  padding: 0 18px;
+  border-color: #fcd34d;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.nav a.cv.placeholder {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .draft {
   display: inline-block;
-  margin-left: 4px;
+  margin-left: 6px;
   padding: 0 6px;
   border-radius: 4px;
   background: #fef3c7;
   color: #92400e;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  vertical-align: middle;
 }
 
-.footer {
-  padding: 24px 16px;
-  text-align: right;
-  font-size: 14px;
-  color: #555;
+@media (max-width: 860px) {
+  .wrap {
+    padding: 0 20px;
+  }
+
+  /* Every tab stays on a phone: the tabs take a row of their own under the name and the CV. */
+  html {
+    scroll-padding-top: 100px;
+  }
+
+  .nav .wrap {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 6px;
+    padding-top: 12px;
+    padding-bottom: 10px;
+  }
+
+  .nav nav {
+    order: 1;
+    flex-basis: 100%;
+    gap: 20px;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+
+  /* The intro's two columns open into one: the photo, the name, the headline, the buttons, then the bio, which
+     shows four lines until "Read more", so the first screen reaches the research. */
+  .hero .side,
+  .hero .about {
+    display: contents;
+  }
+
+  .portrait {
+    order: 0;
+    width: 112px;
+    height: 112px;
+    margin-bottom: 16px;
+  }
+
+  .who {
+    order: 1;
+  }
+
+  .hero h1 {
+    order: 2;
+  }
+
+  .hero .links {
+    order: 3;
+    flex-direction: row;
+    margin: 0 0 22px;
+  }
+
+  /* The three buttons share one row, a third each, and show only their last word: "Google Scholar" becomes
+     "Scholar" (LinkedIn used to wrap onto a row of its own). Screen readers still read the whole name. On a phone
+     too narrow for the three, they wrap rather than spill their words. */
+  .hero .btn {
+    flex: 1 1 0;
+    min-width: max-content;
+    justify-content: center;
+    padding: 0 6px;
+  }
+
+  .hero .first-words {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .hero .bio {
+    order: 4;
+    margin-bottom: 30px;
+  }
+
+  .hero .bio-more {
+    order: 5;
+    justify-self: start;
+  }
+
+  /* The first paragraph shows four lines and the second waits for "Read more": browsers differ in how a line
+     clamp cuts across several paragraphs. */
+  .js .bio:not(.open) {
+    margin-bottom: 6px;
+  }
+
+  .js .bio:not(.open) p:first-child {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .js .bio:not(.open) p + p {
+    display: none;
+  }
+
+  .js .bio-more {
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .hl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .slide {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .hl-text {
+    padding: 22px 20px 24px;
+  }
+
+  .news-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .hl-text h3 {
+    font-size: 22px;
+  }
+
+  .hl-tabs {
+    flex-flow: row wrap;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2,
+  .head h1,
+  #experience h1 {
+    font-size: 30px;
+  }
+
+  .band,
+  #experience {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .split,
+  .skills {
+    grid-template-columns: 1fr;
+  }
+
+  .split {
+    gap: 28px;
+  }
+
+  .pub {
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+    padding: 12px;
+  }
 }
 
-@media (max-width: 600px) {
-  .intro,
-  .photo,
-  .paper-row .media,
-  .paper-row .text {
-    display: block;
-    width: auto;
-    max-width: none;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 
-  .photo img {
-    width: 120px;
-    margin: 0 auto;
-    display: block;
-  }
-
-  .paper-row .media {
-    padding: 16px 16px 0;
-  }
-
-  .paper-row .media a {
-    width: auto;
-  }
-
-  .paper-row .media video {
-    width: 100%;
-    max-width: 320px;
-    height: auto;
-    aspect-ratio: 1 / 1;
-  }
-
-  .paper-row .media img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-  }
-
-  .paper-row .text {
-    padding: 8px 16px 16px;
-  }
-
-  .footer {
-    text-align: left;
+  .btn,
+  .chip {
+    transition: none;
   }
 }

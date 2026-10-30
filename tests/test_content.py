@@ -1,13 +1,33 @@
 import re
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
-from tools.content import OtherPub, Site, credit_line, home_order, load_papers, load_site, placeholders
+from tools.content import (OtherPub, Site, Topic, check_news, check_topics, credit_line, home_order, load_news,
+                           load_papers, load_site, placeholders)
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "content" / "site.toml"
 PAPERS = ROOT / "content" / "papers.toml"
+# Tianyu, 2026-10-30: research highlights like hyunwooyuk.com's, one slide per first-author paper, then key co-authored
+# papers ("Add key co-authored papers"), each marked as co-authored on its slide.
+HIGHLIGHTS = ["scale-inspired-robotic-structures", "stiffness-driven-control", "programmable-morphing-structure",
+              "shear-banding-gradient-metals", "amorphous-thin-films", "graded-substrate-thin-films",
+              "suture-interlocking-metamaterials", "muscle-impedance-sensors", "active-fabrics", "hierarchical-tessellation"]
+# Tianyu, 2026-10-30 ("yes for 1"): the open-access papers are hosted with their supplements, under the license each prints.
+HOSTED = {
+    slug: (f"files/papers/{slug}.pdf", f"files/papers/{slug}-supplementary.pdf" if supplement else "", license)
+    for slug, supplement, license in [
+        ("stiffness-driven-control", True, "CC BY-NC 4.0"),
+        ("shear-banding-gradient-metals", False, "CC BY 4.0"),
+        ("thermally-responsive-actuators", True, "CC BY 4.0"),
+        ("muscle-impedance-sensors", True, "CC BY-NC 4.0"),
+        ("multistable-soft-robots", True, "CC BY 4.0"),
+        ("self-sensing-structures", True, "CC BY 4.0"),
+        ("gradient-nanolayers", True, "CC BY 4.0"),
+    ]
+}
 
 MINIMAL = '''
 [[paper]]
@@ -82,6 +102,67 @@ def load_text(text):
         path = Path(d) / "papers.toml"
         path.write_text(text, encoding="utf-8")
         return load_papers(path)
+
+
+NEWS_ITEM = '''
+[[news]]
+date = "2024-07-18"
+outlet = "An outlet"
+headline = "A headline"
+url = "https://news.example/story"
+papers = ["a"]
+'''
+
+
+class NewsTest(unittest.TestCase):
+    def test_news_loads(self):
+        # Tianyu, 2026-10-30: "also include any news section about my work, both first author and coauthor"; chose
+        # all confirmed coverage, with the Chinese posts and their headlines in English.
+        papers, others = load_papers(PAPERS)
+        items = load_news(ROOT / "content" / "news.toml")
+        check_news(items, papers, others)
+        # Tianyu then added New Scientist ("yes, add it") and the press-release copies, and asked to "combine same
+        # story from different platform to one item just url for different plat form": a release republished
+        # elsewhere is one story whose other sites are listed under it.
+        self.assertEqual(len(items), 19)
+        self.assertEqual(sum(n.lang == "zh" for n in items), 5)
+        self.assertIn("https://www.newscientist.com/article/2356205-artificial-skin-can-detect-nearby-objects-without-"
+                      "even-touching-them/", [n.url for n in items])
+        also = {n.url: [(p.outlet, p.url) for p in n.also] for n in items if n.also}
+        self.assertEqual(also, {
+            "https://www.ntu.edu.sg/news/detail/3d-printed-active-fabric-for-healthcare-and-robotics": [
+                ("EurekAlert!", "https://www.eurekalert.org/news-releases/1051779"),
+                ("TechXplore", "https://techxplore.com/news/2024-07-scientists-3d-fabric-medical-devices.html"),
+                ("Lab Manager", "https://www.labmanager.com/scientists-develop-3d-printed-active-fabric-for-medical-"
+                                "devices-soft-robotics-32537"),
+            ],
+            "https://www.eurekalert.org/news-releases/977345": [
+                ("TechXplore", "https://techxplore.com/news/2023-01-artificial-skin-features-natural.html"),
+            ],
+        })
+        urls = [n.url for n in items] + [p.url for n in items for p in n.also]
+        self.assertEqual(len(urls), len(set(urls)))  # each page once
+        for n in items:
+            self.assertTrue(n.url.startswith("https://"), n.headline)
+
+    def test_news_errors_raise(self):
+        papers, _ = load_text(MINIMAL)
+        cases = {
+            "a date without a day": NEWS_ITEM.replace("2024-07-18", "2024-07"),
+            "a plain-http link": NEWS_ITEM.replace("https://news", "http://news"),
+            "a Chinese headline without a translation": NEWS_ITEM + 'lang = "zh"\n',
+            "no paper": NEWS_ITEM.replace('papers = ["a"]', "papers = []"),
+            "a plain-http link on another site": NEWS_ITEM + 'also = [{ outlet = "B", url = "http://b.example/x" }]\n',
+        }
+        for name, text in cases.items():
+            with self.subTest(name), tempfile.TemporaryDirectory() as d, self.assertRaises(ValueError):
+                path = Path(d) / "news.toml"
+                path.write_text(text, encoding="utf-8")
+                load_news(path)
+        with tempfile.TemporaryDirectory() as d, self.assertRaises(ValueError):  # a paper the site does not list
+            path = Path(d) / "news.toml"
+            path.write_text(NEWS_ITEM.replace('["a"]', '["zz"]'), encoding="utf-8")
+            check_news(load_news(path), papers, [])
 
 
 class ContentTest(unittest.TestCase):
@@ -235,10 +316,109 @@ class ContentTest(unittest.TestCase):
                          ["site.bio", "site.links.email", "other.x.one_line", "other.x.thumb"])
 
 
+TOPIC_OF = {  # the approved design's table (reports, 2026-10-30)
+    "morphing": ["scale-inspired-robotic-structures", "programmable-morphing-structure", "suture-interlocking-metamaterials",
+                 "thermally-responsive-actuators", "negative-pressure-actuators", "multistable-soft-robots",
+                 "active-fabrics", "hierarchical-tessellation", "architectured-composites", "self-sensing-structures"],
+    "control": ["stiffness-driven-control", "muscle-impedance-sensors", "droplet-energy-harvester",
+                "dual-responsive-skin"],  # Tianyu moved Active Fabrics to morphing structures (2026-10-30)
+    "metals": ["shear-banding-gradient-metals", "amorphous-thin-films", "graded-substrate-thin-films", "bimodal-friction",
+               "gradient-friction", "gradient-nanolayers"],
+}
+
+
 class SiteTest(unittest.TestCase):
+    def test_cv_sections_load(self):
+        # Tianyu: "have part of cv on it like my education and others, and reorganize my research into categories".
+        site = load_site(SITE)
+        self.assertEqual(site.role, "Research Associate, Bristol Robotics Laboratory")
+        self.assertEqual([(t.id, t.label, t.heading) for t in site.topics], [
+            ("morphing", "Morphing structures", "Morphing structures with tunable stiffness"),
+            ("control", "Control and sensing", "Robot control, sensing and wearables"),
+            ("metals", "Gradient metals and thin films", "Mechanics of gradient nanograined metals and thin films"),
+        ])
+        self.assertEqual([(r.years, r.role, r.org, r.text) for r in site.experience], [
+            ("2025–now", "Research Associate", "Bristol Robotics Laboratory, University of Bristol",
+             "Electrostatic actuators as a lightweight replacement for the motors and pneumatics in exosuits, "
+             "in the VIVO Hub."),
+            # Tianyu reviewed the drafted text (2026-10-30): the PhD line should "focus on robotic structures with
+            # shape morphing and variable stiffness", the thin films line names their enhanced ductility on metal
+            # substrates, and "I2C and Modbus" leaves the skills.
+            ("2021–2025", "PhD researcher", "Nanyang Technological University",
+             "Robotic structures with shape morphing and variable stiffness."),
+            ("2020–2021", "Research Assistant", "Central South University",
+             "Finite element modeling of friction in gradient and bimodal nanostructured metals."),
+            ("2017–2020", "Graduate researcher", "Northwestern Polytechnical University",
+             "Finite element modeling of enhanced ductility of thin films on metal substrates."),
+        ])
+        self.assertEqual([(d.year, d.degree, d.school) for d in site.education], [
+            ("2025", "PhD, Mechanical Engineering", "Nanyang Technological University"),
+            ("2020", "M.E., Solid Mechanics", "Northwestern Polytechnical University"),
+            ("2017", "B.E., Engineering Mechanics", "Northwestern Polytechnical University"),
+        ])
+        self.assertEqual([(g.name, g.items) for g in site.skills], [
+            ("Simulation", ["Abaqus", "Python", "MATLAB"]),
+            ("Design and fabrication", ["SolidWorks", "Rhino", "FDM and SLA 3D printing"]),
+            ("Robot hardware", ["Raspberry Pi", "Solenoid valves and vacuum pumps"]),
+        ])
+        self.assertNotIn("Prof.", " ".join(r.text for r in site.experience))  # Tianyu: no professors' names here
+        self.assertEqual(site.cv_status, "confirmed")  # Tianyu reviewed it, with the changes above
+        self.assertEqual(site.highlights, HIGHLIGHTS)
+        self.assertIn("email", site.links)  # the new keys sit above [links], so they do not land inside it
+        self.assertNotIn("role", site.links)
+
+    def test_every_paper_has_a_topic(self):
+        site = load_site(SITE)
+        papers, others = load_papers(PAPERS)
+        check_topics(site, papers, others)
+        found = {t.id: [] for t in site.topics}
+        for p in papers + others:
+            found[p.topic].append(p.slug)
+        self.assertEqual({k: sorted(v) for k, v in found.items()}, {k: sorted(v) for k, v in TOPIC_OF.items()})
+
+    def test_topic_errors_raise(self):
+        site = load_site(SITE)
+        papers, others = load_papers(PAPERS)
+        cases = {
+            "an unknown topic": (site, [replace(papers[0], topic="robots")] + papers[1:], others),
+            "a duplicate topic id": (replace(site, topics=site.topics + [Topic("metals", "Metals", "Metals")]), papers,
+                                     others),
+            "an unknown paper in the highlights": (replace(site, highlights=["no-such-paper"]), papers, others),
+            "a paper twice in the highlights": (replace(site, highlights=["active-fabrics", "active-fabrics"]), papers,
+                                                others),
+        }
+        for name, args in cases.items():
+            with self.subTest(name), self.assertRaises(ValueError):
+                check_topics(*args)
+
+    def test_cv_status_validated(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "site.toml"
+            path.write_text(SITE.read_text(encoding="utf-8").replace('cv_status = "draft"', 'cv_status = "maybe"')
+                            .replace('cv_status = "confirmed"', 'cv_status = "maybe"'), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                load_site(path)
+
     def test_site_url(self):
         # Link previews need absolute addresses; the site's own address has no trailing slash.
         self.assertEqual(load_site(SITE).url, "https://tianyuchen.com")
+
+    def test_visit_counter(self):
+        # Tianyu chose GoatCounter (2026-10-30): visits are counted only once its count address is set, and no other
+        # address is taken, so no other counter can slip in.
+        address = "https://cty9525785.goatcounter.com/count"  # Tianyu's GoatCounter site (2026-10-30)
+        self.assertEqual(load_site(SITE).goatcounter, address)
+        text = SITE.read_text(encoding="utf-8")
+        self.assertEqual(text.count(f'goatcounter = "{address}"'), 1)
+        for value, ok in (("", True), ("https://example.com/count", False), ("http://cty9525785.goatcounter.com/count", False)):
+            with self.subTest(value), tempfile.TemporaryDirectory() as d:
+                path = Path(d) / "site.toml"
+                path.write_text(text.replace(f'goatcounter = "{address}"', f'goatcounter = "{value}"'), encoding="utf-8")
+                if ok:
+                    self.assertEqual(load_site(path).goatcounter, value)
+                else:
+                    with self.assertRaises(ValueError):
+                        load_site(path)
 
     def test_bio_status(self):
         self.assertIn(load_site(SITE).bio_status, {"draft", "confirmed"})
@@ -259,8 +439,10 @@ class ValidationTest(unittest.TestCase):
 
     def test_others_load(self):
         _, others = load_text(MINIMAL + OTHER)
-        self.assertEqual([(o.slug, o.me, o.one_line, o.summary_status, o.thumb) for o in others],
-                         [("b", 2, "O.", "draft", "")])
+        self.assertEqual([(o.slug, o.me, o.one_line, o.summary_status, o.thumb, o.short_title) for o in others],
+                         [("b", 2, "O.", "draft", "", "")])
+        # A co-authored highlight's slide can carry a shorter title.
+        self.assertEqual(load_text(MINIMAL + OTHER + 'short_title = "S"\n')[1][0].short_title, "S")
 
     def test_other_tiles_load(self):
         # Tianyu: "for thumbnail, better to use video". A co-authored row can loop a clip of the paper's movies.
@@ -328,6 +510,30 @@ class ValidationTest(unittest.TestCase):
             with self.subTest(name):
                 with self.assertRaises(ValueError):
                     load_text(text)
+
+    def test_hosted_pdfs(self):
+        papers, others = load_papers(PAPERS)
+        hosted = {p.slug: (p.pdf, p.supplement_pdf, p.license) for p in [*papers, *others] if p.pdf}
+        self.assertEqual(hosted, HOSTED)
+        for pdf, supplement, _ in hosted.values():
+            for path in filter(None, (pdf, supplement)):
+                self.assertTrue((ROOT / path).is_file(), path)
+
+    def test_hosted_pdf_needs_an_open_license(self):
+        # Only open-access papers may be hosted; the publishers keep the rights to the others.
+        pdf = 'pdf = "files/papers/b.pdf"\n'
+        _, others = load_text(MINIMAL + OTHER + pdf + 'license = "CC BY 4.0"\n')
+        self.assertEqual((others[0].pdf, others[0].supplement_pdf, others[0].license), ("files/papers/b.pdf", "", "CC BY 4.0"))
+        cases = {
+            "no license": MINIMAL + OTHER + pdf,
+            "a publisher's copyright": MINIMAL + OTHER + pdf + 'license = "Copyright Elsevier"\n',
+            "outside files/papers": MINIMAL + OTHER + 'pdf = "media/b.pdf"\nlicense = "CC BY 4.0"\n',
+            "a supplement alone": MINIMAL + OTHER + 'supplement_pdf = "files/papers/b-s.pdf"\nlicense = "CC BY 4.0"\n',
+            "a first-author paper without one": MINIMAL.replace('one_line = "O"', 'one_line = "O"\npdf = "files/papers/a.pdf"'),
+        }
+        for name, text in cases.items():
+            with self.subTest(name), self.assertRaises(ValueError):
+                load_text(text)
 
     def test_link_mode_allows_missing_movies(self):
         text = MINIMAL.replace('media_mode = "embed"', 'media_mode = "link"').replace(

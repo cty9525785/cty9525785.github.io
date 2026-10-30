@@ -1,11 +1,36 @@
 # Site owner details. Every "TODO:" value is a placeholder Tianyu supplies before publishing.
 name = "Tianyu Chen"
 url = "https://tianyuchen.com"  # the site's own address, for link previews
-tagline = "I design and build robots, guided by finite element simulation."
-# Drafted from Tianyu’s academic CV and confirmed by Tianyu. [label](https://...) makes a link.
-bio = "I’m a research associate at the Bristol Robotics Laboratory, University of Bristol, in the [VIVO Hub for Enhanced Independent Living](https://www.thevivohub.com/), where I research electrostatic actuators as a lightweight replacement for the bulky motors and pneumatic systems in exosuits. Previously, I did my PhD at Nanyang Technological University in Prof. Yifan Wang’s [Robotic Materials Group](https://www.yifanwangntu.com/), where I developed a scale-inspired layered structure whose inversely designed surface patterns let it morph into a target shape and change its stiffness at the same time, and built an amphibious robot and a drone landing gear from it. Before that, I used finite element models to study how thin films and nanostructured metals deform."
+# GoatCounter's count address, https://CODE.goatcounter.com/count (Tianyu chose GoatCounter and made the site
+# cty9525785, 2026-10-30); while empty, nothing is counted.
+goatcounter = "https://cty9525785.goatcounter.com/count"
+tagline = "I design robotic structures, from simulation to working hardware."
+# Drafted from Tianyu’s academic CV and confirmed by Tianyu; split into two paragraphs and reworded with Tianyu
+# (2026-10-30). [label](https://...) makes a link, and a blank line starts a new paragraph.
+bio = """
+At the Bristol Robotics Laboratory, University of Bristol, I work in the [VIVO Hub for Enhanced Independent Living](https://www.thevivohub.com/) on electrostatic actuators, a lightweight replacement for the bulky motors and pneumatic systems in exosuits.
+
+Previously, I did my PhD at Nanyang Technological University in Prof. Yifan Wang’s [Robotic Materials Group](https://www.yifanwangntu.com/), where I developed a scale-inspired layered structure whose inversely designed surface patterns let it morph into a target shape and change its stiffness at the same time. From it, I built an amphibious robot and a drone landing gear. Before that, I used finite element models to study how thin films and nanostructured metals deform."""
 bio_status = "confirmed"
 photo = "assets/img/photo.jpg"
+role = "Research Associate, Bristol Robotics Laboratory"
+# Experience, education and skills below: drafted from Tianyu's general academic CV; reviewed and confirmed by
+# Tianyu (2026-10-30), with their changes.
+cv_status = "confirmed"
+# The research highlights slideshow under the intro, one slide per paper in this order (Tianyu, 2026-10-30: like
+# hyunwooyuk.com's "camera roll", with key co-authored papers added; a co-authored slide says so).
+highlights = [
+  "scale-inspired-robotic-structures",
+  "stiffness-driven-control",
+  "programmable-morphing-structure",
+  "shear-banding-gradient-metals",
+  "amorphous-thin-films",
+  "graded-substrate-thin-films",
+  "suture-interlocking-metamaterials",
+  "muscle-impedance-sensors",
+  "active-fabrics",
+  "hierarchical-tessellation",
+]
 
 # Rendered in this order on the home page.
 [links]
@@ -13,3 +38,70 @@ email = "tianyu.chen@bristol.ac.uk"
 cv = "files/Tianyu-Chen-CV.pdf"  # the general academic CV without phone or postcode
 scholar = "https://scholar.google.com/citations?user=GbAZVFoAAAAJ"
 linkedin = "https://www.linkedin.com/in/tianyu-chen-0570b3134/"
+
+# Research topics, in the order the home page lists them. Each paper in papers.toml names one.
+[[topic]]
+id = "morphing"
+label = "Morphing structures"
+heading = "Morphing structures with tunable stiffness"
+
+[[topic]]
+id = "control"
+label = "Control and sensing"
+heading = "Robot control, sensing and wearables"
+
+[[topic]]
+id = "metals"
+label = "Gradient metals and thin films"
+heading = "Mechanics of gradient nanograined metals and thin films"
+
+[[experience]]
+years = "2025–now"
+role = "Research Associate"
+org = "Bristol Robotics Laboratory, University of Bristol"
+text = "Electrostatic actuators as a lightweight replacement for the motors and pneumatics in exosuits, in the VIVO Hub."
+
+[[experience]]
+years = "2021–2025"
+role = "PhD researcher"
+org = "Nanyang Technological University"
+text = "Robotic structures with shape morphing and variable stiffness."
+
+[[experience]]
+years = "2020–2021"
+role = "Research Assistant"
+org = "Central South University"
+text = "Finite element modeling of friction in gradient and bimodal nanostructured metals."
+
+[[experience]]
+years = "2017–2020"
+role = "Graduate researcher"
+org = "Northwestern Polytechnical University"
+text = "Finite element modeling of enhanced ductility of thin films on metal substrates."
+
+[[education]]
+year = "2025"
+degree = "PhD, Mechanical Engineering"
+school = "Nanyang Technological University"
+
+[[education]]
+year = "2020"
+degree = "M.E., Solid Mechanics"
+school = "Northwestern Polytechnical University"
+
+[[education]]
+year = "2017"
+degree = "B.E., Engineering Mechanics"
+school = "Northwestern Polytechnical University"
+
+[[skills]]
+name = "Simulation"
+items = ["Abaqus", "Python", "MATLAB"]
+
+[[skills]]
+name = "Design and fabrication"
+items = ["SolidWorks", "Rhino", "FDM and SLA 3D printing"]
+
+[[skills]]
+name = "Robot hardware"
+items = ["Raspberry Pi", "Solenoid valves and vacuum pumps"]

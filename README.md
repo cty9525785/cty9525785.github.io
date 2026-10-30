@@ -1,6 +1,6 @@
 # Tianyu Chen's website
 
-Source for a personal academic website: a home page that lists the papers, and a page with its movies for each paper written as first or co-first author.
+Source for a personal academic website: a home page with the research highlights and news, a Publications page that lists the papers by topic, an Experience page, and a page with its movies for each paper written as first or co-first author.
 
 ## Build
 
@@ -22,7 +22,8 @@ Run the tests with (numpy and Pillow are needed; FFMPEG lets the tile timing tes
 
 ## Credits
 
-- Home page layout adapted from Jon Barron's website: https://github.com/jonbarron/jonbarron.github.io
-- Paper pages adapted from the Academic Project Page Template, licensed under CC BY-SA 4.0: https://github.com/eliahuhorwitz/Academic-project-page-template
-- Lato font by Lukasz Dziedzic (tyPoland), from Google Fonts, licensed under the SIL Open Font License 1.1: `assets/fonts/lato/OFL.txt`
+- Paper pages: an article layout adapted from Jon Barron's website: https://jonbarron.info/
+- Inter font by The Inter Project Authors, licensed under the SIL Open Font License 1.1: `assets/fonts/inter/OFL.txt`
+- Source Serif 4 font by The Source Serif 4 Project Authors, licensed under the SIL Open Font License 1.1: `assets/fonts/source-serif-4/OFL.txt`
 - Movies and figures are from the papers credited under each one.
+- `assets/js/count.js`: GoatCounter's counting script, released under the ISC license, copied unchanged from https://gc.zgo.at/count.js. It runs only when `goatcounter` in `content/site.toml` holds the site's count address.

@@ -117,6 +117,12 @@ class TileSpeedTest(unittest.TestCase):
                          {0: 1.0})
         # A wide shot padded to a square on its own background color: padding cannot change speed.
         self.assertEqual(graph_speeds("[0:v]crop=16:9:0:0,pad=16:16:0:3:black,setpts=(PTS-STARTPTS)/5[out]"), {0: 5.0})
+        # Holding a piece's last frame and joining pieces end to end add time but cannot change the footage's speed.
+        self.assertEqual(graph_speeds("[0:v]setpts=(PTS-STARTPTS)/5,tpad=stop_mode=clone:stop_duration=0.8[a];"
+                                      "[1:v]setpts=(PTS-STARTPTS)/5[b];[a][b]concat=n=2:v=1:a=0[out]"), {0: 5.0, 1: 5.0})
+        # A black point set so a scene's background matches its padding: a color change cannot change speed.
+        self.assertEqual(graph_speeds("[0:v]colorlevels=rimin=0.08:gimin=0.08:bimin=0.08,setpts=(PTS-STARTPTS)/5[out]"),
+                         {0: 5.0})
         bad = {
             "other setpts form": "[0:v]setpts=0.5*PTS[out]",
             "two setpts": "[0:v]setpts=(PTS-STARTPTS)/2,setpts=(PTS-STARTPTS)/2[out]",
@@ -183,6 +189,79 @@ class MediaOutputTest(unittest.TestCase):
         self.assertAlmostEqual(sails.duration, 172.8, delta=0.2)
         self.assertEqual((sails.width, sails.height, sails.has_audio), (1920, 1080, False))
 
+    def test_loops_end_without_a_cut(self):
+        # Tianyu saw a frame of a title card at the end of the Science Robotics loop: a clip ran into its movie's next
+        # scene. A fade only dims the picture, so consecutive frames stay correlated; a cut to new content does not.
+        if FFMPEG is None:
+            self.skipTest("ffmpeg not found; set FFMPEG")
+        import numpy as np
+        n = 64
+        for loop in sorted(MEDIA.glob("*/loop.mp4")):
+            raw = subprocess.run([FFMPEG, "-v", "error", "-sseof", "-0.6", "-i", str(loop), "-vf",
+                                  f"scale={n}:{n},format=gray", "-f", "rawvideo", "-"],
+                                 capture_output=True, check=True).stdout
+            frames = np.frombuffer(raw, np.uint8).reshape(-1, n, n).astype(float)
+            for band in range(4):  # a tile may stack several clips, so each horizontal band is checked alone
+                rows = frames[:, band * n // 4:(band + 1) * n // 4].reshape(len(frames), -1)
+                for i, (a, b) in enumerate(zip(rows[:-1], rows[1:])):
+                    if a.std() >= 4 and b.std() >= 4:  # skip the near-black end of a fade
+                        with self.subTest(loop.parent.name, band=band, frame=i):
+                            self.assertGreater(np.corrcoef(a, b)[0, 1], 0.5)
+
+    def test_gripper_holds_each_lifted_object(self):
+        # Tianyu: "can you let the object after being lifted wait a bit long? now it's too fast to move to the next
+        # object". Each grasped object is held, lifted, for a moment: a still stretch of at least 0.6 s.
+        if FFMPEG is None:
+            self.skipTest("ffmpeg not found; set FFMPEG")
+        import numpy as np
+        raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(MEDIA / "stiffness-driven-control" / "loop.mp4"),
+                              "-vf", "scale=96:96,format=gray", "-f", "rawvideo", "-"], capture_output=True, check=True).stdout
+        frames = np.frombuffer(raw, np.uint8).reshape(-1, 96, 96).astype(float)
+        still = np.abs(np.diff(frames, axis=0)).mean(axis=(1, 2)) < 0.4
+        runs, length = [], 0
+        for s in list(still) + [False]:
+            if s:
+                length += 1
+            elif length:
+                runs.append(length)
+                length = 0
+        self.assertGreaterEqual(sum(1 for r in runs if r >= 18), 7)  # all seven objects
+
+    def test_gripper_lifts_every_object(self):
+        # Tianyu: "in the gripper loop why the bear only got touched and not lifted". Movie S2 lifts the bear from
+        # 87.65 s; its last frame is 88.22 s, then the apple's scene starts at 88.24 s. Every piece ends on its
+        # lifted frame and holds it.
+        paper = next(p for p in self.papers if p.slug == "stiffness-driven-control")
+        bear = paper.tile.inputs[2]
+        self.assertAlmostEqual(bear.start + bear.duration, 88.23, places=2)
+        graph = (ROOT / "tools" / "tiles" / "stiffness-driven-control.graph").read_text(encoding="utf-8")
+        chains = graph.strip().split(";")[:-1]
+        self.assertEqual(len(chains), 7)
+        for i, chain in enumerate(chains):
+            self.assertIn("tpad=stop_mode=clone:stop_duration=0.8", chain, i)
+
+    def test_gripper_sits_in_black(self):
+        # Tianyu: the gripper was "still zoomed too much, it would be better to have more black surrounding".
+        # Bright pixels (the gripper and what it holds) stay clear of the sides and the bottom; the rod may reach
+        # the top edge. The movie's white object labels under the gripper start at 0.737 of the height.
+        if FFMPEG is None:
+            self.skipTest("ffmpeg not found; set FFMPEG")
+        import numpy as np
+        n = 240
+        raw = subprocess.run([FFMPEG, "-v", "error", "-i", str(MEDIA / "stiffness-driven-control" / "loop.mp4"),
+                              "-vf", f"scale={n}:{n},format=rgb24", "-f", "rawvideo", "-"],  # every frame
+                             capture_output=True, check=True).stdout
+        frames = np.frombuffer(raw, np.uint8).reshape(-1, n, n, 3)
+        ys, xs = np.nonzero((frames.max(axis=3) > 110).any(axis=0))
+        self.assertGreaterEqual(xs.min() / n, 0.15)
+        self.assertLessEqual(xs.max() / n, 0.85)
+        self.assertLessEqual(ys.max() / n, 0.735)
+        # The square runs past the movie's bottom edge (0.83 of the height) into padding: no visible step there.
+        gray = frames.astype(float).mean(axis=3)
+        above = gray[:, int(0.79 * n):int(0.82 * n), :int(0.2 * n)].mean(axis=(1, 2))
+        below = gray[:, int(0.86 * n):int(0.98 * n), :int(0.2 * n)].mean(axis=(1, 2))
+        self.assertLessEqual(float(np.abs(above - below).max()), 4)
+
     def test_loops(self):
         _, others = load_papers(ROOT / "content" / "papers.toml")
         for paper in self.papers + others:
@@ -194,7 +273,7 @@ class MediaOutputTest(unittest.TestCase):
                 self.assertFalse(info.has_audio)
                 self.assertEqual((info.width, info.height), (480, 480))  # fills the square home page tile
                 self.assertGreaterEqual(info.duration, 4.0)
-                self.assertLessEqual(info.duration, 12.0)  # the Science Robotics tile runs 11.4 s
+                self.assertLessEqual(info.duration, 13.0)  # the gripper's, with seven objects each held, runs 12.3 s
                 self.assertLessEqual(path.stat().st_size, 2_500_000)
                 self.assertTrue((MEDIA / paper.slug / "loop-poster.jpg").stat().st_size > 0)
 

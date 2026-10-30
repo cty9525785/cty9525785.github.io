@@ -27,8 +27,8 @@ QUIET = ["-hide_banner", "-loglevel", "error"]
 GRAPHS = ROOT / "tools" / "tiles"
 # The filters a tile graph may use. Of these only setpts changes speed, and only in the one form
 # graph_speeds reads, so a tile's label cannot drift from what it plays.
-TILE_FILTERS = {"crop", "pad", "scale", "fps", "format", "settb", "setpts", "drawbox", "color", "vstack", "hstack",
-                "xfade", "fade"}
+TILE_FILTERS = {"crop", "pad", "scale", "fps", "format", "settb", "setpts", "drawbox", "color", "colorlevels", "vstack",
+                "hstack", "xfade", "fade", "tpad", "concat"}
 SETPTS = re.compile(r"setpts=\(PTS-STARTPTS\)/(\d+(?:\.\d+)?)")
 LABEL = re.compile(r"\[[^\]]*\]")
 INPUT = re.compile(r"\[(\d+):v\]")

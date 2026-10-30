@@ -4,7 +4,8 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from tools.check_publish import content_problems, file_problems, pdf_problems, public_allowances
+from tools.check_publish import (content_problems, file_problems, hosted_pdfs, paper_pdf_problems, pdf_problems,
+                                 public_allowances)
 from tools.content import load_papers, load_site
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +17,18 @@ def clean_pdf() -> bytes:
     doc.new_page().insert_text((72, 72), "Curriculum vitae")
     doc.set_metadata({"title": "CV", "author": "Someone"})
     return doc.tobytes()
+
+
+def paper_pdf(text: str, **metadata) -> bytes:
+    import fitz  # PyMuPDF
+    doc = fitz.open()
+    doc.new_page().insert_text((72, 72), text)
+    doc.set_metadata({"title": "A paper", "author": "A. Author", **metadata})
+    return doc.tobytes()
+
+
+STAMP = ("Downloaded from https://publisher.example/doi/10.1/x by A UNIVERSITY, Online Library on [28/10/2026]. "
+         "See the Terms and Conditions")
 
 
 def git_repo_with(files: dict[str, bytes]) -> tempfile.TemporaryDirectory:
@@ -34,6 +47,12 @@ class ContentProblemsTest(unittest.TestCase):
     def setUpClass(cls):
         cls.site = load_site(ROOT / "content" / "site.toml")
         cls.papers, cls.others = load_papers(ROOT / "content" / "papers.toml")
+
+    def test_cv_draft_is_flagged(self):
+        # The experience, education and skills text stays a draft until Tianyu confirms it on the built page.
+        self.assertIn("site.cv: draft", content_problems(replace(self.site, cv_status="draft"), self.papers, self.others))
+        self.assertNotIn("site.cv: draft",
+                         content_problems(replace(self.site, cv_status="confirmed"), self.papers, self.others))
 
     def test_reports_placeholders_and_drafts(self):
         site = replace(self.site, bio="TODO: bio", links={**self.site.links, "email": "TODO: address"})
@@ -68,7 +87,7 @@ class ContentProblemsTest(unittest.TestCase):
         self.assertEqual(emails, {"yifan.wang@ntu.edu.sg", "mejjli@csu.edu.cn"})
 
     def test_clean_when_filled(self):
-        site = replace(self.site, bio="Bio.", bio_status="confirmed", photo="assets/img/photo.jpg",
+        site = replace(self.site, bio="Bio.", bio_status="confirmed", cv_status="confirmed", photo="assets/img/photo.jpg",
                        links={k: "https://example.invalid/" for k in self.site.links})
         papers = [replace(p, summary_status="confirmed")
                   for p in self.papers]
@@ -98,12 +117,47 @@ class PublishedPdfTest(unittest.TestCase):
             self.assertEqual(pdf_problems(path), ["phone number", "postcode", "metadata beyond title and author"])
 
 
+class HostedPaperPdfTest(unittest.TestCase):
+    def test_hosted_papers_are_clean(self):
+        papers, others = load_papers(ROOT / "content" / "papers.toml")
+        self.assertEqual(len(hosted_pdfs(papers, others)), 13)  # seven papers, six supplements
+        for path in sorted(hosted_pdfs(papers, others)):
+            self.assertEqual(paper_pdf_problems(ROOT / path), [], path)
+
+    def test_catches_download_stamps_and_metadata(self):
+        # What a download adds: the stamp naming who downloaded the PDF and when, and the reader's metadata.
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "paper.pdf"
+            path.write_bytes(paper_pdf(f"Results.\n{STAMP}", creator="a user account"))
+            self.assertEqual(paper_pdf_problems(path), ["download stamp", "metadata beyond title and author"])
+            path.write_bytes(paper_pdf("Results."))
+            self.assertEqual(paper_pdf_problems(path), [])
+
+    def test_papers_keep_what_they_print(self):
+        # A paper prints its authors' institutions and the corresponding author's contact as published; the CV may not.
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "paper.pdf"
+            path.write_bytes(paper_pdf("Lab, Bristol BS16 1QY, UK (+44)7900000000 " + "someone" + "@" + "university.example"))
+            self.assertEqual(paper_pdf_problems(path), [])
+            self.assertEqual(pdf_problems(path), ["phone number", "postcode"])
+
+
 class FileProblemsTest(unittest.TestCase):
     def test_current_repo_is_clean(self):
-        # As main() runs it: the email and CV the owner chose to publish are allowed, nothing else.
-        papers, _ = load_papers(ROOT / "content" / "papers.toml")
+        # As main() runs it: the email, CV and open-access papers the owner chose to publish are allowed, nothing else.
+        papers, others = load_papers(ROOT / "content" / "papers.toml")
         emails, files = public_allowances(load_site(ROOT / "content" / "site.toml"), papers)
-        self.assertEqual(file_problems(ROOT, allow_emails=emails, allow_files=files), [])
+        self.assertEqual(file_problems(ROOT, allow_emails=emails, allow_files=files,
+                                       paper_pdfs=hosted_pdfs(papers, others)), [])
+
+    def test_hosted_papers_pass_their_own_check(self):
+        tmp = git_repo_with({"files/papers/a.pdf": paper_pdf("Lab, Bristol BS16 1QY"),
+                             "files/papers/b.pdf": paper_pdf(STAMP), "files/other.pdf": paper_pdf("Results.")})
+        with tmp:
+            problems = file_problems(Path(tmp.name), paper_pdfs={"files/papers/a.pdf", "files/papers/b.pdf"})
+        self.assertFalse(any(p.startswith("files/papers/a.pdf") for p in problems), problems)
+        self.assertIn("files/papers/b.pdf: download stamp", problems)
+        self.assertIn("files/other.pdf: private file type", problems)
 
     def test_catches_private_files_and_trackers(self):
         tmp = git_repo_with({

@@ -1,4 +1,5 @@
 """Content model: load the site and paper TOML files, validate them, and derive what the pages need."""
+import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -9,6 +10,10 @@ MEDIA_MODES = {"embed", "link"}
 PROCESSES = {"copy", "remux", "reencode1080", "silent1080", "none"}
 SUMMARY_STATUSES = {"draft", "confirmed"}
 TILE_KINDS = {"clip", "drawing"}
+# The licenses under which the site may host a paper's PDF, each with its deed; the publishers keep the other papers.
+LICENSES = {"CC BY 4.0": "https://creativecommons.org/licenses/by/4.0/",
+            "CC BY-NC 4.0": "https://creativecommons.org/licenses/by-nc/4.0/"}
+HOSTED_FOLDER = "files/papers/"
 
 
 @dataclass
@@ -84,6 +89,10 @@ class Paper:
     bibtex: str
     movies: list[Movie]
     figure: Figure | None = None  # tools/figures.py cuts Figure 1 for a paper that has no tile
+    topic: str = ""  # one of the site's topic ids
+    pdf: str = ""  # an open-access paper's PDF, hosted under files/papers/
+    supplement_pdf: str = ""  # its supplementary materials, hosted beside it
+    license: str = ""  # the license the paper prints, one of LICENSES; required to host it
 
 
 @dataclass
@@ -101,6 +110,59 @@ class OtherPub:
     equal_contribution: list[str] = field(default_factory=list)  # as the paper's note names them
     tile: Tile | None = None  # a clip of the paper's movies, played instead of its figure
     movies: list[SourceMovie] = field(default_factory=list)  # what the tile is cut from
+    topic: str = ""  # one of the site's topic ids
+    pdf: str = ""  # as for Paper
+    supplement_pdf: str = ""
+    license: str = ""
+    short_title: str = ""  # its slide's title, when it is one of the site's highlights
+
+
+@dataclass
+class Platform:
+    outlet: str
+    url: str
+
+
+@dataclass
+class NewsItem:
+    """A story about one or more of the papers, as its source titled it."""
+    date: str  # YYYY-MM-DD
+    outlet: str
+    headline: str
+    url: str
+    papers: list[str]  # slugs, in the order the story features them
+    lang: str = ""  # the headline's language when it is not English, such as "zh"
+    translation: str = ""  # the headline in English, required with lang
+    also: list[Platform] = field(default_factory=list)  # other sites that republished the same story
+
+
+@dataclass
+class Topic:
+    """A research topic: the home page groups the publications by it and filters them with its label."""
+    id: str
+    label: str
+    heading: str
+
+
+@dataclass
+class Role:
+    years: str
+    role: str
+    org: str
+    text: str
+
+
+@dataclass
+class Degree:
+    year: str
+    degree: str
+    school: str
+
+
+@dataclass
+class SkillGroup:
+    name: str
+    items: list[str]
 
 
 @dataclass
@@ -112,6 +174,14 @@ class Site:
     links: dict[str, str]
     bio_status: str = "draft"  # a drafted bio stays a draft until Tianyu confirms it
     url: str = ""  # the site's own address, for link previews; no trailing slash
+    role: str = ""  # the current position, beside the name
+    topics: list[Topic] = field(default_factory=list)
+    experience: list[Role] = field(default_factory=list)
+    education: list[Degree] = field(default_factory=list)
+    skills: list[SkillGroup] = field(default_factory=list)
+    cv_status: str = "draft"  # experience, education and skills stay a draft until Tianyu confirms them
+    highlights: list[str] = field(default_factory=list)  # the slideshow's papers by slug, in order
+    goatcounter: str = ""  # GoatCounter's count address, https://CODE.goatcounter.com/count; empty: no counting
 
 
 def _read(path: Path) -> dict:
@@ -125,11 +195,20 @@ def _check(ok: bool, message: str) -> None:
 
 def load_site(path: Path) -> Site:
     data = _read(path)
-    site = Site(data["name"], data["tagline"], data["bio"], data["photo"], dict(data["links"]),
-                data.get("bio_status", "draft"), data.get("url", ""))
+    try:
+        site = Site(data["name"], data["tagline"], data["bio"], data["photo"], dict(data["links"]),
+                    data.get("bio_status", "draft"), data.get("url", ""), data.get("role", ""),
+                    [Topic(**t) for t in data.get("topic", [])], [Role(**r) for r in data.get("experience", [])],
+                    [Degree(**d) for d in data.get("education", [])], [SkillGroup(**g) for g in data.get("skills", [])],
+                    data.get("cv_status", "draft"), list(data.get("highlights", [])), data.get("goatcounter", ""))
+    except TypeError as err:
+        raise ValueError(f"site: {err}") from err
     _check(site.bio_status in SUMMARY_STATUSES, f"site: unknown bio_status {site.bio_status!r}")
+    _check(site.cv_status in SUMMARY_STATUSES, f"site: unknown cv_status {site.cv_status!r}")
     _check(not site.url or (site.url.startswith("https://") and not site.url.endswith("/")),
            f"site: url {site.url!r} must start with https:// and have no trailing slash")
+    _check(not site.goatcounter or re.fullmatch(r"https://[a-z0-9-]+\.goatcounter\.com/count", site.goatcounter),
+           f"site: goatcounter {site.goatcounter!r} must be https://CODE.goatcounter.com/count")
     return site
 
 
@@ -150,6 +229,16 @@ def _check_tile(slug: str, tile: Tile, movie_ids: set[str]) -> None:
     ats = [s.at for s in tile.segments]
     _check(bool(ats) and ats[0] == 0 and ats == sorted(set(ats)), f"{slug}: tile segments must start at 0, in order")
     _check(all(s.speed > 0 for s in tile.segments), f"{slug}: tile speeds must be positive")
+
+
+def _check_hosted(pub: Paper | OtherPub) -> None:
+    if not (pub.pdf or pub.supplement_pdf):
+        return
+    _check(pub.license in LICENSES, f"{pub.slug}: a hosted PDF needs an open license, one of {sorted(LICENSES)}")
+    _check(bool(pub.pdf), f"{pub.slug}: a supplement is hosted only beside its paper")
+    for path in filter(None, (pub.pdf, pub.supplement_pdf)):
+        _check(path.startswith(HOSTED_FOLDER) and path.endswith(".pdf"),
+               f"{pub.slug}: {path!r} must be a PDF in {HOSTED_FOLDER}")
 
 
 def _paper(raw: dict) -> Paper:
@@ -179,6 +268,7 @@ def _paper(raw: dict) -> Paper:
                f"{slug} {m.id}: an embedded paper needs a source for every movie")
     if tile is not None:
         _check_tile(slug, tile, {m.id for m in movies})
+    _check_hosted(paper)
     return paper
 
 
@@ -203,6 +293,7 @@ def load_papers(path: Path) -> tuple[list[Paper], list[OtherPub]]:
         _check(o.summary_status in SUMMARY_STATUSES, f"{o.slug}: unknown summary_status {o.summary_status!r}")
         if o.tile is not None:
             _check_tile(o.slug, o.tile, {m.id for m in o.movies})
+        _check_hosted(o)
     slugs += [o.slug for o in others]
     dupes = sorted({s for s in slugs if slugs.count(s) > 1})
     _check(not dupes, f"duplicate slugs: {dupes}")
@@ -217,6 +308,44 @@ def movie_file(movie: Movie) -> str:
 def poster_file(movie: Movie) -> str:
     """File name of a movie's poster frame inside media/<slug>/."""
     return f"poster-{movie.id.lower()}.jpg"
+
+
+def check_topics(site: Site, papers: list[Paper], others: list[OtherPub]) -> None:
+    """Every paper sits under one of the site's topics, and each highlight is one of the papers, once."""
+    ids = [t.id for t in site.topics]
+    _check(len(ids) == len(set(ids)), f"site: duplicate topic ids {ids}")
+    for p in [*papers, *others]:
+        _check(p.topic in ids, f"{p.slug}: topic {p.topic!r} is not one of {ids}")
+    slugs = {p.slug for p in [*papers, *others]}
+    for slug in site.highlights:
+        _check(slug in slugs, f"site: highlight {slug!r} is not one of the papers")
+    _check(len(site.highlights) == len(set(site.highlights)), "site: a paper appears twice in the highlights")
+
+
+def load_news(path: Path) -> list[NewsItem]:
+    """The press coverage in content/news.toml, as listed there."""
+    items = []
+    for raw in _read(path).get("news", []):
+        try:
+            item = NewsItem(**{**raw, "also": [Platform(**p) for p in raw.get("also", [])]})
+        except TypeError as err:
+            raise ValueError(f"news {raw.get('headline', '?')!r}: {err}") from err
+        name = f"news {item.headline!r}"
+        _check(re.fullmatch(r"\d{4}-\d{2}-\d{2}", item.date) is not None, f"{name}: date must be YYYY-MM-DD")
+        _check(all(u.startswith("https://") for u in [item.url, *(p.url for p in item.also)]),
+               f"{name}: the links must be https")
+        _check(bool(item.papers), f"{name}: name the paper it covers")
+        _check(bool(item.translation) == bool(item.lang), f"{name}: a headline not in English needs its translation")
+        items.append(item)
+    return items
+
+
+def check_news(items: list[NewsItem], papers: list[Paper], others: list[OtherPub]) -> None:
+    """Every story covers papers the site lists."""
+    slugs = {p.slug for p in [*papers, *others]}
+    for item in items:
+        for slug in item.papers:
+            _check(slug in slugs, f"news {item.headline!r}: {slug!r} is not one of the papers")
 
 
 def home_order(papers: list[Paper]) -> list[Paper]:

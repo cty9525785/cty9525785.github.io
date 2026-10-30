@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.className += " js";</script>
   <title>$name</title>
   <meta name="author" content="$name">
   <meta name="description" content="$tagline_text">
@@ -15,39 +16,19 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="$name: $tagline_text">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preload" href="assets/fonts/lato/lato-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/lato/lato-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/lato/lato-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/inter/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/home.css">
 </head>
 <body>
-  <main class="page">
-    <table class="header"><tbody>
-      <tr>
-        <td class="intro">
-          <p class="name">$name</p>
-          <p class="tagline">$tagline</p>
-          <p>$bio</p>
-          <p class="links">$links</p>
-        </td>
-        <td class="photo"><img src="$photo" alt="Photo of $name"></td>
-      </tr>
-    </tbody></table>
-
-    <h2>Research</h2>
-    <table class="papers" id="research"><tbody>
-$rows
-    </tbody></table>
-
-    <h2>Other publications</h2>
-    <table class="papers" id="other-publications"><tbody>
-$others
-    </tbody></table>
-
-    <p class="footer">
-      Website design adapted from <a href="https://github.com/jonbarron/jonbarron.github.io">Jon Barron's website</a>.
-      Movies and figures are from, or adapted from, the papers credited on each paper's page or linked from each row.
-    </p>
-  </main>
+$nav
+<main>
+$hero
+$highlights
+$news
+</main>
+$footer
+<script src="assets/js/home.js" defer></script>
+$counter
 </body>
 </html>

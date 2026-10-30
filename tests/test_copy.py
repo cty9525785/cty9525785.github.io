@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from tools.build import read_body
-from tools.content import PLACEHOLDER, load_papers
+from tools.content import PLACEHOLDER, load_papers, load_site
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,6 +33,16 @@ class CopyTest(unittest.TestCase):
             yield f"{p.slug}.one_line", p.one_line
             for m in p.movies:
                 yield f"{p.slug}.{m.id}", m.caption
+        site = load_site(ROOT / "content" / "site.toml")
+        yield "site.role", site.role
+        for t in site.topics:
+            yield f"site.topic.{t.id}", f"{t.label}. {t.heading}"
+        for r in site.experience:
+            yield f"site.experience.{r.years}", f"{r.role}. {r.org}. {r.text}"
+        for d in site.education:
+            yield f"site.education.{d.year}", f"{d.degree}. {d.school}"
+        for g in site.skills:
+            yield f"site.skills.{g.name}", f"{g.name}: {', '.join(g.items)}"
         for o in self.others:
             yield f"{o.slug}.one_line", o.one_line
 

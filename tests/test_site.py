@@ -26,13 +26,15 @@ def tracked_files() -> list[Path]:
 
 
 def pages() -> list[Path]:
-    return [ROOT / "index.html", *sorted((ROOT / "papers").glob("*/index.html"))]
+    return [ROOT / "index.html", ROOT / "publications.html", ROOT / "experience.html",
+            *sorted((ROOT / "papers").glob("*/index.html"))]
 
 
 class SiteTest(unittest.TestCase):
     def test_all_local_links_open_from_disk(self):
         # A page opened from disk gets no index.html for a folder link (only a web
-        # server adds it), so every local link must name an existing file.
+        # server adds it), so every local link must name an existing file; a link
+        # into another page's section must find that section there.
         for page in pages():
             html = page.read_text(encoding="utf-8")
             refs = [t.get(attr) for name, attr in (("a", "href"), ("link", "href"), ("img", "src"),
@@ -41,8 +43,11 @@ class SiteTest(unittest.TestCase):
             for ref in refs:
                 if not ref or ref.startswith(("http:", "https:", "mailto:", "#", "data:")):
                     continue
-                target = (page.parent / ref).resolve()
+                path, _, anchor = ref.partition("#")
+                target = (page.parent / path).resolve()
                 self.assertTrue(target.is_file(), f"{page.relative_to(ROOT)}: {ref}")
+                if anchor:
+                    self.assertIn(f'id="{anchor}"', target.read_text(encoding="utf-8"), f"{page.relative_to(ROOT)}: {ref}")
 
     def test_every_media_file_is_used(self):
         # Whatever git tracks under media/ gets published, so a file no page uses is dead weight.

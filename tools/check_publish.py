@@ -33,28 +33,52 @@ EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 LICENSE_NAMES = {"OFL.txt"}
 PHONE = re.compile(r"\+\s*\(?\s*\d{1,3}\s*\)?\s*\d[\d\s-]{6,}")
 UK_POSTCODE = re.compile(r"\b[A-Z]{1,2}\d[A-Z\d]?\s+\d[A-Z]{2}\b")
+# What Wiley and Science print in the margin of a downloaded PDF:
+# "Downloaded from https://... by <institution>" or "... on <date>".
+DOWNLOAD_STAMP = re.compile(r"Downloaded\s+from\s+https?://\S+\s+(?:by|on)\s")
 
 
-def pdf_problems(path: Path) -> list[str]:
-    """What a PDF the owner chose to publish (the CV) must not carry: a phone number, a postcode, or metadata
-    beyond its title and author, where an account name or a folder path could hide."""
+def _read_pdf(path: Path) -> tuple[str, bool] | None:
+    """A PDF's text, and whether its metadata goes beyond title and author, where an account name or a folder path
+    could hide; None when it does not open."""
     import fitz  # PyMuPDF, needed only when a PDF is published
 
     try:  # read from memory, so a file that fails to open is not left locked
         with fitz.open(stream=Path(path).read_bytes(), filetype="pdf") as doc:
             text = " ".join(page.get_text() for page in doc)
             extra = {k: v for k, v in doc.metadata.items() if v and k not in ("format", "title", "author")}
-            xmp = doc.get_xml_metadata()
+            return text, bool(extra or doc.get_xml_metadata())
     except (fitz.FileDataError, RuntimeError):
+        return None
+
+
+def pdf_problems(path: Path) -> list[str]:
+    """What a PDF the owner chose to publish (the CV) must not carry: a phone number, a postcode, or metadata
+    beyond its title and author."""
+    read = _read_pdf(path)
+    if read is None:
         return ["not a readable PDF"]
+    text, extra = read
     problems = []
     if PHONE.search(text):
         problems.append("phone number")
     if UK_POSTCODE.search(text):
         problems.append("postcode")
-    if extra or xmp:
+    if extra:
         problems.append("metadata beyond title and author")
     return problems
+
+
+def paper_pdf_problems(path: Path) -> list[str]:
+    """What a hosted open-access paper must not carry. Its pages stay as published, with the authors' institutions
+    and the corresponding author's address; what must go is what the download added: the stamp naming who
+    downloaded it and when, and metadata beyond title and author."""
+    read = _read_pdf(path)
+    if read is None:
+        return ["not a readable PDF"]
+    text, extra = read
+    return (["download stamp"] if DOWNLOAD_STAMP.search(text) else []) + (
+        ["metadata beyond title and author"] if extra else [])
 
 
 def content_problems(site: Site, papers: list[Paper], others: list[OtherPub], root: Path = ROOT) -> list[str]:
@@ -64,6 +88,8 @@ def content_problems(site: Site, papers: list[Paper], others: list[OtherPub], ro
         problems.append("site.photo: placeholder image")
     if site.bio_status == "draft" and not site.bio.startswith(PLACEHOLDER):
         problems.append("site.bio: draft")
+    if site.cv_status == "draft" and (site.experience or site.education or site.skills):
+        problems.append("site.cv: draft")
     for paper in papers:
         if paper.summary_status == "draft":
             problems.append(f"paper.{paper.slug}.summary: draft")
@@ -91,6 +117,11 @@ def public_allowances(site: Site, papers: list[Paper] = ()) -> tuple[set[str], s
     return emails, files
 
 
+def hosted_pdfs(papers: list[Paper], others: list[OtherPub]) -> set[str]:
+    """The open-access papers and supplements the site hosts, which the file checks treat as papers, not private files."""
+    return {path for pub in [*papers, *others] for path in (pub.pdf, pub.supplement_pdf) if path}
+
+
 def _tracked(root: Path) -> list[str]:
     out = subprocess.run(["git", "ls-files", "-z"], cwd=root, capture_output=True, text=True, check=True).stdout
     return [name for name in out.split("\0") if name]
@@ -98,7 +129,7 @@ def _tracked(root: Path) -> list[str]:
 
 def file_problems(root: Path, max_file: int = 100 * MIB, max_total: int = 1_000_000_000,
                   deny_words: frozenset[str] = frozenset(), allow_emails: set[str] = frozenset(),
-                  allow_files: set[str] = frozenset()) -> list[str]:
+                  allow_files: set[str] = frozenset(), paper_pdfs: set[str] = frozenset()) -> list[str]:
     """Problems in the files git tracks, which are exactly what GitHub Pages would publish.
 
     deny_words come from a private list kept outside the repo (for example target employers),
@@ -114,7 +145,9 @@ def file_problems(root: Path, max_file: int = 100 * MIB, max_total: int = 1_000_
         suffix = path.suffix.lower()
         if size > max_file:
             problems.append(f"{name}: larger than 100 MiB")
-        if suffix in PRIVATE_SUFFIXES and name not in allow_files:
+        if name in paper_pdfs:
+            problems += [f"{name}: {problem}" for problem in paper_pdf_problems(path)]
+        elif suffix in PRIVATE_SUFFIXES and name not in allow_files:
             problems.append(f"{name}: private file type")
         elif suffix == ".pdf":
             problems += [f"{name}: {problem}" for problem in pdf_problems(path)]
@@ -152,7 +185,8 @@ def main(argv: list[str] | None = None) -> int:
     papers, others = load_papers(ROOT / "content" / "papers.toml")
     emails, files = public_allowances(site, papers)
     problems = content_problems(site, papers, others, ROOT) + file_problems(
-        ROOT, deny_words=_read_words(args.deny_file), allow_emails=emails, allow_files=files)
+        ROOT, deny_words=_read_words(args.deny_file), allow_emails=emails, allow_files=files,
+        paper_pdfs=hosted_pdfs(papers, others))
     for problem in problems:
         print(problem)
     print(f"{len(problems)} item(s) to settle before publishing" if problems else "Ready to publish.")

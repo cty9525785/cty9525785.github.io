@@ -47,12 +47,13 @@ class RenderPaperTest(unittest.TestCase):
         preloads = [t for t in links if t.get("rel") == "preload"]
         self.assertEqual({t.get("href") for t in preloads},
                          {"../../assets/fonts/source-serif-4/source-serif-4-latin-normal.woff2",
-                          "../../assets/fonts/lato/lato-latin-400-normal.woff2",
-                          "../../assets/fonts/lato/lato-latin-700-normal.woff2"})
+                          "../../assets/fonts/inter/inter-latin-wght-normal.woff2",
+                          "../../assets/fonts/inter/inter-latin-wght-italic.woff2"})  # the journal name is italic
         for t in preloads:
             self.assertEqual((t.get("as"), t.get("type")), ("font", "font/woff2"))
             self.assertIn("crossorigin", t)
-        self.assertEqual([t.get("src") for t in tags(page, "script")], ["../../assets/js/article.js"])
+        self.assertEqual([t.get("src") for t in tags(page, "script")],
+                         ["../../assets/js/article.js", "../../assets/js/count.js"])  # the page's own, the counter
 
     def test_link_preview(self):
         for slug, page in self.html.items():
@@ -64,6 +65,14 @@ class RenderPaperTest(unittest.TestCase):
                 self.assertEqual(image, f"https://tianyuchen.com/media/{slug}/loop-poster.jpg")
                 self.assertTrue((ROOT / image.removeprefix("https://tianyuchen.com/")).is_file())
 
+    def test_interface_font_and_accent(self):
+        # The redesign (2026-10-30): the paper pages' interface text matches the home page's Inter and blue accent;
+        # their Source Serif 4 body text stays.
+        css = (ROOT / "assets" / "css" / "article.css").read_text(encoding="utf-8")
+        self.assertIn("--sans: 'Inter'", css)
+        self.assertIn("--accent: #2563eb", css)
+        self.assertNotIn("'Lato'", css)
+
     def test_top_bar(self):
         page = self.html[SAILS]
         bar = re.search(r'<header class="topbar">.*?</header>', page, re.S).group(0)
@@ -71,6 +80,22 @@ class RenderPaperTest(unittest.TestCase):
         self.assertIn('<span class="topbar-title">Scale-inspired programmable robotic structures</span>', bar)
         self.assertIn('href="https://doi.org/10.1126/scirobotics.adl0307"', bar)
         self.assertIn('data-copy="bibtex-text"', bar)
+
+    def test_tab_icon(self):
+        for slug, page in self.html.items():
+            self.assertEqual([t.get("href") for t in tags(page, "link") if t.get("rel") == "icon"],
+                             ["../../assets/img/favicon.svg"], slug)
+
+    def test_open_access_pdf_button(self):
+        # The hosted PDF opens from the top bar, beside the publisher's page; other papers have only the latter.
+        for slug, page in self.html.items():
+            bar = re.search(r'<header class="topbar">.*?</header>', page, re.S).group(0)
+            pdf = self.p[slug].pdf
+            buttons = re.findall(r'<a class="btn" href="([^"]+)"[^>]*>([^<]+)</a>', bar)
+            self.assertEqual([text for _, text in buttons], ["Paper", "PDF"] if pdf else ["Paper"], slug)
+            if pdf:
+                self.assertEqual(buttons[1][0], f"../../{pdf}")
+        self.assertTrue(self.p[SCIADV].pdf)
 
     def test_contents_follow_the_sections(self):
         for slug, page in self.html.items():
@@ -151,8 +176,30 @@ class RenderPaperTest(unittest.TestCase):
 
     def test_footer_credit(self):
         footer = re.search(r"<footer>.*?</footer>", self.html[SAILS], re.S).group(0)
-        self.assertIn('<a href="https://jonbarron.info/">Jon Barron', footer)
+        self.assertIn('<a href="https://jonbarron.info/" target="_blank" rel="noopener">Jon Barron', footer)
         self.assertIn("Movies and figures are from the papers credited with each one.", footer)
+
+    def test_visit_counter(self):
+        # A paper page loads the site's own copy of count.js, its footer silent about it (Tianyu asked to delete that
+        # line); with no count address, no script.
+        for page in self.html.values():
+            self.assertIn('<script data-goatcounter="https://cty9525785.goatcounter.com/count" async '
+                          'src="../../assets/js/count.js"></script>', page)
+            self.assertNotIn("GoatCounter", re.search(r"<footer>.*?</footer>", page, re.S).group(0))
+        off = render_paper(self.p[SAILS], replace(self.site, goatcounter=""), self.body[SAILS])
+        self.assertNotIn("goatcounter", off.lower())
+
+    def test_external_links_open_in_new_tabs(self):
+        # Tianyu: "for link outside my own site, open in new tab", in the pages' own text too.
+        checked = 0
+        for slug, page in self.html.items():
+            for attrs in re.findall(r"<a ([^>]*)>", page):
+                href = re.search(r'href="([^"]*)"', attrs)
+                if href and href.group(1).startswith(("http://", "https://")):
+                    self.assertIn('target="_blank"', attrs, (slug, href.group(1)))
+                    self.assertIn('rel="noopener"', attrs, (slug, href.group(1)))
+                    checked += 1
+        self.assertGreaterEqual(checked, 12)  # the Paper buttons, the footer's credit and the links in the text
 
     def test_relative_paths_only(self):
         for slug, page in self.html.items():

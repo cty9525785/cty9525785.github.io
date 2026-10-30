@@ -1,0 +1,164 @@
+# Press coverage of the papers (Tianyu, 2026-10-30: "also include any news section about my work, both first
+# author and coauthor"; all confirmed coverage, Chinese posts with their headlines in English). Each story names the
+# papers it covers, as the story features them; the home page marks co-authored papers. Headlines as the sources
+# wrote them. Found by a search on the papers' titles (no personal data in any request) and checked on 2026-10-30.
+# A story republished on other sites is one item, with those sites under "also" (Tianyu: "combine same story from
+# different platform to one item just url for different plat form"); stories an outlet rewrote under its own byline
+# stay items of their own.
+
+[[news]]
+date = "2026-10-20"
+outlet = "NTU MAE News"
+headline = "A Robot That Learns Its Own Behaviour"
+url = "https://www.ntu.edu.sg/mae/news-events/news/detail/a-robot-that-learns-its-own-behaviour"
+papers = ["stiffness-driven-control"]
+
+[[news]]
+date = "2026-09-10"
+outlet = "机器人大讲堂, on Tencent News"
+headline = "Science子刊 | 像肌肉一样调节刚度：让拮抗软体机器人更稳、更准地完成任务"
+url = "https://news.qq.com/rain/a/20260910A0BIOX00"
+papers = ["stiffness-driven-control"]
+lang = "zh"
+translation = "Tuning stiffness like muscle makes antagonistic soft robots steadier and more precise"
+
+[[news]]
+date = "2025-07-06"
+outlet = "机器人大讲堂"
+headline = "Science Advances发表！南洋理工大学推出头发丝薄度传感器FMEIS，让机器秒懂肌肉「微表情」"
+url = "https://www.leaderobot.com/news/5751"
+papers = ["muscle-impedance-sensors"]
+lang = "zh"
+translation = "NTU unveils FMEIS, a sensor as thin as a hair that lets machines read the muscles' micro-expressions"
+
+# The NTU release of July 2024 covers two papers: it leads with the active fabric (co-authored) and shows the
+# scale-inspired structure (first author) on robots and drones. The stories retelling it list both.
+[[news]]
+date = "2024-09-19"
+outlet = "ASME, Mechanical Engineering"
+headline = "3D-Printed Fabric Hardens and Softens on Command"
+url = "https://www.asme.org/topics-resources/content/3d-printed-fabric-hardens-and-softens-on-command"
+papers = ["active-fabrics", "scale-inspired-robotic-structures"]
+
+[[news]]
+date = "2024-07-29"
+outlet = "3Dnatives"
+headline = "NTU Has Developed a 3D Printed ‘Active’ Fabric for Flexible, Made-to-Measure Limb Supports"
+url = "https://www.3dnatives.com/en/ntu-3d-printed-active-fabric-290720244/"
+papers = ["active-fabrics"]
+
+[[news]]
+date = "2024-07-22"
+outlet = "TechSpot"
+headline = "Scientists design miracle fabric that turns rigid at the push of a button"
+url = "https://www.techspot.com/news/103910-scientists-design-miracle-fabric-turns-rigid-push-button.html"
+papers = ["active-fabrics", "scale-inspired-robotic-structures"]
+
+[[news]]
+date = "2024-07-21"
+outlet = "Interesting Engineering"
+headline = "New fabric stiffens on demand, suitable for drone limbs, medical devices"
+url = "https://interestingengineering.com/innovation/fabric-stiffens-on-demand-drone-limbs"
+papers = ["active-fabrics", "scale-inspired-robotic-structures"]
+
+[[news]]
+date = "2024-07-21"
+outlet = "机器人大讲堂"
+headline = "Science Robotics发表！南洋理工大学研究团队提出新型可变刚度软体机器人结构，融合形状与刚度变化两大功能！"
+url = "https://www.leaderobot.com/news/4451"
+papers = ["scale-inspired-robotic-structures"]
+lang = "zh"
+translation = "In Science Robotics: an NTU team proposes a soft robotic structure with variable stiffness that combines shape change and stiffness change"
+
+[[news]]
+date = "2024-07-20"
+outlet = "VoxelMatters"
+headline = "NTU Singapore develops 3D printed fabric that stiffens on demand"
+url = "https://www.voxelmatters.com/ntu-singapore-develops-3d-printed-fabric-that-stiffens-on-demand/"
+papers = ["active-fabrics"]
+
+[[news]]
+date = "2024-07-19"
+outlet = "Engineering.com"
+headline = "Engineers 3D print fabric that stiffens on demand"
+url = "https://www.engineering.com/engineers-3d-print-fabric-that-stiffens-on-demand/"
+papers = ["active-fabrics", "scale-inspired-robotic-structures"]
+
+# The release itself, under its own title; NTU's news page carries it as "3D-printed active fabric for healthcare and
+# robotics". EurekAlert! dates its copy 17 July (US time).
+[[news]]
+date = "2024-07-18"
+outlet = "NTU Singapore press release"
+headline = "NTU Singapore scientists develop 3D-printed active fabric for medical devices and soft robotics"
+url = "https://www.ntu.edu.sg/news/detail/3d-printed-active-fabric-for-healthcare-and-robotics"
+papers = ["active-fabrics", "scale-inspired-robotic-structures"]
+also = [
+  { outlet = "EurekAlert!", url = "https://www.eurekalert.org/news-releases/1051779" },
+  { outlet = "TechXplore", url = "https://techxplore.com/news/2024-07-scientists-3d-fabric-medical-devices.html" },
+  { outlet = "Lab Manager", url = "https://www.labmanager.com/scientists-develop-3d-printed-active-fabric-for-medical-devices-soft-robotics-32537" },
+]
+
+[[news]]
+date = "2024-07-18"
+outlet = "高分子科学前沿, on Tencent News"
+headline = "南洋理工大学王一凡课题组Science Robotics：鳞片启发的变刚度软体机器人结构"
+url = "https://news.qq.com/rain/a/20240718A0100S00"
+papers = ["scale-inspired-robotic-structures"]
+lang = "zh"
+translation = "Yifan Wang's group at NTU in Science Robotics: a scale-inspired soft robotic structure with variable stiffness"
+
+[[news]]
+date = "2023-12-04"
+outlet = "爱科学, from 科学网"
+headline = "可编程离散单元组装的复杂三维曲面"
+url = "https://www.iikx.com/news/progress/25163.html"
+papers = ["hierarchical-tessellation"]
+lang = "zh"
+translation = "Complex 3D surfaces assembled from programmable discrete units"
+
+[[news]]
+date = "2023-11-13"
+outlet = "Advanced Science News"
+headline = "A nanogenerator that captures the energy of falling water"
+url = "https://advancedsciencenews.com/a-nanogenerator-that-captures-the-energy-of-falling-water"
+papers = ["droplet-energy-harvester"]
+
+[[news]]
+date = "2023-01-27"
+outlet = "Medical Dialogues"
+headline = "Artificial skin more sensitive than natural skin developed"
+url = "https://medicaldialogues.in/mdtv/dermatology/videos/artificial-skin-more-sensitive-than-natural-skin-developed-106197"
+papers = ["dual-responsive-skin"]
+
+[[news]]
+date = "2023-01-26"
+outlet = "GEN, Genetic Engineering & Biotechnology News"
+headline = "Artificial Skin Exceeds Natural Skin in Sensing Touch and Proximity"
+url = "https://www.genengnews.com/news/artificial-skin-exceeds-natural-skin-in-sensing-touch-and-proximity"
+papers = ["dual-responsive-skin"]
+
+[[news]]
+date = "2023-01-26"
+outlet = "Inverse"
+headline = "Can this new artificial skin transform touch screens and video games?"
+url = "https://inverse.com/science/artificial-skin-feeling-distant-objects"
+papers = ["dual-responsive-skin"]
+
+# Confirmed on 2026-10-30 from the page itself, which cites Wang, H. L. et al., Small, DOI 10.1002/smll.202206830
+# (Tianyu: "yes, add it").
+[[news]]
+date = "2023-01-25"
+outlet = "New Scientist"
+headline = "Artificial skin can detect nearby objects without even touching them"
+url = "https://www.newscientist.com/article/2356205-artificial-skin-can-detect-nearby-objects-without-even-touching-them/"
+papers = ["dual-responsive-skin"]
+
+[[news]]
+date = "2023-01-25"
+outlet = "Wiley press release, on EurekAlert!"
+headline = "Can artificial skin go beyond the sensing features of natural skin?"
+url = "https://www.eurekalert.org/news-releases/977345"
+papers = ["dual-responsive-skin"]
+also = [
+  { outlet = "TechXplore", url = "https://techxplore.com/news/2023-01-artificial-skin-features-natural.html" },
+]
