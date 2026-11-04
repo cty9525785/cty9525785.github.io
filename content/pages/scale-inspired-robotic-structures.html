@@ -1,0 +1,209 @@
+      <figure class="fig">
+        <video autoplay muted loop playsinline poster="figures/hero-poster.jpg"><source src="figures/hero.mp4" type="video/mp4"></video>
+        <figcaption>The landing gear unfolds in flight and the drone lands on it (4× speed; the hover in between is cut).</figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Animals such as the octopus change their shape and their stiffness at the same time, with one integrated body. Soft robots usually need separate modules for the two, which makes them bulky and their control complex. This paper presents SAILS, a scale-inspired layered structure that does both with a single input. Its scales carry inversely designed surface patterns. Sealed in a thin latex envelope, the structure is soft until a negative pressure is applied; then it takes its programmed shape and becomes stiff.</p>
+        <p>Because it runs on negative pressure, SAILS does not inflate: it stays as thin as about 1 mm and can be actuated at up to 5 Hz. The paper uses it for an amphibious soft robot and for drone landing gear that adapts to different loads.</p>
+      </section>
+
+      <section id="how">
+        <h2><span class="num">1</span> Working principle <a class="anchor" href="#how" aria-label="Link to this section">#</a></h2>
+        <p>SAILS is a base layer with a row of scales attached to it, both printed from TPU and covered with PTFE tape to reduce friction. Each scale is bonded to the base layer on one side, and the whole structure is sealed between two latex films. With no pressure applied, the scales and the base layer are barely coupled, so the structure can be rolled up or sag under its own weight. A negative pressure of 90 kPa presses the patterned surfaces together until they interlock: the structure takes the shape its patterns were designed for and becomes stiff.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig1a.jpg" alt="Pangolin and fish scales, and the scale-inspired layered structure they inspired" loading="lazy">
+          <figcaption>The scales of pangolins and fish, and the layered structure they inspired. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The patterns come from the target shape itself, by a method the paper calls layered tessellation. A sinusoidal cutting surface drawn along the middle of the target splits it into two layers. Each layer is divided into small units and flattened by rotating them, a thin supporting sheet is added to its back, and the upper layer is cut into scales short enough that their patterns still match the base layer when the structure lies flat. Pressed back together, the patterns mesh fully only in the shape they were cut from, which is why the structure returns to it.</p>
+        <figure class="fig">
+          <video autoplay muted loop playsinline poster="figures/sails-hook-poster.jpg"><source src="figures/sails-hook.mp4" type="video/mp4"></video>
+          <figcaption><span class="tag">Illustration</span>Layered tessellation of the paper's hook, drawn to the dimensions in its supplementary materials (a 1.8 mm thick strip whose centerline is a spiral) with its 15 scales of 3 periods: the cut, the two flattened layers, the scales hinged to the base, and the strip curling back into its hook when the air is pumped out of its latex envelope. The last step shows the paper's 50 g load test. The circle magnifies one scale's hinge. The supporting sheets' thickness, how the loose scales rest, the envelope's wrinkles, the clamp, the tube, the weight's size and the timing are schematic.</figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/panels/fig1d.jpg" alt="SAILS rolled up and hanging limp, then curled into a hook at 90 kPa and holding a 50 g weight" loading="lazy">
+          <figcaption>With no pressure, the strip can be rolled up or hangs limp; at 90 kPa it takes its hook shape and holds 50 g. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <div class="stills">
+            <div><img src="figures/stills/s1-step1.jpg" alt="The printer laying down the scales and the base layer" loading="lazy"><span>1&nbsp; Print</span></div>
+            <div><img src="figures/stills/s1-step2.jpg" alt="Deburring the printed parts by hand" loading="lazy"><span>2&nbsp; Deburr</span></div>
+            <div><img src="figures/stills/s1-step3.jpg" alt="Covering the scales with PTFE tape" loading="lazy"><span>3&nbsp; Tape</span></div>
+            <div><img src="figures/stills/s1-step4.jpg" alt="Bonding a scale to the base layer with a soldering iron" loading="lazy"><span>4&nbsp; Bond</span></div>
+            <div><img src="figures/stills/s1-step5.jpg" alt="Sealing the structure between latex films with glue" loading="lazy"><span>5&nbsp; Seal</span></div>
+            <div><img src="figures/stills/s1-step6.jpg" alt="Trimming the excess latex film" loading="lazy"><span>6&nbsp; Trim and test</span></div>
+          </div>
+          <figcaption>Making a SAILS, in stills from the movie below: printing the scales and the base layer in TPU, deburring them, covering the scales with PTFE tape, bonding each scale to the base layer on one side with a soldering iron, sealing the structure between two latex films with silicone glue, and trimming the films once the glue has cured. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s1.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s1.mp4" type="video/mp4"></video>
+            <figcaption>How a SAILS is made, from printing to the first test. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="shapes">
+        <h2><span class="num">2</span> Programmed shapes <a class="anchor" href="#shapes" aria-label="Link to this section">#</a></h2>
+        <p>The same method programs many shapes. For surfaces that can be flattened without stretching, the target shapes, the finite element simulations and the experiments agree within a root mean square error of about 5%: a hook whose curvature grows toward its free end, a wave, a helix, which needs the patterns turned to 70.62°, and two surfaces defined by splines.</p>
+        <p>A single structure bends in only one direction, so domes and saddles are approximated with three-by-three meshes, to within about 10% of the target. The dome unfolds from a folded state and then holds 50 g, more than four times its own weight.</p>
+        <figure class="fig">
+          <div class="shapes">
+            <div class="shape labels" aria-hidden="true"><span></span><span>Target</span><span>Simulation</span><span>Experiment</span><span>Distance from target</span></div>
+            <div class="shape"><h3>Hook</h3><img src="figures/panels/fig2a.jpg" alt="Hook, target" loading="lazy"><img src="figures/panels/fig2c.jpg" alt="Hook, simulation" loading="lazy"><img src="figures/panels/fig2d.jpg" alt="Hook, experiment" loading="lazy"><img class="err" src="figures/panels/err-hook.jpg" alt="Hook, distance between simulation and target" loading="lazy"></div>
+            <div class="shape"><h3>Wave</h3><img src="figures/panels/fig2e.jpg" alt="Wave, target" loading="lazy"><img src="figures/panels/fig2g.jpg" alt="Wave, simulation" loading="lazy"><img src="figures/panels/fig2h.jpg" alt="Wave, experiment" loading="lazy"><img class="err" src="figures/panels/err-wave.jpg" alt="Wave, distance between simulation and target" loading="lazy"></div>
+            <div class="shape"><h3>Helix</h3><img src="figures/panels/fig2i.jpg" alt="Helix, target" loading="lazy"><img src="figures/panels/fig2k.jpg" alt="Helix, simulation" loading="lazy"><img src="figures/panels/fig2l.jpg" alt="Helix, experiment" loading="lazy"><img class="err" src="figures/panels/err-helix.jpg" alt="Helix, distance between simulation and target" loading="lazy"></div>
+            <div class="shape"><h3>Spline 1</h3><img src="figures/panels/s2-1-target.jpg" alt="Spline 1, target" loading="lazy"><img src="figures/panels/s2-1-sim.jpg" alt="Spline 1, simulation" loading="lazy"><img src="figures/panels/s2-1-exp.jpg" alt="Spline 1, experiment" loading="lazy"><img class="err" src="figures/panels/err-spline1.jpg" alt="Spline 1, distance between simulation and target" loading="lazy"></div>
+            <div class="shape"><h3>Spline 2</h3><img src="figures/panels/s2-2-target.jpg" alt="Spline 2, target" loading="lazy"><img src="figures/panels/s2-2-sim.jpg" alt="Spline 2, simulation" loading="lazy"><img src="figures/panels/s2-2-exp.jpg" alt="Spline 2, experiment" loading="lazy"><img class="err" src="figures/panels/err-spline2.jpg" alt="Spline 2, distance between simulation and target" loading="lazy"></div>
+          </div>
+          <figcaption>Surfaces that can be flattened without stretching. The bottom row maps how far each simulation is from its target, with the root mean square error (RMSE). Scale bars, 2 cm. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), and its supplementary materials.</span> Full figures: <a href="figures/fig2.jpg">shapes</a>, <a href="figures/sm/figS2.jpg">splines</a>, <a href="figures/sm/figS12.jpg">errors</a>.</figcaption>
+        </figure>
+        <figure class="fig">
+          <div class="views">
+            <div class="head" aria-hidden="true"><span></span><span>Target</span><span>Simulation</span><span>Experiment</span><span>Distance from target</span></div>
+            <div><h3>Dome</h3><img src="figures/panels/fig2m.jpg" alt="Dome, target" loading="lazy"><img src="figures/panels/fig2o.jpg" alt="Dome, simulation" loading="lazy"><img src="figures/panels/fig2p.jpg" alt="Dome, experiment" loading="lazy"><img class="err" src="figures/panels/err-dome.jpg" alt="Dome, distance between simulation and target" loading="lazy"></div>
+            <div><h3>Saddle</h3><img src="figures/panels/fig2q.jpg" alt="Saddle, target" loading="lazy"><img src="figures/panels/fig2s.jpg" alt="Saddle, simulation" loading="lazy"><img src="figures/panels/fig2t.jpg" alt="Saddle, experiment" loading="lazy"><img class="err" src="figures/panels/err-saddle.jpg" alt="Saddle, distance between simulation and target" loading="lazy"></div>
+          </div>
+          <figcaption>Surfaces that cannot be flattened, built as three-by-three meshes. Scale bars, 2 cm. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), and its supplementary materials.</span></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s2.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s2.mp4" type="video/mp4"></video>
+            <figcaption>Structures with developable surfaces morphing into their target shapes, with simulations alongside the experiments. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s3.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s3.mp4" type="video/mp4"></video>
+            <figcaption>Deployment of a dome-shaped structure, which then holds a 50 g load. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="stiffness">
+        <h2><span class="num">3</span> Stiffness variation <a class="anchor" href="#stiffness" aria-label="Link to this section">#</a></h2>
+        <p>In three-point bending, a 2 mm thick structure with four scales stiffens as the pressure rises. Its apparent bending modulus goes from 9.8 MPa with no pressure to 36.8 MPa at 5 kPa and 58.7 MPa at 90 kPa, about six times, and it is similar whether the scales face up or down.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/fig3c.jpg" alt="Force against deflection in three-point bending, from 0 to 90 kPa" loading="lazy">
+            <img src="figures/panels/fig3d.jpg" alt="Apparent bending modulus against negative pressure, with the scales up or down" loading="lazy">
+          </div>
+          <figcaption>Left, force against deflection in three-point bending, from 0 to 90 kPa. Right, the apparent bending modulus against pressure, with the scales up or down. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Thicker structures stiffen much more. From 1 to 6 mm, the modulus at 90 kPa grows from a few times to 53 times the modulus with no pressure, more than the 10 to 26 times of many jamming-based structures, while SAILS stays among the thinnest of them.</p>
+        <figure class="fig feature">
+          <img src="figures/panels/fig3e.jpg" alt="The ratio of the modulus at 90 kPa to the modulus with no pressure, against thickness, measured and simulated" loading="lazy">
+          <figcaption>The modulus at 90 kPa over the modulus with no pressure, against thickness: 53 times at 6 mm. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>More scales make a structure softer but let it reach its target shape more closely, and changing the material's stiffness or the friction between the layers shows the same trade-off. The finite element models behind these results, in Abaqus/Explicit, are 3D for the shapes above and 2D plane strain for the bending tests. They treat the printed TPU as linear elastic (55.7 MPa) and the latex as neo-Hookean (1.1 MPa), use friction coefficients measured on an inclined plane, and reproduce both the bending tests and the morphed shapes.</p>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 1.656" src="figures/panels/fig3g.jpg" alt="Bending modulus against normalized curvature as the number of scales grows" loading="lazy">
+            <img style="flex: 2.043" src="figures/sm/figS10.jpg" alt="The simulated three-point bending test and the strain in the structure" loading="lazy">
+          </div>
+          <figcaption>Left, the trade-off between stiffness and shape accuracy as the number of scales grows. Right, the simulated bending test: the scales, the base layer and the airbag on two supports under the indenter (top), and the largest principal strain at 90 kPa (bottom). <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), and its supplementary materials.</span> <a href="figures/fig3.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="robot">
+        <h2><span class="num">4</span> An amphibious soft robot <a class="anchor" href="#robot" aria-label="Link to this section">#</a></h2>
+        <p>Three segments of SAILS, each with a chamber on either side, make a soft robot that moves like an eel or a snake. Actuating the chamber on one side or the other bends a segment up or down. A Raspberry Pi switches six solenoid valves on a vacuum pump. Actuating the chambers in turn, with each segment a quarter period behind the last, sends a wave along the body that drives the robot forward on ground; the reversed sequence makes it swim.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig4a.jpg" alt="The robot's three segments, and a cross-section with its latex film and air tunnels" loading="lazy">
+          <figcaption>The robot's three segments, each with two chambers. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/sm/figS7.jpg" alt="The robot's layers, and its printed parts with dimensions" loading="lazy">
+          <figcaption>The robot's layers (top): SAILS, latex films and air tubes. Below, the printed parts with their dimensions in mm, and the target shape of each SAILS segment. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), supplementary materials.</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <div class="panels flex">
+            <img style="flex: 0.584" src="figures/panels/fig4d.jpg" alt="Snapshots of the robot crawling on the ground, with the chambers actuated at each moment" loading="lazy">
+            <img style="flex: 0.558" src="figures/panels/fig4g.jpg" alt="Snapshots of the robot swimming in water, with the chambers actuated at each moment" loading="lazy">
+          </div>
+          <figcaption>Crawling on the ground, then swimming in water; the chambers under negative pressure are shaded at each moment. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The robot climbs a 10 mm obstacle and crosses from land into water, squeezes through gaps that narrow from 20 to 8 mm, carries 50 g, nearly twice its own weight, and climbs a 22° slope. It is fastest at 0.56 Hz on ground and 1.25 Hz in water, where it reaches 0.34 body lengths per second, and models of both cases match the measured speeds.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig5a.jpg" alt="The robot climbing a 10 mm obstacle and moving into water, its outline traced over 70 s" loading="lazy">
+          <figcaption>The robot climbs a 10 mm obstacle and moves from land into water; its outline is traced at moments from 0 to 70 s. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig narrow">
+          <img src="figures/panels/fig5f.jpg" alt="Speed in water, on ground, on a slope and with a load; inset, speed against thickness for other soft robots" loading="lazy">
+          <figcaption>Speed in each scenario, in body lengths per second; inset, speed against thickness compared with other soft undulatory robots. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s4.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s4.mp4" type="video/mp4"></video>
+            <figcaption>The amphibious robot crawling on the ground and swimming in water. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s5.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s5.mp4" type="video/mp4"></video>
+            <figcaption>The robot climbing over an obstacle and moving from land into water. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s6.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s6.mp4" type="video/mp4"></video>
+            <figcaption>The robot passing through gaps that narrow from 20 mm to 8 mm. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s7.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s7.mp4" type="video/mp4"></video>
+            <figcaption>The robot carrying a 50 g load and climbing a 22° slope. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="bridge">
+        <h2><span class="num">5</span> A bridge and a shield <a class="anchor" href="#bridge" aria-label="Link to this section">#</a></h2>
+        <p>A larger robot, twice as thick and as wide and about twice as long, puts the stiffness to work. After crawling over an obstacle, it stiffens into a bridge for a toy car. It covers a quail egg and shields it from a falling 50 g ball that breaks the egg without protection, and it carries 1.26 kg, seven times its own weight.</p>
+        <figure class="fig">
+          <img src="figures/panels/fig6.jpg" alt="The robot as a bridge and as a protective structure" loading="lazy">
+          <figcaption>Top, the robot crawls over an obstacle and becomes a bridge for a toy car. Bottom, it covers a quail egg and shields it from a falling 50 g ball; without it, the ball breaks the egg. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig6.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s8.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s8.mp4" type="video/mp4"></video>
+            <figcaption>A larger robot crawling over an obstacle, stiffening into a bridge for a toy car, shielding a quail egg from a falling ball and carrying a heavier load. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="drone">
+        <h2><span class="num">6</span> Adaptive landing gear for a drone <a class="anchor" href="#drone" aria-label="Link to this section">#</a></h2>
+        <p>Hook-shaped landing gear made of SAILS turns its stiffness into adjustable impact protection. A Raspberry Pi, a vacuum pump, valves and a pressure gauge on the drone set the gear's pressure.</p>
+        <figure class="fig">
+          <img src="figures/sm/figS9.jpg" alt="The landing gear's layers, and its printed layer with dimensions and target shape" loading="lazy">
+          <figcaption>The landing gear's layers (top): SAILS between latex films, with an air tube. Below, its printed layer and connector with dimensions in mm, and its target shape, a spiral. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), supplementary materials.</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/sm/figS11.jpg" alt="The drone from above with its pump, Raspberry Pi, relay, valve and gauge, and a diagram of how they connect" loading="lazy">
+          <figcaption>The drone from above, with its vacuum pump, Raspberry Pi, relay, solenoid valve, pressure gauge and landing gears, and how they connect. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024), supplementary materials.</span></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/panels/fig7ab.jpg" alt="The drone with its landing gear above a force sensor, and the gear's shape from 0 to 90 kPa in experiment and simulation" loading="lazy">
+          <figcaption>Left, the drop test: the drone and its landing gear above a force sensor. Right, the gear from 0 to 90 kPa, in experiment and simulation. <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig7.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>In drop tests, a stiffer gear gives a higher peak force when the drone falls 3 cm, but a lower one when it falls 20 cm. Simulations of the gear under compression explain why: at low pressure the soft gear collapses until its fixed end hits the ground, while the gear at 90 kPa does not. The gear deploys in flight before landing, and it also works as a gripper, lifting a 225 g load that the drone then carries off.</p>
+        <figure class="fig narrow" style="--w: 269px">
+          <img src="figures/panels/fig7e.jpg" alt="Highest impact force against pressure, falling as the gear stiffens for the high drop and rising for the low drop" loading="lazy">
+          <figcaption>The highest impact force against pressure, for the high drop (top, 20 cm) and the low drop (bottom, 3 cm). <span class="credit">Adapted from Chen et al., Science Robotics 9, eadl0307 (2024).</span> <a href="figures/fig7.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="demo-grid">
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s9.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s9.mp4" type="video/mp4"></video>
+            <figcaption>Drop tests of the drone with its landing gear, released from 3 cm and 20 cm. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s10.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s10.mp4" type="video/mp4"></video>
+            <figcaption>Setting the negative pressure in the landing gear with the onboard control system. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s11.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s11.mp4" type="video/mp4"></video>
+            <figcaption>The landing gear deploying in flight, followed by the drone landing on it. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+          <figure class="fig">
+            <video controls preload="none" playsinline poster="../../media/scale-inspired-robotic-structures/poster-s12.jpg"><source src="../../media/scale-inspired-robotic-structures/movie-s12.mp4" type="video/mp4"></video>
+            <figcaption>The landing gear working as a gripper to lift a 225 g load. <span class="credit">From Chen et al., Science Robotics 9, eadl0307 (2024).</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      

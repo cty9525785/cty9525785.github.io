@@ -1,0 +1,1402 @@
+/* Home page: a light portfolio layout (redesign, 2026-10-30), set in Inter. */
+/* Inter, SIL Open Font License (../fonts/inter/OFL.txt), served with the page. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('../fonts/inter/inter-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('../fonts/inter/inter-latin-wght-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* The page stays hidden until its fonts are in (the script in its head, Tianyu: "can we make all the font load before
+   appearing?"). After 5 s it shows whatever happens, should the script never run. */
+.fonts-wait body {
+  opacity: 0;
+  animation: fonts-in 0s 5s forwards;
+}
+
+@keyframes fonts-in {
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  --ink: #0f172a;
+  --body: #475569;
+  --muted: #64748b;
+  --line: #e5e7eb;
+  --soft: #f6f7f9;
+  --accent: #c2410c;  /* the hook animation's orange, darkened for words on white (5.2:1) */
+  --orange: #f09e40;  /* the hook animation's orange, for the black band and footer (9.7:1 on black) */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 76px;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font: 16px/1.6 'Inter', 'Segoe UI', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Rounds the ring on plain links only: the pill buttons and chips keep their own round shape when focused. */
+a:not(.btn):not(.chip):focus-visible {
+  border-radius: 6px;
+}
+
+svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Menu bar: ground glass (Tianyu: "add some glass feeling on this banner", "like the ground glass"). A white wash over
+   a strong blur turns whatever scrolls under it into soft color, a faint grain gives the glass its tooth, and a hairline
+   and a soft shadow lift it off the page. The wash is 0.88 because at 0.72 the bar turned a dirty gray over the black
+   band. */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  background-color: rgba(255, 255, 255, 0.88);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.35);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.nav .wrap {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 68px;
+}
+
+.brand {
+  margin-right: auto;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.nav nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 15px;
+  color: #334155;  /* darker than the muted gray: it holds 4.5:1 even with the black band under the glass */
+}
+
+.nav nav a:hover {
+  color: var(--ink);
+}
+
+.nav nav a[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* At least as wide as "CV" in Inter: until Inter arrives a page lays out with the fallback's narrower letters, and the
+   pill jumped from 55 to 58 px on every page (Tianyu: "the CV button seems to change size every time i click"). */
+.nav a.cv {
+  min-width: 58px;
+  padding: 8px 18px;
+  text-align: center;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nav a.cv:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+/* Hero */
+/* The round photo with the contact buttons under it, beside the name, headline and bio (Tianyu chose option A). */
+.hero {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  padding-top: 48px;
+  padding-bottom: 40px;
+}
+
+.portrait {
+  display: block;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+}
+
+/* The photo column is shorter than the text beside it and stretches to its height: the photo at the top, the
+   buttons at the foot, level with the letters of the bio's last line (Tianyu: "these two should align"). */
+.hero .side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  padding-bottom: 4px;
+}
+
+/* Four buttons stacked under the photo, a little lower than the site's others so the stack ends level with the
+   bio's last line (ORCID joined, 2026-10-31). */
+.hero .links {
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.hero .btn {
+  justify-content: center;
+  height: 36px;
+}
+
+.who {
+  margin: 4px 0 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #5e6e85;
+}
+
+.who b,
+.who .role {
+  display: block;
+}
+
+.who b {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+h1 {
+  margin: 0 0 18px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.hero h1 span {
+  display: block;
+  color: var(--accent);
+}
+
+.bio {
+  max-width: 36em;
+  margin: 0;
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.bio p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.bio p + p {
+  margin-top: 14px;
+}
+
+/* "Read more" under the bio, for phones only (see the phone rules). */
+.bio-more {
+  display: none;
+  margin: 0 0 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.bio a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.bio a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn:hover {
+  border-color: #cbd5e1;
+  background: var(--soft);
+}
+
+.btn.primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: #1e293b;
+}
+
+/* On a wide screen the bio's 36em left a blank strip in its 800 px column (Tianyu: "why it feels a bit blank on
+   this side"): the photo grows and the bio fills the column, so the intro reaches the right edge like the menu and
+   the slideshow. At 19 px its lines stay near 75 characters. The photo stays small enough for its column to end
+   level with the text (nine lines, 451 px). */
+@media (min-width: 1080px) {
+  .hero {
+    grid-template-columns: 264px minmax(0, 1fr);
+    gap: 80px;
+  }
+
+  /* Each clause on one line, down to the narrowest screen of this size. */
+  h1 {
+    margin-bottom: 20px;
+    font-size: min(40px, 3.6vw);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+  }
+
+  .portrait {
+    width: 264px;
+    height: 264px;
+  }
+
+  .who b {
+    font-size: 22px;
+  }
+
+  .bio {
+    max-width: none;
+    font-size: 19px;
+  }
+}
+
+/* Research highlights: one captioned slide at a time with numbered tabs (home.js). Without scripts the slides
+   show one under another and the tabs jump to them. They sit on a full-width black band with no card around the footage
+   (Tianyu chose this from the mockups, 2026-11-04: "A is better"), whose own black meets the band's, so a robot stands
+   free of any frame. */
+.hl-band {
+  background: #000;
+  color: #ffffff;
+}
+
+.hl-band a:focus-visible,
+.hl-band button:focus-visible {
+  outline-color: var(--orange);
+}
+
+.highlights {
+  padding-top: 72px;
+  padding-bottom: 88px;
+}
+
+.hl-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.hl-head h2 {
+  margin: 0;
+  color: #ffffff;
+}
+
+/* As wide as "Pause" in Inter, so it holds its size as the font arrives and when it reads "Play". */
+.hl-pause {
+  min-width: 80px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid #3a3f48;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e6e9ee;
+  cursor: pointer;
+}
+
+.hl-pause:hover {
+  border-color: #565c66;
+  background: #15181d;
+}
+
+html:not(.js) .hl-pause {
+  display: none;
+}
+
+.hl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 12px;
+  align-items: start;
+}
+
+.slide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: transparent;
+}
+
+html:not(.js) .slide + .slide {
+  margin-top: 20px;
+}
+
+.js .hl-slides {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The slides share one grid cell, which takes the tallest slide's height. */
+.js .slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s;
+}
+
+.js .slide.on {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* The slides and, on a phone, arrows over the shown clip (below); elsewhere, and without scripts, no arrows show. */
+.hl-stage {
+  position: relative;
+  min-width: 0;
+}
+
+.hl-arrows {
+  display: none;
+}
+
+.hl-media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background: #000;
+}
+
+.hl-media img,
+.hl-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The clip's poster as an image over it until it plays (home.js): a phone loads a clip only when it plays, and
+   Safari shows a black frame, not the poster, while it loads or if it will not play. Without scripts the clip's own
+   poster serves. */
+.hl-media .hl-poster {
+  display: none;
+}
+
+.js .hl-media .hl-poster {
+  display: block;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.3s;
+}
+
+.hl-media.playing .hl-poster {
+  opacity: 0;
+}
+
+.hl-media.still img {
+  object-fit: contain;
+  padding: 28px;
+}
+
+.hl-text {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 12px 24px 56px;
+}
+
+.hl-text h3 {
+  margin: 4px 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #2a2e35;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.hl-text h3 a:hover {
+  color: var(--orange);
+}
+
+.hl-text .label {
+  color: var(--orange);
+}
+
+.hl-text .one {
+  margin: 0 0 16px;
+  font-size: 17px;
+  color: #d3d8e0;
+}
+
+.hl-text .authors {
+  color: #97a1af;
+}
+
+.hl-text .authors strong {
+  color: #ffffff;
+}
+
+.hl-text .venue {
+  margin-bottom: 18px;
+  color: #97a1af;
+}
+
+.hl-text .more a {
+  color: var(--orange);
+}
+
+.hl-text .more a:hover {
+  color: #ffffff;
+}
+
+.hl-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hl-tab {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #15181d;
+  font-size: 14px;
+  font-weight: 600;
+  color: #aab2bf;
+}
+
+.hl-tab:hover {
+  background: #23272e;
+}
+
+.hl-tab[aria-current="true"] {
+  background: var(--orange);
+  color: #000000;
+}
+
+/* On a phone, an orange pill that glides over the numbers with the strip (below). */
+.hl-pill {
+  display: none;
+}
+
+/* In the news: dated stories, newest first; the older ones open under All coverage. */
+.news {
+  padding-top: 72px;
+  padding-bottom: 88px;
+}
+
+.news h2 {
+  margin: 0 0 18px;
+}
+
+.news-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.news-item {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.news-item p {
+  margin: 0;
+}
+
+.news-item .when {
+  padding-top: 2px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.news-item .headline {
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.news-item .headline:hover {
+  color: var(--accent);
+}
+
+.news-item .tr {
+  display: block;
+  font-size: 14.5px;
+  color: var(--body);
+}
+
+.news-item .where {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.news-item .where a,
+.news-item .also a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: #cbd5e1;
+  text-underline-offset: 3px;
+}
+
+/* The same story on other sites. */
+.news-item .also {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.news-more summary {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* Gray bands and section heads. The band starts right under the menu bar, whose edge is its top. */
+.band {
+  padding: 84px 0;
+  background: var(--soft);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+h2,
+.head h1,
+#experience h1 {
+  margin: 0;
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+
+/* Publication thumbnails */
+.pub .thumb {
+  display: block;
+  overflow: hidden;
+  background: #0b0b0b;
+}
+
+.pub .thumb img,
+.pub .thumb video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A paper's figure is shown whole, since cropping it cuts through its labels; clips fill their frame. */
+.pub .thumb img {
+  object-fit: contain;
+  background: #fff;
+}
+
+.label {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+a.title:hover,
+.more a:hover {
+  color: var(--accent);
+}
+
+.authors {
+  margin: 0 0 4px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.authors strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.venue {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.one {
+  margin: 10px 0 14px;
+  font-size: 14.5px;
+  color: var(--body);
+}
+
+.more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: auto 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Experience, education and skills */
+#experience {
+  padding-top: 84px;
+  padding-bottom: 88px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 72px;
+}
+
+.edu-h {
+  margin: 40px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The roles' own heading, level with the page's. */
+.xp-col .edu-h {
+  margin: 0 0 18px;
+}
+
+.edu,
+.xp {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edu li {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.edu b {
+  display: block;
+  font-weight: 600;
+}
+
+.edu span {
+  color: var(--muted);
+}
+
+.xp li {
+  position: relative;
+  padding: 0 0 30px 36px;
+}
+
+.xp li::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: -6px;
+  left: 7px;
+  width: 2px;
+  background: var(--line);
+}
+
+.xp li:last-child::before {
+  display: none;
+}
+
+.xp li::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.when {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.xp h3 {
+  margin: 2px 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.org {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.xp li > p:last-child {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--body);
+}
+
+.skills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 56px;
+}
+
+.skill {
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.skill h4 {
+  margin: 0 0 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.skill span {
+  display: inline-block;
+  margin: 0 6px 8px 0;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
+  font-size: 14px;
+}
+
+/* Awards and teaching in the narrow column, as Education is above them; the talks' long titles in the wide one */
+.cv-more {
+  margin-top: 56px;
+}
+
+.cv-more .edu-h:first-child {
+  margin-top: 0;
+}
+
+.edu .courses {
+  margin: 4px 0 0;
+  color: var(--body);
+}
+
+.edu .nb {
+  white-space: nowrap;
+}
+
+/* Publications, by topic */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  color: var(--muted);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.chip:hover {
+  border-color: #cbd5e1;
+  color: var(--ink);
+}
+
+.chip.on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+/* The space a theme keeps from one shown above it; a filter hides the others, and "+" would count them too. */
+.topic:not([data-off]) ~ .topic:not([data-off]) {
+  margin-top: 52px;
+}
+
+.topic[data-off] {
+  display: none;
+}
+
+.topic h3 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.pubs {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pub {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 22px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.pub .thumb {
+  align-self: start;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+}
+
+.pub .title {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.pub .one {
+  margin: 8px 0;
+}
+
+.pub .more {
+  font-size: 13.5px;
+}
+
+.more a.license {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.co-label {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #5e6e85;
+}
+
+/* Footer */
+footer {
+  padding: 48px 0 56px;
+  background: #000;
+  font-size: 14px;
+  color: #97a1af;
+}
+
+footer p {
+  margin: 0 0 6px;
+}
+
+footer a {
+  color: #ffffff;
+}
+
+footer a:hover {
+  color: var(--orange);
+}
+
+footer a:focus-visible {
+  outline-color: var(--orange);
+}
+
+/* The closing invitation, with the address itself to copy; the mockups' 44 px was "too big" (Tianyu, 2026-11-04). */
+footer .contact {
+  margin: 0 0 14px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+footer .contact a {
+  color: var(--orange);
+}
+
+/* Text Tianyu has yet to supply or confirm */
+.placeholder {
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+/* A pill whose link Tianyu has yet to supply keeps its shape but takes the placeholder colors. */
+.btn.placeholder,
+.btn.primary.placeholder {
+  padding: 0 18px;
+  border-color: #fcd34d;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.nav a.cv.placeholder {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.draft {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+@media (max-width: 860px) {
+  /* The sides only: a "padding" shorthand here also wiped the top and bottom padding the sections set for
+     themselves, and the slideshow met the news heading (Tianyu: "the in the news and the cards above have no gap"). */
+  .wrap {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  /* Every tab stays on a phone: the tabs take a row of their own under the name and the CV. */
+  html {
+    scroll-padding-top: 100px;
+  }
+
+  /* As much room above the name as under the tabs, the two rows a little closer than that, so the bar reads as one
+     (Tianyu: "Why the header looks weird on the phone"; it had 25 px above, 26.5 between, 17.5 under). */
+  .nav .wrap {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 0;
+    padding-top: 8px;
+    padding-bottom: 14px;
+  }
+
+  .nav nav {
+    order: 1;
+    flex-basis: 100%;
+    gap: 20px;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+
+  /* The intro's two columns open into one: the photo, the name, the headline, the buttons, then the bio, which
+     shows four lines until "Read more", so the first screen reaches the research. */
+  .hero .side,
+  .hero .about {
+    display: contents;
+  }
+
+  .portrait {
+    order: 0;
+    justify-self: center;  /* Tianyu: "put my photo to be centered instead of left aligned" */
+    width: 112px;
+    height: 112px;
+    margin-bottom: 13.5px;  /* 24 px to the name's letters, as from the header to the photo */
+  }
+
+  .who {
+    order: 1;
+    text-align: center;  /* under the photo (Tianyu: "Also my name and role to be centered") */
+  }
+
+  /* The lab on a line of its own, without the comma (Tianyu: "Bristol robotic lab in a new line"). */
+  .who .at {
+    display: none;
+  }
+
+  .who .place {
+    display: block;
+  }
+
+  .hero h1 {
+    order: 2;
+  }
+
+  /* The four buttons sit two by two, each its finger's size, and show only their last word: "Google Scholar"
+     becomes "Scholar". Screen readers still read the whole name. */
+  .hero .links {
+    order: 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 22px;
+  }
+
+  .hero .btn {
+    height: 44px;
+    padding: 0 6px;
+  }
+
+  .hero .first-words {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .hero .bio {
+    order: 4;
+    margin-bottom: 30px;
+  }
+
+  .hero .bio-more {
+    order: 5;
+    justify-self: start;
+  }
+
+  /* The first paragraph shows four lines and the second waits for "Read more": browsers differ in how a line
+     clamp cuts across several paragraphs. */
+  .js .bio:not(.open) {
+    margin-bottom: 6px;
+  }
+
+  .js .bio:not(.open) p:first-child {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .js .bio:not(.open) p + p {
+    display: none;
+  }
+
+  .js .bio-more {
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  /* No Pause button on a phone (Tianyu: "Remove the play pause buttom on the phone page"). */
+  .hl-pause {
+    display: none;
+  }
+
+  .hl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .slide {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  /* The slides side by side in a strip that moves under the finger and stops at one slide at a time (Tianyu: "Can we
+     make this slidable on phone view"); home.js scrolls it for the roll and the tabs. The strip reaches the screen's
+     edges, with each slide's neighbors just out of sight. */
+  .js .hl-slides {
+    display: flex;
+    gap: 24px;
+    margin: -24px -20px -48px;
+    padding: 24px 20px 48px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .js .hl-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .js .slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+
+  .hl-text {
+    padding: 20px 2px 8px;
+  }
+
+  .news-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .hl-text h3 {
+    font-size: 26px;
+  }
+
+  /* The numbers above the slide, in one row, so they sit by the clip (Tianyu: "the labels 1 2 3... are underneath so
+     it's inconvenient to switch"), drawn over the strip's shadow padding so a tap on them reaches them. */
+  .hl-tabs {
+    order: -1;
+    position: relative;
+    z-index: 1;
+    flex-flow: row nowrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .hl-tab {
+    flex: 1 1 0;
+    width: auto;
+    max-width: 44px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  /* The current number's orange chip moves along the row with the strip (Tianyu: "make it moving along with the
+     sliding card"): home.js slides an orange pill over the numbers as the strip scrolls, with the numbers again in
+     black inside it, laid out as the row is and shifted back so each number stays on its chip. No transition: it would
+     trail the finger. The current number's own chip stays plain under it. */
+  .js .hl-tab[aria-current="true"] {
+    background: #15181d;
+    color: #aab2bf;
+  }
+
+  .js .hl-pill {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 36px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--orange);
+    pointer-events: none;
+  }
+
+  .hl-pill-numbers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .hl-pill-numbers span {
+    display: grid;
+    place-items: center;
+    flex: 1 1 0;
+    max-width: 44px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  /* Arrows at the clip's sides (Tianyu: "Yes add the buttons"), over the shown slide's clip: the overlay takes the
+     clip's square and lets swipes through between the buttons. */
+  .js .hl-arrows {
+    display: block;
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    aspect-ratio: 1 / 1;
+    pointer-events: none;
+  }
+
+  .hl-arrows button {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
+    padding: 0;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.22);
+    color: var(--ink);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .hl-prev {
+    left: 10px;
+  }
+
+  .hl-next {
+    right: 10px;
+  }
+
+  .hl-arrows svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2,
+  .head h1,
+  #experience h1 {
+    font-size: 30px;
+  }
+
+  .band,
+  #experience {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .highlights {
+    padding-top: 48px;
+    padding-bottom: 64px;
+  }
+
+  .news {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .split,
+  .skills {
+    grid-template-columns: 1fr;
+  }
+
+  .split {
+    gap: 28px;
+  }
+
+  .pub {
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .btn,
+  .chip {
+    transition: none;
+  }
+}

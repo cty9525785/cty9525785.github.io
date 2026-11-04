@@ -1,0 +1,3 @@
+[0:v]drawbox=x=80:y=40:w=390:h=125:color=black:t=fill,drawbox=x=1462:y=55:w=370:h=107:color=black:t=fill,drawbox=x=1670:y=880:w=140:h=120:color=black:t=fill,crop=1690:1080:140:0,pad=1690:1690:0:305:black,scale=480:480,fps=30,format=yuv420p,settb=AVTB[c];
+[1:v]drawbox=x=80:y=40:w=390:h=125:color=black:t=fill,drawbox=x=1462:y=55:w=370:h=107:color=black:t=fill,drawbox=x=1670:y=880:w=140:h=120:color=black:t=fill,crop=1690:1080:140:0,pad=1690:1690:0:305:black,scale=480:480,fps=30,format=yuv420p,settb=AVTB[s];
+[c][s]xfade=transition=fade:duration=0.4:offset=8.8[out]

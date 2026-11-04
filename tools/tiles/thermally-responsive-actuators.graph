@@ -1,0 +1,1 @@
+[0:v]drawbox=x=85:y=935:w=305:h=80:color=black:t=fill,crop=1600:1080:0:0,pad=1600:1600:0:260:black,setpts=(PTS-STARTPTS)/2,scale=480:480,fps=30,format=yuv420p,settb=AVTB,fade=t=in:st=0:d=0.3,fade=t=out:st=5.7:d=0.3[out]

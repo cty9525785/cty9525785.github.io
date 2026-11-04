@@ -1,0 +1,158 @@
+      <figure class="fig">
+        <video autoplay muted loop playsinline poster="figures/clips/box-loop-poster.jpg"><source src="figures/clips/box-loop.mp4" type="video/mp4"></video>
+        <figcaption>A flat sheet whose hinges are scaled structures folds into a box within one second when the air is pumped out (real time).</figcaption>
+      </figure>
+
+      <section id="summary" class="summary">
+        <h2 class="summary-head">Summary</h2>
+        <p>Robots and deployable structures often need to change shape and then hold that shape under load. Adding a separate stiffening mechanism to a morphing structure makes it bulky, harder to control, and can stop it from reaching its target shape. This paper studies a scaled structure that does both with one mechanism, and turns it into a design method: rules for choosing its geometry, finite element simulations of what sets its shape and stiffness, and three devices built with it.</p>
+      </section>
+
+      <section id="how">
+        <h2><span class="num">1</span> Working principle <a class="anchor" href="#how" aria-label="Link to this section">#</a></h2>
+        <p>The structure has two layers with triangular teeth: a base layer, and a row of scales hinged to it. Both sit in a thin latex bag. With no pressure applied, the layers slide freely and the strip is soft enough to lie flat or sag.</p>
+        <p>Pumping the air out of the bag presses the scales onto the base layer. The scales' teeth are spaced wider than the base layer's, so they mesh only when the strip bends: it curls until every tooth sits flush, which happens at the curvature the teeth were cut for. Pressed together, the two layers then work as one thicker plate, so the strip is also stiff.</p>
+        <div class="pair">
+          <figure class="fig">
+            <video autoplay muted loop playsinline poster="figures/morphing-poster.jpg"><source src="figures/morphing-loop.mp4" type="video/mp4"></video>
+            <figcaption><span class="tag">Illustration</span>A strip with one tooth per scale curls into a half circle and then carries a load. The latex bag is not drawn.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="figures/panels/printed.jpg" alt="The printed strip lying soft, curled into an arch under negative pressure, and holding a 200 g weight" loading="lazy">
+            <figcaption>The printed structure, soft at first, takes its arch at a negative pressure of 90 kPa and then holds 200 g, 15.3 times its own weight. Scale bar, 2 cm. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="design">
+        <h2><span class="num">2</span> Design method <a class="anchor" href="#design" aria-label="Link to this section">#</a></h2>
+        <p>The design method, which the paper calls layered tessellation, starts from the target shape. The curve is drawn with the structure's thickness and filled with alternating triangles. The triangles are split into two layers, each layer is straightened by turning its triangles, a thin layer is added to its back to join them, and the upper layer is cut into scales.</p>
+        <figure class="fig narrow">
+          <img src="figures/panels/design-steps.jpg" alt="Five steps from a half-circle target to a flat strip of scales on a base layer" loading="lazy">
+          <figcaption>The five steps for a half-circle target: the target, its triangles, the two layers apart, each layer straightened (inset: the thin layer of thickness <em>t</em> that joins its triangles), and the upper layer cut into scales. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig1.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Four independent parameters define a structure: the target radius <em>r</em>, the thickness <em>h</em>, the number of scales <em>n</em><sub>s</sub> and the number of periods on each scale <em>n</em><sub>p</sub>. From the geometry of one period, the paper derives the conditions under which the scales still mesh with the base layer when the strip lies flat.</p>
+        <figure class="fig">
+          <div class="panels two middle">
+            <img src="figures/panels/circle.jpg" alt="A circular target filled with alternating triangles, with its radius and thickness marked" loading="lazy">
+            <img src="figures/panels/period.jpg" alt="One period of the circle, with the lengths and angles used in the design conditions" loading="lazy">
+          </div>
+          <figcaption>Left, a circular target of radius <em>r</em> and thickness <em>h</em>, filled with triangles. Right, one period, with the lengths and angles used in the design conditions. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig2-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/panels/mesh-conditions.jpg" alt="Scales lying on a flat base layer, with one or several periods per scale, for either choice of base layer" loading="lazy">
+          <figcaption>Laid flat, each scale must still fit the base layer beneath it. Top, with the smaller triangles as the base layer, for one period per scale and for several; bottom, with the larger triangles as the base layer. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig2-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Those conditions bound the design. With the smaller triangles as the base layer and one period per scale, the thickest possible structure grows with the target radius and falls quickly as scales are added, and more periods per scale narrow the range further. Using the larger triangles as the base layer triples it, up to 120 mm thick at a 60 mm radius, but it too shrinks quickly once a scale carries more than one period.</p>
+        <figure class="fig">
+          <div class="panels two">
+            <img src="figures/panels/space-3d.jpg" alt="Allowed thickness against the number of scales and the radius, smaller triangles as the base layer" loading="lazy">
+            <img src="figures/panels/space-np.jpg" alt="Allowed thickness against the number of scales for one to four periods, smaller triangles as the base layer" loading="lazy">
+            <img src="figures/panels/space-3d-large.jpg" alt="Allowed thickness against the number of scales and the radius, larger triangles as the base layer" loading="lazy">
+            <img src="figures/panels/space-np-large.jpg" alt="Allowed thickness against the number of scales for one to four periods, larger triangles as the base layer" loading="lazy">
+          </div>
+          <figcaption>The allowed thickness <em>h</em>. Top, with the smaller triangles as the base layer: against the number of scales and the target radius with one period per scale, and against the number of scales with one to four periods per scale at <em>r</em> = 19.1 mm. Bottom, the same with the larger triangles as the base layer. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig3-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig">
+          <img src="figures/figa1-full.jpg" alt="A table of three targets, each flattened with three or four scales of two or three periods" loading="lazy">
+          <figcaption>The four parameters are independent: three targets, each flattened with three or four scales of two or three periods. <span class="credit">From Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="model">
+        <h2><span class="num">3</span> Finite element model <a class="anchor" href="#model" aria-label="Link to this section">#</a></h2>
+        <p>Two-dimensional plane strain models in Abaqus/Explicit include the scales, the base layer, the latex bag and the test fixtures. The printed TPU is modeled as elastic with a measured modulus of 55.7 MPa, the latex as a neo-Hookean solid, and the friction between each pair of materials comes from inclined plane tests.</p>
+        <figure class="fig">
+          <img src="figures/panels/model.jpg" alt="The finite element models of the bending test and of morphing" loading="lazy">
+          <figcaption>The models for the three-point bending test (top) and for morphing (bottom); the inset shows the pin connection between a scale and the base layer. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig4.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>The models match three-point bending tests at negative pressures from 0 to 90 kPa, and they track how the curvature approaches its target as the pressure rises. The simulated final curvature is slightly higher than the measured one, which the paper attributes to the PTFE tape on the printed parts.</p>
+        <figure class="fig">
+          <img src="figures/panels/validation.jpg" alt="Measured and simulated force, bending modulus and curvature" loading="lazy">
+          <figcaption>Experiments against simulations: force against displacement in three-point bending at negative pressures from 0 to 90 kPa (top left), and the apparent bending modulus (top right) and the curvature (bottom) against the negative pressure. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig5.jpg">Full figure</a></figcaption>
+        </figure>
+      </section>
+
+      <section id="findings">
+        <h2><span class="num">4</span> Effects of friction, scales and tooth shape <a class="anchor" href="#findings" aria-label="Link to this section">#</a></h2>
+        <p>Friction between the scales and the base layer decides whether the structure can morph at all. A force analysis of one unit, with each period treated as a rigid body hinged at its vertices, gives the friction coefficient above which a scale can no longer slide on the base layer: the layers lock before the strip reaches its shape.</p>
+        <figure class="fig">
+          <img src="figures/panels/forces.jpg" alt="Forces on a scale and on the base layer in one unit, for two contact configurations" loading="lazy">
+          <figcaption>The forces on a scale (red) and on the base layer (green) in one unit, when the scale's tip touches the base layer's edge (left) and when the base layer's tip touches the scale's edge (right). <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig6-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig medium">
+          <img src="figures/fig7.jpg" alt="Map of the friction coefficient at which the layers lock, against thickness and number of scales" loading="lazy">
+          <figcaption>The friction coefficient above which the layers lock, against thickness and number of scales (<em>r</em> = 19.1 mm). In the purple region the strip would bend the wrong way; the insets show the unit in the two configurations. <span class="credit">From Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span></figcaption>
+        </figure>
+        <p>Simulations of whole strips show the same kind of threshold. Their stiffness rises with friction, but above a critical coefficient, about 0.2 with four scales and 0.6 with eight, they no longer reach their target and may even bend the wrong way.</p>
+        <figure class="fig">
+          <img src="figures/panels/friction.jpg" alt="Bending modulus and normalized curvature against the friction coefficient" loading="lazy">
+          <figcaption>The apparent bending modulus (left) and the normalized curvature (right), which is 1 when the strip reaches its target, against the friction coefficient, for 4, 8 and 12 scales of three periods. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig8.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>More periods per scale raise the stiffness but lower the curvature the strip reaches, a trade-off between morphing and stiffness.</p>
+        <figure class="fig">
+          <img src="figures/panels/periods.jpg" alt="Bending modulus and normalized curvature against the central angle of one period" loading="lazy">
+          <figcaption>The apparent bending modulus (left) and the normalized curvature (right) against the central angle of one period, <em>α</em>, which shrinks as scales are added, for one to three periods per scale. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig9.jpg">Full figure</a></figcaption>
+        </figure>
+        <p>Changing the shape of the teeth overcomes the trade-off: with superellipse teeth of exponent 1.9, the structure reaches the highest stiffness and the highest curvature of the designs studied.</p>
+        <figure class="fig">
+          <img src="figures/panels/tooth-shape.jpg" alt="Bending modulus and normalized curvature for four tooth shapes" loading="lazy">
+          <figcaption>The same two measures for four tooth shapes, with three periods per scale: triangles, sine waves, and superellipses of exponents 0.7 and 1.9. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig10-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <figure class="fig medium">
+          <img src="figures/fig11.jpg" alt="Apparent bending modulus against normalized curvature for all designs" loading="lazy">
+          <figcaption>Stiffness against how closely the strip reaches its target, for the tooth shapes and periods studied. <span class="credit">From Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="demos">
+        <h2><span class="num">5</span> Demonstrations <a class="anchor" href="#demos" aria-label="Link to this section">#</a></h2>
+        <p>Printed from PLA for higher stiffness, the structure becomes a soft gripper, a phone stand and the hinges of a foldable box, all driven by a negative pressure of 90 kPa.</p>
+        <p>Each finger of the gripper is a strip designed for a quarter circle of radius 63.66 mm, 2 mm thick. Soft, the gripper folds flat; under pressure it opens out within 0.3 s, and it lifts a 147 g load, 7.35 times its own weight, not counting its frame.</p>
+        <figure class="fig">
+          <img src="figures/panels/gripper-design.jpg" alt="The gripper, the scaled structure in one finger, and the finger's quarter-circle target" loading="lazy">
+          <figcaption>The gripper, the scaled structure in one finger, and the finger's target shape. Scale bar, 2 cm. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig12-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 1">
+            <video controls preload="none" playsinline poster="figures/clips/gripper-curl-poster.jpg"><source src="figures/clips/gripper-curl.mp4" type="video/mp4"></video>
+            <figcaption>The fingers curl into a quarter circle within a quarter of a second, then open again when the pressure is released (real time). <span class="credit">Recorded for the paper.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 1">
+            <video controls preload="none" playsinline poster="figures/clips/gripper-pick-poster.jpg"><source src="figures/clips/gripper-pick.mp4" type="video/mp4"></video>
+            <figcaption>The gripper closes around a 147 g load and lifts it (real time). <span class="credit">Recorded for the paper.</span></figcaption>
+          </figure>
+        </div>
+        <p>The phone stand is one strip of eight scales with two periods each, 4 mm thick and 3 cm wide. It takes its shape in about 11 s and then holds a phone.</p>
+        <figure class="fig">
+          <img src="figures/panels/stand-design.jpg" alt="The phone stand's target shape and its layered structure" loading="lazy">
+          <figcaption>The phone stand's target shape and the layered structure designed from it. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig13-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 1.778">
+            <video controls preload="none" playsinline poster="figures/clips/stand-poster.jpg"><source src="figures/clips/stand.mp4" type="video/mp4"></video>
+            <figcaption>The flat strip morphs into the phone stand (real time). <span class="credit">Recorded for the paper.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 0.826">
+            <img src="figures/panels/stand-phone.jpg" alt="A phone resting on the stand" loading="lazy">
+            <figcaption>The stand holding a phone. Scale bar, 2 cm. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig13-full.jpg">Full figure</a></figcaption>
+          </figure>
+        </div>
+        <p>In the box, the scaled structures are only the hinges, each designed as a quarter circle, between flat faces 2 mm thick and 3 cm wide. The box folds within one second, holds 400 g, and lifts 20 g.</p>
+        <figure class="fig">
+          <img src="figures/panels/box-design.jpg" alt="The folded box, a hinge's layered tessellation, and the flat sheet" loading="lazy">
+          <figcaption>The box, the layered tessellation at its hinges, and the flat sheet it folds from. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig14-full.jpg">Full figure</a></figcaption>
+        </figure>
+        <div class="row">
+          <figure class="fig" style="flex: 1.333">
+            <video controls preload="none" playsinline poster="figures/clips/box-poster.jpg"><source src="figures/clips/box.mp4" type="video/mp4"></video>
+            <figcaption>The flat sheet folds into a box within one second (real time). <span class="credit">Recorded for the paper.</span></figcaption>
+          </figure>
+          <figure class="fig" style="flex: 1.172">
+            <img src="figures/panels/box-load.jpg" alt="The folded box under a 400 g weight, and lifting a 20 g weight" loading="lazy">
+            <figcaption>The folded box holds 400 g (left) and lifts 20 g (right). Scale bars, 2 cm. <span class="credit">Adapted from Chen et al., International Journal of Mechanical Sciences 284, 109699 (2024).</span> <a href="figures/fig14-full.jpg">Full figure</a></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      
