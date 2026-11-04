@@ -1328,6 +1328,18 @@ footer .contact a {
     color: var(--ink);
     cursor: pointer;
     pointer-events: auto;
+    transition: opacity 0.3s;
+  }
+
+  /* They fade a few seconds after they show (home.js), so they don't cover the clip, and then let swipes through. */
+  .hl-arrows.faded button {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hl-arrows.faded button:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .hl-prev {
@@ -1396,7 +1408,8 @@ footer .contact a {
   }
 
   .btn,
-  .chip {
+  .chip,
+  .hl-arrows button {
     transition: none;
   }
 }

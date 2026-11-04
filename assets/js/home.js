@@ -60,6 +60,7 @@
   // this slidable on phone view"): the roll, the tabs and the arrows over the clip scroll it to their slide, a swipe
   // shows the slide it stops on, and the roll waits while a finger is down.
   var DWELL = 9000;  // ms a slide shows, at least
+  var ARROWS = 3000;  // ms a phone's arrows stay after they show or a finger leaves the slides
   var box = document.querySelector(".highlights");
   if (box) {
     var slides = Array.prototype.slice.call(box.querySelectorAll(".slide"));
@@ -207,6 +208,31 @@
     nextArrow.addEventListener("click", function () {
       show((at + 1) % slides.length);
     });
+    // They fade so they don't cover the clip (Tianyu: "make the arrows disappear aftera while"), showing again when they
+    // come into view, for a pointer or the keyboard, and when a finger lifts from the slides without having scrolled the
+    // page. Only on the lift: shown under a finger that just landed, an arrow would stop a swipe that starts there from
+    // moving the strip. The roll moving on does not bring them back.
+    var arrows = box.querySelector(".hl-arrows");
+    var stage = box.querySelector(".hl-stage");
+    var fading = null;
+    var pageAt = 0;
+    var showArrows = function () {
+      arrows.classList.remove("faded");
+      window.clearTimeout(fading);
+      fading = window.setTimeout(function () {
+        arrows.classList.add("faded");
+      }, ARROWS);
+    };
+    stage.addEventListener("touchstart", function () {
+      pageAt = window.scrollY;
+    }, { passive: true });
+    stage.addEventListener("touchend", function () {
+      if (window.scrollY === pageAt) {
+        showArrows();
+      }
+    });
+    stage.addEventListener("mousemove", showArrows);
+    stage.addEventListener("focusin", showArrows);
 
     // Once the strip stops, the slide it stopped on shows: one the script scrolled to is already showing and its clip
     // starts now, and the slides it passes on the way (back from the last to the first) are not shown.
@@ -306,6 +332,11 @@
         onScreen = items[items.length - 1].isIntersecting;
         resume();
       }).observe(box);
+      new IntersectionObserver(function (items) {
+        if (items[items.length - 1].isIntersecting) {
+          showArrows();
+        }
+      }, { threshold: 0.9 }).observe(nextArrow);
     }
     show(0);
     follow();

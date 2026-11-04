@@ -809,6 +809,38 @@ class RenderHomeTest(unittest.TestCase):
         # Tianyu asked why "All papers" sat above "Publications": it only repeated the heading.
         self.assertNotIn("All papers", section(self.pubs, "publications"))
 
+    def test_arrows_fade_on_a_phone(self):
+        # Tianyu (2026-11-04): "on the phone's view please make the arrows disappear aftera while, otherwise it would cover
+        # the content". They show when they come into view and when a finger lifts from the slides, then fade, and one with
+        # the keyboard's focus stays seen. A faded arrow lets a swipe that starts where it sits move the slides, so a finger
+        # that lands does not bring them back, nor does one that scrolled the page, nor the roll moving on. Coming into
+        # view goes by the arrow itself, since a phone held sideways never has most of the square clip on its screen.
+        css = (ROOT / "assets" / "css" / "home.css").read_text(encoding="utf-8")
+        phone = css_rules(css.split("@media (max-width: 860px) {")[1].split("\n}")[0])
+        self.assertIn("transition: opacity 0.3s", last_rule(phone, ".hl-arrows button"))
+        faded = last_rule(phone, ".hl-arrows.faded button")
+        self.assertIn("opacity: 0", faded)
+        self.assertIn("pointer-events: none", faded)
+        focused = last_rule(phone, ".hl-arrows.faded button:focus-visible")
+        self.assertIn("opacity: 1", focused)
+        self.assertIn("pointer-events: auto", focused)
+        calm = css_rules(css.split("@media (prefers-reduced-motion: reduce) {")[1])
+        self.assertIn("transition: none", last_rule(calm, ".hl-arrows button"))
+        script = (ROOT / "assets" / "js" / "home.js").read_text(encoding="utf-8")
+        self.assertIn("var ARROWS = 3000;", script)
+        show = re.search(r"var showArrows = function \(\) \{(.*?)\n    \};", script, re.S).group(1)
+        self.assertIn('arrows.classList.remove("faded")', show)
+        self.assertIn("window.clearTimeout(fading)", show)
+        self.assertRegex(show, r'window\.setTimeout\(function \(\) \{\s*arrows\.classList\.add\("faded"\);\s*\}, ARROWS\)')
+        landed = re.search(r'stage\.addEventListener\("touchstart", function \(\) \{(.*?)\}, \{ passive: true \}\);', script, re.S).group(1)
+        self.assertIn("pageAt = window.scrollY;", landed)
+        self.assertNotIn("showArrows", landed)
+        self.assertRegex(script, r'stage\.addEventListener\("touchend", function \(\) \{\s*if \(window\.scrollY === pageAt\) \{\s*showArrows\(\);')
+        self.assertIn('stage.addEventListener("mousemove", showArrows);', script)
+        self.assertIn('stage.addEventListener("focusin", showArrows);', script)
+        self.assertIn("{ threshold: 0.9 }).observe(nextArrow)", script)
+        self.assertNotIn("showArrows", re.search(r"var show = function \(i, swiped\) \{(.*?)\n    \};", script, re.S).group(1))
+
     def test_filtered_theme_sits_as_the_first_does(self):
         # Tianyu: "why the gap under the different tabs are different": 32 px under the filters with the first theme shown,
         # 52 px with another, because "+" also matched the hidden theme before it. Only a theme shown above earns the space.
