@@ -368,13 +368,14 @@ class SiteTest(unittest.TestCase):
             ("Robot hardware", ["Raspberry Pi", "Solenoid valves and vacuum pumps"]),
         ])
         # From the general CV (Tianyu, 2026-11-03), without the 2014 and 2015 student prizes but for the national one, which
-        # Tianyu asked to add back in their spelling, "zhou peiyuan" (2026-11-04); the CV has "Chou Pei-yuan".
+        # Tianyu asked to add back (2026-11-04), under the name the organizer, the Chinese Society of Theoretical and
+        # Applied Mechanics, uses in English.
         self.assertEqual([(a.year, a.name, a.org) for a in site.awards], [
             ("2021–2024", "NTU Research Scholarship", "Nanyang Technological University"),
             ("2020", "Outstanding Master’s Thesis Award", "Northwestern Polytechnical University"),
             ("2017–2019", "Academic scholarships for postgraduates, first and second class",
              "Northwestern Polytechnical University"),
-            ("2015", "National Zhou Peiyuan Mechanics Competition for College Students", "Third-class prize"),
+            ("2015", "National Zhou Peiyuan Competition on Mechanics", "Third-class prize"),
         ])
         self.assertEqual([(t.years, t.role, t.org, t.courses) for t in site.teaching], [
             ("2022–2025", "Teaching Assistant", "Nanyang Technological University",

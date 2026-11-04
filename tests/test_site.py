@@ -137,6 +137,18 @@ class SiteTest(unittest.TestCase):
             self.assertIn("animation: fonts-in 0s 5s forwards", hold, css)
             self.assertRegex(text, r"@keyframes fonts-in \{\s*to \{\s*opacity: 1;?\s*\}\s*\}", css)
 
+    def test_cv_names_the_prize_as_the_site_does(self):
+        # Tianyu (2026-11-04): the organizer's name for the competition, on the site and in the CV it links to.
+        try:
+            import fitz
+        except ImportError:
+            self.skipTest("PyMuPDF not installed")
+        with fitz.open(ROOT / "files" / "Tianyu-Chen-CV.pdf") as doc:
+            text = re.sub(r"\s+", " ", " ".join(page.get_text() for page in doc))
+        self.assertIn("National Zhou Peiyuan Competition on Mechanics", text)
+        self.assertNotIn("Chou Pei-yuan", text)
+        self.assertIn("National Zhou Peiyuan Competition on Mechanics", (ROOT / "experience.html").read_text(encoding="utf-8"))
+
     def test_pages_name_their_own_address(self):
         # Tianyu (2026-11-01): "how can i count click of my website from different source, like google scholar and
         # linkedin". A tagged link (?campaign=linkedin) tells GoatCounter the source, but its count.js records the
