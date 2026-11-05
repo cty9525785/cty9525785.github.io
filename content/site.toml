@@ -18,18 +18,20 @@ role = "Research Associate, Bristol Robotics Laboratory"
 # Tianyu (2026-10-30), with their changes.
 cv_status = "confirmed"  # the awards, teaching and talks too, as listed to Tianyu (2026-11-04)
 # The research highlights slideshow under the intro, one slide per paper in this order (Tianyu, 2026-10-30: like
-# hyunwooyuk.com's "camera roll", with key co-authored papers added; a co-authored slide says so).
+# hyunwooyuk.com's "camera roll", with key co-authored papers added; a co-authored slide says so). The master's papers come last
+# (Tianyu, 2026-11-05: "SR, SA control, IJMS, AM, matter, suture, junwei's sa, then the three master paper", then "add hai lu's
+# small paper to the highlight to replace chen yu's afm").
 highlights = [
   "scale-inspired-robotic-structures",
   "stiffness-driven-control",
   "programmable-morphing-structure",
+  "active-fabrics",
+  "hierarchical-tessellation",
+  "dual-responsive-skin",
+  "muscle-impedance-sensors",
   "shear-banding-gradient-metals",
   "amorphous-thin-films",
   "graded-substrate-thin-films",
-  "suture-interlocking-metamaterials",
-  "muscle-impedance-sensors",
-  "active-fabrics",
-  "hierarchical-tessellation",
 ]
 
 # Rendered in this order on the home page.

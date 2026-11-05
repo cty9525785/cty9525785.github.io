@@ -11,10 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "content" / "site.toml"
 PAPERS = ROOT / "content" / "papers.toml"
 # Tianyu, 2026-10-30: research highlights like hyunwooyuk.com's, one slide per first-author paper, then key co-authored
-# papers ("Add key co-authored papers"), each marked as co-authored on its slide.
+# papers ("Add key co-authored papers"), each marked as co-authored on its slide. The order is Tianyu's (2026-11-05): "SR, SA
+# control, IJMS, AM, matter, suture, junwei's sa, then the three master paper", and then "add hai lu's small paper to the
+# highlight to replace chen yu's afm".
 HIGHLIGHTS = ["scale-inspired-robotic-structures", "stiffness-driven-control", "programmable-morphing-structure",
-              "shear-banding-gradient-metals", "amorphous-thin-films", "graded-substrate-thin-films",
-              "suture-interlocking-metamaterials", "muscle-impedance-sensors", "active-fabrics", "hierarchical-tessellation"]
+              "active-fabrics", "hierarchical-tessellation", "dual-responsive-skin", "muscle-impedance-sensors",
+              "shear-banding-gradient-metals", "amorphous-thin-films", "graded-substrate-thin-films"]
 # Tianyu, 2026-10-30 ("yes for 1"): the open-access papers are hosted with their supplements, under the license each prints.
 HOSTED = {
     slug: (f"files/papers/{slug}.pdf", f"files/papers/{slug}-supplementary.pdf" if supplement else "", license)

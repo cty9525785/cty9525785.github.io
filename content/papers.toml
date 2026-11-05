@@ -449,6 +449,7 @@ authors = ["Junwei Li", "Kunlin Wu", "Jingcheng Xiao", "Tianyu Chen", "Xudong Ya
 me = 4
 title = "Flexible multichannel muscle impedance sensors for collaborative human-machine interfaces"
 short_title = "Muscle impedance sensors for human-machine interfaces"
+highlight_clip = "highlight"
 citation = "Science Advances 11, eadv3359 (2025)"
 doi = "10.1126/sciadv.adv3359"
 pdf = "files/papers/muscle-impedance-sensors.pdf"
@@ -456,6 +457,21 @@ supplement_pdf = "files/papers/muscle-impedance-sensors-supplementary.pdf"
 license = "CC BY-NC 4.0"
 one_line = "A thin, soft impedance sensor that conforms to skin reads the contractions of several deep muscles, for gesture recognition, force prediction, human-robot collaboration and exoskeleton control."
 summary_status = "confirmed"
+
+[other.tile]
+kind = "clip"
+graph = "muscle-impedance-sensors.graph"
+inputs = [{ movie = "S2", start = 6.0, duration = 10.4 }, { movie = "S3", start = 5.6, duration = 7.5 }]
+segments = [{ at = 0.0, speed = 2.0 }, { at = 4.8, speed = 1.5 }]
+poster_at = 2.6
+
+[[other.movie]]
+id = "S2"
+source = "Li 2025 Sci Adv - Movie S2.mp4"
+
+[[other.movie]]
+id = "S3"
+source = "Li 2025 Sci Adv - Movie S3.mp4"
 
 [[other]]
 slug = "negative-pressure-actuators"
@@ -502,10 +518,27 @@ me = 3
 equal_contribution = ["Xudong Yang", "Yu Chen"]
 title = "Active Fabrics With Controllable Stiffness for Robotic Assistive Interfaces"
 short_title = "Active fabrics with controllable stiffness"
+highlight_clip = "highlight"
 citation = "Advanced Materials 36, 2404502 (2024)"
 doi = "10.1002/adma.202404502"
 one_line = "Rigid tiles linked by actuated fibers form fabrics that switch from soft to stiff around the body, for exosuits and body armor."
 summary_status = "confirmed"
+
+[other.tile]
+kind = "clip"
+graph = "active-fabrics.graph"
+inputs = [{ movie = "S5", start = 10.0, duration = 4.5 }, { movie = "S4", start = 21.0, duration = 14.0 }]
+segments = [{ at = 0.0, speed = 2.0 }, { at = 4.1, speed = 3.0 }]
+poster_at = 3.5
+
+[[other.movie]]
+id = "S5"
+source = "Yang 2024 Adv Mater - Movie S5.mp4"
+source_speed = 2.0
+
+[[other.movie]]
+id = "S4"
+source = "Yang 2024 Adv Mater - Movie S4.mp4"
 
 [[other]]
 slug = "hierarchical-tessellation"
@@ -514,10 +547,22 @@ authors = ["Xudong Yang", "Mingchao Liu", "Bojian Zhang", "Ziqi Wang", "Tianyu C
 me = 5
 title = "Hierarchical tessellation enables programmable morphing matter"
 short_title = "Hierarchical tessellation for morphing matter"
+highlight_clip = "highlight"
 citation = "Matter 7, 603–619 (2024)"
 doi = "10.1016/j.matt.2023.11.002"
 one_line = "A design method divides a curved 3D surface into rigid particles laid out flat, which tendons pull into that shape with tunable stiffness."
 summary_status = "confirmed"
+
+[other.tile]
+kind = "clip"
+graph = "hierarchical-tessellation.graph"
+inputs = [{ movie = "S3", start = 15.5, duration = 12.5 }, { movie = "S3", start = 30.0, duration = 5.5 }]
+segments = [{ at = 0.0, speed = 2.5 }, { at = 4.6, speed = 1.0 }]
+poster_at = 4.5
+
+[[other.movie]]
+id = "S3"
+source = "Yang 2024 Matter - Video S3.mp4"
 
 [[other]]
 slug = "architectured-composites"
@@ -548,11 +593,24 @@ topic = "control"
 authors = ["Hai Lu Wang", "Tianyu Chen", "Bojian Zhang", "Guohui Wang", "Xudong Yang", "Kunlin Wu", "Yifan Wang"]
 me = 2
 title = "A dual-responsive artificial skin for tactile and touchless interfaces"
+short_title = "Dual-responsive artificial skin for tactile and touchless interfaces"
+highlight_clip = "highlight"
 citation = "Small 19, 2206830 (2023)"
 doi = "10.1002/smll.202206830"
 one_line = "A flexible capacitive skin senses both touch pressure and approaching objects, and can tell metals, polymers and human skin apart before contact."
 summary_status = "confirmed"
 thumb = ""
+
+[other.tile]
+kind = "clip"
+graph = "dual-responsive-skin.graph"
+inputs = [{ movie = "S1", start = 31.4, duration = 14.2 }, { movie = "S1", start = 31.4, duration = 14.2 }]
+segments = [{ at = 0.0, speed = 2.0 }]
+poster_at = 6.0
+
+[[other.movie]]
+id = "S1"
+source = "Wang 2023 Small - Movie S1.mp4"
 
 [[other]]
 slug = "self-sensing-structures"

@@ -277,6 +277,24 @@ class MediaOutputTest(unittest.TestCase):
                 self.assertLessEqual(path.stat().st_size, 2_500_000)
                 self.assertTrue((MEDIA / paper.slug / "loop-poster.jpg").stat().st_size > 0)
 
+    def test_coauthored_slide_clips(self):
+        # Tianyu (2026-11-05): clips from the papers' movies on these slides, square and sharp like the first slide's,
+        # and each with its poster over it until it plays.
+        _, others = load_papers(ROOT / "content" / "papers.toml")
+        for slug in ("active-fabrics", "hierarchical-tessellation", "dual-responsive-skin", "muscle-impedance-sensors"):
+            pub = next(o for o in others if o.slug == slug)
+            self.assertEqual(pub.highlight_clip, "highlight", slug)
+            self.assertFalse((MEDIA / slug / "thumb.jpg").exists(), slug)  # its Publications row loops a clip (test_loops)
+            path = MEDIA / slug / "highlight.mp4"
+            info = probe(path)
+            self.assertFalse(info.has_audio, slug)
+            self.assertTrue(info.faststart, slug)
+            self.assertEqual((info.width, info.height), (720, 720), slug)
+            self.assertGreaterEqual(info.duration, 15.0, slug)
+            self.assertLessEqual(info.duration, 23.0, slug)
+            self.assertLessEqual(path.stat().st_size, 4_000_000, slug)
+            self.assertTrue((MEDIA / slug / "highlight-poster.jpg").stat().st_size > 0, slug)
+
     def test_first_slide_clip(self):
         # Tianyu (2026-11-01): the hook animation in the first research highlights slide, then the drone landing, as
         # one clip, square and sharper than the 480 px loops since it leads the page; the Publications row keeps its loop.

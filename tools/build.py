@@ -364,12 +364,12 @@ def _slide(n: int, pub: Paper | OtherPub, own: bool) -> str:
     title = pub.short_title or pub.title
     link = f"papers/{pub.slug}/index.html" if own else f"https://doi.org/{esc(pub.doi)}"
     media_dir = f"media/{pub.slug}/"
-    if pub.tile is None:
+    clip = pub.highlight_clip or ("loop" if pub.tile else "")  # a slide may have a clip of its own (Tianyu, 2026-11-01)
+    if not clip:
         media = f'<img src="{media_dir}thumb.jpg" alt="" loading="lazy">'
         kind = "hl-media still"
     else:  # only the first slide's clip plays at once; the script plays each other one as its slide shows
         play = "autoplay" if n == 1 else 'preload="none"'
-        clip = (pub.highlight_clip if own else "") or "loop"  # a slide may have a clip of its own (Tianyu, 2026-11-01)
         # That clip is long enough to set the slide's time: it plays once and holds its last frame until the roll moves
         # on, since repeating would show its first frame (Tianyu: "why the last frame ... is the hook again?").
         repeat = " loop" if clip == "loop" else ""

@@ -116,6 +116,7 @@ class OtherPub:
     supplement_pdf: str = ""
     license: str = ""
     short_title: str = ""  # its slide's title, when it is one of the site's highlights
+    highlight_clip: str = ""  # as for Paper; its row keeps what it had
 
 
 @dataclass

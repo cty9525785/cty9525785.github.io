@@ -319,12 +319,13 @@ class RenderHomeTest(unittest.TestCase):
             self.assertIn(html.escape(pub.citation), body)
             self.assertEqual(body.count("<strong>Tianyu Chen"), 1, slug)
             self.assertEqual('<p class="label">Co-authored</p>' in body, slug not in own, slug)
-            if pub.tile is None:
+            # Tianyu (2026-11-01) chose the first slide for the hook animation they liked on the explainer page: that
+            # paper's slide has a clip of its own, the animation and then the drone, as three co-authored slides have
+            # theirs (test_coauthored_slides_play_their_own_clips); the others play their loops.
+            clip = pub.highlight_clip or ("loop" if pub.tile else "")
+            if not clip:
                 self.assertEqual([t.get("src") for t in tags(media.group(3), "img")], [f"media/{slug}/thumb.jpg"])
                 continue
-            # Tianyu (2026-11-01) chose the first slide for the hook animation they liked on the explainer page: that
-            # paper's slide has a clip of its own, the animation and then the drone; the others play their loops.
-            clip = "highlight" if i == 0 else "loop"
             self.assertEqual([t.get("src") for t in tags(media.group(3), "source")], [f"media/{slug}/{clip}.mp4"])
             video = tags(media.group(3), "video")[0]
             self.assertEqual(video.get("poster"), f"media/{slug}/{clip}-poster.jpg")
@@ -332,8 +333,8 @@ class RenderHomeTest(unittest.TestCase):
                 self.assertIn(attr, video)
             # Tianyu (2026-11-02): "why the last frame before moving to the second highlight is the hook again?" The
             # first slide's long clip plays once and holds its last frame until the roll moves on; repeating, it would
-            # show its first frame. The others, shorter, repeat until their time is up.
-            self.assertEqual("loop" in video, i != 0, slug)
+            # show its first frame. The loops, shorter, repeat until their time is up.
+            self.assertEqual("loop" in video, clip == "loop", slug)
             self.assertEqual("autoplay" in video, i == 0, slug)  # the script plays each other clip as its slide shows
             if i:
                 self.assertEqual(video.get("preload"), "none", slug)
@@ -351,6 +352,21 @@ class RenderHomeTest(unittest.TestCase):
                          [("button", "hl-prev", "Previous highlight"), ("button", "hl-next", "Next highlight")])
         self.assertEqual(arrows.count("<svg"), 2)
         self.assertLess(hl.index('<div class="hl-arrows">'), hl.index('<nav class="hl-tabs"'))
+
+    def test_coauthored_slides_play_their_own_clips(self):
+        # Tianyu (2026-11-05): "for the matter paper use videos from the paper, for the AM paper as well", "junwei's science
+        # advances paper also use video". Those slides play clips cut from the papers' movies, longer and with words, which
+        # the Publications rows do not: they loop short clips of their own (test_coauthored_rows_loop_clips).
+        hl = section(self.page, "highlights")
+        self.assertNotIn("hl-media still", hl)
+        # "add hai lu's small paper to the highlight to replace chen yu's afm": the suture paper keeps only its row.
+        self.assertNotIn('data-slug="suture-interlocking-metamaterials"', hl)
+        self.assertIn('<source src="media/suture-interlocking-metamaterials/loop.mp4"', self.pubs)
+        for slug in ("active-fabrics", "hierarchical-tessellation", "dual-responsive-skin", "muscle-impedance-sensors"):
+            slide = re.search(rf'data-slug="{slug}">(.*?)</article>', hl, re.S).group(1)
+            self.assertIn(f'<source src="media/{slug}/highlight.mp4" type="video/mp4">', slide)
+            self.assertNotIn("thumb.jpg", slide)
+            self.assertNotIn(f"media/{slug}/highlight", self.pubs)
 
     def test_news(self):
         # Tianyu: "also include any news section about my work, both first author and coauthor"; all confirmed
@@ -529,9 +545,10 @@ class RenderHomeTest(unittest.TestCase):
         # frames rewinds.
         hl = section(self.page, "highlights")
         clips = re.findall(r'data-slug="([a-z0-9-]+)"><a class="hl-media"[^>]*>(.*?)</a>', hl, re.S)
-        self.assertEqual(len(clips), 7)
-        for i, (slug, body) in enumerate(clips):
-            clip = "highlight" if i == 0 else "loop"  # the first slide's own clip (test_highlights)
+        self.assertEqual(len(clips), 10)
+        for slug, body in clips:
+            pub = next(p for p in [*self.papers, *self.others] if p.slug == slug)
+            clip = pub.highlight_clip or "loop"  # a slide's own clip (test_highlights)
             self.assertIn(f'<img class="hl-poster" src="media/{slug}/{clip}-poster.jpg" alt="">', body)
             self.assertLess(body.index("<video"), body.index('class="hl-poster"'))  # drawn over the clip
         css = (ROOT / "assets" / "css" / "home.css").read_text(encoding="utf-8")
@@ -919,11 +936,14 @@ class RenderHomeTest(unittest.TestCase):
         self.assertIn(f'<source src="media/{slug}/loop.mp4"', body)
         self.assertEqual(tags(body, "img"), [])
 
-    def test_active_fabrics_shows_its_schematic(self):
-        # Tianyu: "for the am paper this figure maybe better as thumbnail": Figure 1a's schematic, not a clip.
-        body = entries(self.pubs)["active-fabrics"]
-        self.assertEqual(tags(body, "video"), [])
-        self.assertEqual([t.get("src") for t in tags(body, "img")], ["media/active-fabrics/thumb.jpg"])
+    def test_coauthored_rows_loop_clips(self):
+        # Tianyu (2026-11-05), once those slides had their videos: "update also the thumbnails in the publication page". For
+        # the AM paper this replaces "for the am paper this figure maybe better as thumbnail" (2026-10-30).
+        for slug in ("active-fabrics", "hierarchical-tessellation", "dual-responsive-skin", "muscle-impedance-sensors"):
+            body = entries(self.pubs)[slug]
+            self.assertEqual(tags(body, "img"), [], slug)
+            self.assertIn(f'<source src="media/{slug}/loop.mp4"', body)
+            self.assertEqual(tags(body, "video")[0].get("poster"), f"media/{slug}/loop-poster.jpg")
 
     def test_coauthored_entry_marks_equal_contributors(self):
         found = entries(self.pubs)
