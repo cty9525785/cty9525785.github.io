@@ -1,6 +1,7 @@
 """Render the site's pages from content/*.toml into static HTML."""
 import hashlib
 import html
+import json
 import re
 import sys
 from datetime import date
@@ -594,6 +595,22 @@ def _footer(site: Site) -> str:
             '</footer>')
 
 
+def _home_title(site: Site) -> str:
+    """The title a search result shows: the name, then the role and place (Tianyu, 2026-11-09: "attract more people to visit")."""
+    return site.name if not site.role or _is_placeholder(site.role) else f"{site.name} | {site.role}"
+
+
+def _person_data(site: Site) -> str:
+    """Tells search engines that this site and the profiles it links to are one person; no contact details."""
+    job, _, place = site.role.partition(", ")
+    data = {"@context": "https://schema.org", "@type": "Person", "name": site.name, "url": f"{site.url}/",
+            "image": f"{site.url}/{site.photo}", "jobTitle": job, "worksFor": {"@type": "Organization", "name": place},
+            "sameAs": [site.links[key] for key in ("scholar", "linkedin", "orcid")
+                       if key in site.links and not _is_placeholder(site.links[key])]}
+    text = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return f'  <script type="application/ld+json">{text}</script>'
+
+
 def render_home(site: Site, papers: list[Paper], others: list[OtherPub], news: list[NewsItem] = ()) -> str:
     check_topics(site, papers, others)
     check_news(list(news), papers, others)
@@ -601,6 +618,8 @@ def render_home(site: Site, papers: list[Paper], others: list[OtherPub], news: l
     return _new_tabs(_template("home.html").substitute(
         **_font_loading(_sans_fonts(hero + highlights + stories)),
         name=esc(site.name),
+        page_title=esc(_home_title(site)),
+        person_data=_person_data(site),
         site_url=esc(site.url),
         tagline_text=esc(site.tagline),
         nav=_nav(site),
@@ -647,9 +666,21 @@ def render_experience(site: Site) -> str:
                  _experience(site))
 
 
+def render_sitemap(site: Site, papers: list[Paper]) -> str:
+    """Every page for search engines, each by the address its canonical link names."""
+    addresses = [f"{site.url}/", f"{site.url}/publications.html", f"{site.url}/experience.html",
+                 *(f"{site.url}/papers/{paper.slug}/index.html" for paper in papers)]
+    urls = "".join(f"  <url><loc>{esc(address)}</loc></url>\n" for address in addresses)
+    return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n'
+
+
+def render_robots(site: Site) -> str:
+    return f"User-agent: *\nAllow: /\n\nSitemap: {site.url}/sitemap.xml\n"
+
+
 def build(root: Path = ROOT) -> list[Path]:
-    """Write the menu's pages (index.html, publications.html, experience.html) and papers/<slug>/index.html under
-    root; return the written paths."""
+    """Write the menu's pages (index.html, publications.html, experience.html), papers/<slug>/index.html, the sitemap
+    and robots.txt under root; return the written paths."""
     site = load_site(root / "content" / "site.toml")
     papers, others = load_papers(root / "content" / "papers.toml")
     news_file = root / "content" / "news.toml"
@@ -659,6 +690,8 @@ def build(root: Path = ROOT) -> list[Path]:
              root / "experience.html": render_experience(site)}
     for paper in papers:
         pages[root / "papers" / paper.slug / "index.html"] = render_paper(paper, site, read_body(root, paper.slug))
+    pages[root / "sitemap.xml"] = render_sitemap(site, papers)
+    pages[root / "robots.txt"] = render_robots(site)
     for path, text in pages.items():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8", newline="\n")

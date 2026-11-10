@@ -1,5 +1,6 @@
 import hashlib
 import html
+import json
 import re
 import unittest
 from dataclasses import replace
@@ -367,6 +368,23 @@ class RenderHomeTest(unittest.TestCase):
             self.assertIn(f'<source src="media/{slug}/highlight.mp4" type="video/mp4">', slide)
             self.assertNotIn("thumb.jpg", slide)
             self.assertNotIn(f"media/{slug}/highlight", self.pubs)
+
+    def test_home_page_tells_search_engines_who_this_is(self):
+        # Tianyu (2026-11-09): "attract more people to visit". A search result read only "Tianyu Chen", a common name, and
+        # nothing tied the site to the profiles it links to. The title now gives the role and the place, and the page says
+        # the site, Google Scholar, LinkedIn and ORCID are one person, with no contact details.
+        self.assertIn("<title>Tianyu Chen | Research Associate, Bristol Robotics Laboratory</title>", self.page)
+        found = re.findall(r'<script type="application/ld\+json">(.*?)</script>', self.page, re.S)
+        self.assertEqual(len(found), 1)
+        person = json.loads(found[0])
+        self.assertEqual((person["@context"], person["@type"], person["name"], person["url"], person["image"], person["jobTitle"]),
+                         ("https://schema.org", "Person", "Tianyu Chen", "https://tianyuchen.com/",
+                          "https://tianyuchen.com/assets/img/photo.jpg", "Research Associate"))
+        self.assertEqual(person["worksFor"], {"@type": "Organization", "name": "Bristol Robotics Laboratory"})
+        self.assertEqual(person["sameAs"], [self.site.links[key] for key in ("scholar", "linkedin", "orcid")])
+        self.assertFalse(set(person) & {"email", "telephone", "address"})
+        for page in (self.pubs, self.xp):
+            self.assertNotIn("ld+json", page)
 
     def test_news(self):
         # Tianyu: "also include any news section about my work, both first author and coauthor"; all confirmed
@@ -1170,7 +1188,7 @@ class RenderHomeTest(unittest.TestCase):
 
     def test_build_writes_pages(self):
         written = build(ROOT)
-        self.assertEqual(len(written), 9)
+        self.assertEqual(len(written), 11)  # the nine pages, then the sitemap and robots.txt (test_site)
         self.assertTrue(all(path.exists() for path in written))
         self.assertIn(ROOT / "index.html", written)
         self.assertIn(ROOT / "publications.html", written)

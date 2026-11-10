@@ -2,6 +2,7 @@ import re
 import subprocess
 import unittest
 from pathlib import Path
+from xml.etree import ElementTree
 
 from tests.htmlutil import tags
 from tools.check_publish import LICENSE_NAMES, public_allowances
@@ -148,6 +149,31 @@ class SiteTest(unittest.TestCase):
         self.assertIn("National Zhou Peiyuan Competition on Mechanics", text)
         self.assertNotIn("Chou Pei-yuan", text)
         self.assertIn("National Zhou Peiyuan Competition on Mechanics", (ROOT / "experience.html").read_text(encoding="utf-8"))
+
+    def test_search_engines_get_the_list_of_pages(self):
+        # Tianyu (2026-11-10): "it seems google has my site, what's next". The sitemap gives each page by the address its
+        # canonical link names, which is what Search Console takes, and robots.txt points to it and shuts nothing out.
+        listed = [loc.text for loc in ElementTree.parse(ROOT / "sitemap.xml").getroot().iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
+        canonical = [next(t.get("href") for t in tags(path.read_text(encoding="utf-8"), "link") if t.get("rel") == "canonical")
+                     for path in pages()]
+        self.assertEqual(sorted(listed), sorted(canonical))
+        robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
+        self.assertIn("User-agent: *\nAllow: /\n", robots)
+        self.assertIn("Sitemap: https://tianyuchen.com/sitemap.xml\n", robots)
+        self.assertNotIn("Disallow", robots)
+
+    def test_cv_gives_the_sites_address(self):
+        # Tianyu (2026-11-10), to bring people to the site: none of the CVs gave its address. The link is tagged so GoatCounter
+        # shows visits from the CV (test_pages_name_their_own_address).
+        try:
+            import fitz
+        except ImportError:
+            self.skipTest("PyMuPDF not installed")
+        with fitz.open(ROOT / "files" / "Tianyu-Chen-CV.pdf") as doc:
+            text = " ".join(page.get_text() for page in doc)
+            links = [link.get("uri") for page in doc for link in page.get_links()]
+        self.assertIn("tianyuchen.com", text)
+        self.assertIn("https://tianyuchen.com/?campaign=cv", links)
 
     def test_pages_name_their_own_address(self):
         # Tianyu (2026-11-01): "how can i count click of my website from different source, like google scholar and
