@@ -719,23 +719,31 @@ class RenderHomeTest(unittest.TestCase):
         self.assertEqual(section(draft, "experience").count('<span class="draft">draft</span>'), 1)
 
     def test_awards_teaching_and_talks(self):
-        # Tianyu (2026-11-03): under the skills, the short lists in the narrow column as Education is above them, and the
-        # talks' long titles in the wide one.
+        # Under the skills. Tianyu (2026-11-19): "the about me page layout looks weird", when awards and teaching ran down a
+        # narrow column twice as long as the talks beside it. The talks' long titles now cross the page, and the two short
+        # lists follow side by side in equal columns, one above the other on a phone.
         xp = section(self.xp, "experience")
-        self.assertGreater(xp.index('<div class="split cv-more">'), xp.index('<div class="skills">'))
-        more = xp[xp.index('<div class="split cv-more">'):]
-        self.assertEqual(re.findall(r'<h3 class="edu-h">(.*?)</h3>', more), ["Awards", "Teaching", "Talks and posters"])
+        self.assertGreater(xp.index('<div class="cv-more">'), xp.index('<div class="skills">'))
+        more = xp[xp.index('<div class="cv-more">'):]
+        self.assertEqual(re.findall(r'<h3 class="edu-h">(.*?)</h3>', more), ["Talks and posters", "Awards", "Teaching"])
+        pair = more[more.index('<div class="cv-pair">'):]
+        self.assertEqual(re.findall(r'<h3 class="edu-h">(.*?)</h3>', pair), ["Awards", "Teaching"])
+        self.assertEqual(pair.count("<div>"), 2)
+        css = (ROOT / "assets" / "css" / "home.css").read_text(encoding="utf-8")
+        self.assertIn("grid-template-columns: 1fr 1fr", last_rule(css_rules(outside_media(css)), ".cv-pair"))
+        phone = css_rules(css.split("@media (max-width: 860px) {")[1].split("\n}")[0])
+        self.assertTrue(any("grid-template-columns: 1fr;" in body for selectors, body in phone if ".cv-pair" in selectors))
         lists = re.findall(r'<ul class="edu">(.*?)</ul>', more, re.S)
         items = [re.findall(r"<li>(.*?)</li>", found, re.S) for found in lists]
         self.assertEqual([len(found) for found in items],
-                         [len(self.site.awards), len(self.site.teaching), len(self.site.talks)])
-        for li, a in zip(items[0], self.site.awards):
+                         [len(self.site.talks), len(self.site.awards), len(self.site.teaching)])
+        for li, a in zip(items[1], self.site.awards):
             self.assertEqual(li, f'<b>{html.escape(a.name)}</b><span>{html.escape(a.org)}, <span class="nb">{a.year}'
                                  "</span></span>")
-        for li, t in zip(items[1], self.site.teaching):
+        for li, t in zip(items[2], self.site.teaching):
             self.assertEqual(li, f'<b>{t.role}</b><span>{html.escape(t.org)}, <span class="nb">{t.years}</span></span>'
                                  f'<p class="courses">{html.escape("; ".join(t.courses))}</p>')
-        for li, t in zip(items[2], self.site.talks):
+        for li, t in zip(items[0], self.site.talks):
             self.assertEqual(li, f'<p class="when">{t.year} · {t.kind}</p><b>{html.escape(t.title)}</b>'
                                  f"<span>{'<br>'.join(html.escape(v) for v in t.venues)}</span>")
         self.assertIn("Zhou Peiyuan", self.xp)  # the national prize, which Tianyu asked to add back

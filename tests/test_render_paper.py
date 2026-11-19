@@ -255,5 +255,12 @@ class RenderPaperTest(unittest.TestCase):
             self.assertIsNone(numbering.search(seen), f"{slug}: {numbering.search(seen)}")
 
 
+    def test_hook_illustration_gives_no_figures(self):
+        # Tianyu (2026-11-19): the hook animation shows no figures ("don't mention any specific number in this skematic
+        # movie"), then "remove the numbers from the caption too".
+        body = read_body(ROOT, "scale-inspired-robotic-structures")
+        caption = re.search(r"sails-hook\.mp4.*?<figcaption>(.*?)</figcaption>", body, re.S).group(1)
+        self.assertNotRegex(re.sub(r"<[^>]+>", "", caption), r"\d")
+
 if __name__ == "__main__":
     unittest.main()

@@ -870,9 +870,17 @@ a.title:hover,
   font-size: 14px;
 }
 
-/* Awards and teaching in the narrow column, as Education is above them; the talks' long titles in the wide one */
+/* The talks' long titles across the page, then awards and teaching side by side in equal columns (Tianyu: "the about me
+   page layout looks weird" when the two ran down a narrow column twice as long as the talks beside it) */
 .cv-more {
   margin-top: 56px;
+}
+
+.cv-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  margin-top: 48px;
 }
 
 .cv-more .edu-h:first-child {
@@ -1387,11 +1395,13 @@ footer .contact a {
   }
 
   .split,
-  .skills {
+  .skills,
+  .cv-pair {
     grid-template-columns: 1fr;
   }
 
-  .split {
+  .split,
+  .cv-pair {
     gap: 28px;
   }
 

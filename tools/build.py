@@ -472,7 +472,7 @@ def _cv_list(heading: str, items: list[str]) -> str:
 
 
 def _experience(site: Site) -> str:
-    """The About me page: the roles as a timeline beside the degrees, the skills, then the talks beside the awards and
+    """The About me page: the roles as a timeline beside the degrees, the skills, the talks, then the awards beside the
     teaching."""
     if not (site.experience or site.education or site.skills):
         return ""
@@ -486,10 +486,12 @@ def _experience(site: Site) -> str:
                 f'<p class="courses">{esc("; ".join(t.courses))}</p>' for t in site.teaching]
     talks = [f'<p class="when">{esc(t.year)} · {esc(t.kind)}</p><b>{esc(t.title)}</b>'
              f'<span>{"<br>".join(esc(v) for v in t.venues)}</span>' for t in site.talks]
-    more = ('  <div class="split cv-more">\n'
-            f'    <div class="side">\n{_cv_list("Awards", awards)}{_cv_list("Teaching", teaching)}    </div>\n'
-            f'    <div>\n{_cv_list("Talks and posters", talks)}    </div>\n'
-            '  </div>\n') if awards or teaching or talks else ""
+    pair = "".join(f"      <div>\n{block}      </div>\n" for block in (_cv_list("Awards", awards), _cv_list("Teaching", teaching))
+                   if block)
+    more = ('  <div class="cv-more">\n'
+            f'{_cv_list("Talks and posters", talks)}'
+            + (f'    <div class="cv-pair">\n{pair}    </div>\n' if pair else "")
+            + '  </div>\n') if awards or teaching or talks else ""
     return ('<section id="experience" class="wrap">\n'
             '  <div class="split">\n'
             '    <div class="side">\n'
