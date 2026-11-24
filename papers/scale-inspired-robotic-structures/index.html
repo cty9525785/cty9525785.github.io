@@ -296,6 +296,30 @@
     <p>Page design adapted from <a href="https://jonbarron.info/" target="_blank" rel="noopener">Jon Barron’s website</a>.</p>
   </footer>
   <script src="../../assets/js/article.js?v=857bf46d" defer></script>
+  <script>(function (d, url) {
+    // count.js sends GoatCounter the campaign tag (?campaign=cv) from the address when it counts the visit; once it
+    // has, or has failed to load, the tag leaves the address bar, with no reload and no step added to Back.
+    if (!url.searchParams.has("campaign")) return;
+    var seen = function () { return !("visibilityState" in d) || d.visibilityState === "visible"; };
+    var tidy = function () {
+      url.searchParams.delete("campaign");
+      try { history.replaceState(history.state, "", url.pathname + url.search + location.hash); } catch (e) {}
+    };
+    var counted = function (e) {
+      if (!e.target.dataset || !e.target.dataset.goatcounter) return;
+      d.removeEventListener("load", counted, true);
+      d.removeEventListener("error", counted, true);
+      if (e.type === "error" || seen()) return tidy();
+      // A tab opened out of sight is counted when it comes into view, by count.js's listener, which comes first.
+      d.addEventListener("visibilitychange", function wait() {
+        if (!seen()) return;
+        d.removeEventListener("visibilitychange", wait);
+        tidy();
+      });
+    };
+    d.addEventListener("load", counted, true);
+    d.addEventListener("error", counted, true);
+  })(document, new URL(location.href));</script>
   <script data-goatcounter="https://cty9525785.goatcounter.com/count" async src="../../assets/js/count.js?v=792b7abd"></script>
 </body>
 </html>

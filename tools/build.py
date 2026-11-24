@@ -241,18 +241,46 @@ def render_paper(paper: Paper, site: Site, body: str) -> str:
         movies=movies,
         bibtex=esc(paper.bibtex.strip()),
         footer_contact=_footer_contact(site).rstrip("\n"),
-        counter=_counter(site, "../../"),
+        counter=_counter(site, "../../", "  "),
         article_css="../../" + _versioned("assets/css/article.css"),
         article_js="../../" + _versioned("assets/js/article.js"),
     ), site.url)
 
 
-def _counter(site: Site, root: str = "") -> str:
-    """GoatCounter's script, the site's own reviewed copy, once its count address is set (Tianyu chose it)."""
+_TIDY_ADDRESS = """<script>(function (d, url) {
+  // count.js sends GoatCounter the campaign tag (?campaign=cv) from the address when it counts the visit; once it
+  // has, or has failed to load, the tag leaves the address bar, with no reload and no step added to Back.
+  if (!url.searchParams.has("campaign")) return;
+  var seen = function () { return !("visibilityState" in d) || d.visibilityState === "visible"; };
+  var tidy = function () {
+    url.searchParams.delete("campaign");
+    try { history.replaceState(history.state, "", url.pathname + url.search + location.hash); } catch (e) {}
+  };
+  var counted = function (e) {
+    if (!e.target.dataset || !e.target.dataset.goatcounter) return;
+    d.removeEventListener("load", counted, true);
+    d.removeEventListener("error", counted, true);
+    if (e.type === "error" || seen()) return tidy();
+    // A tab opened out of sight is counted when it comes into view, by count.js's listener, which comes first.
+    d.addEventListener("visibilitychange", function wait() {
+      if (!seen()) return;
+      d.removeEventListener("visibilitychange", wait);
+      tidy();
+    });
+  };
+  d.addEventListener("load", counted, true);
+  d.addEventListener("error", counted, true);
+})(document, new URL(location.href));</script>"""
+
+
+def _counter(site: Site, root: str = "", indent: str = "") -> str:
+    """GoatCounter's script, the site's own reviewed copy, once its count address is set (Tianyu chose it). Before it,
+    a script that takes the campaign tag out of the address bar once count.js has read it (Tianyu, 2026-11-24): it
+    listens from before count.js can load or fail, so it never misses either."""
     if not site.goatcounter:
         return ""
-    return (f'<script data-goatcounter="{esc(site.goatcounter)}" async '
-            f'src="{root}{_versioned("assets/js/count.js")}"></script>')
+    return (_TIDY_ADDRESS.replace("\n", "\n" + indent) + f'\n{indent}<script data-goatcounter="{esc(site.goatcounter)}" '
+            f'async src="{root}{_versioned("assets/js/count.js")}"></script>')
 
 
 def _link(key: str, value: str, label: str, cls: str = "") -> str:

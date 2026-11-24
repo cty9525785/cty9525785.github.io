@@ -191,6 +191,27 @@ class SiteTest(unittest.TestCase):
         self.assertEqual([t.get("href") for t in tags((ROOT / "index.html").read_text(encoding="utf-8"), "link")
                           if t.get("rel") == "canonical"], ["https://tianyuchen.com/"])
 
+    def test_campaign_tag_leaves_the_address_once_counted(self):
+        # Tianyu (2026-11-24): "for the campaign link the url still show the campaign tag after the website is open. is
+        # there a way to not show that". count.js sends GoatCounter the tag from the address (location.search) when it
+        # counts the visit, so the tag may leave only after that, which no timer can know. A script just before
+        # count.js hears it load, or fail (then nothing will read the tag); a tab opened out of sight is counted when it
+        # comes into view, by count.js's own listener, which comes first. history.replaceState drops the tag without a
+        # reload (a second, untagged visit) and without a step on Back; the rest of the address stays.
+        for path in pages():
+            page = path.read_text(encoding="utf-8")
+            name = path.relative_to(ROOT).as_posix()
+            scripts = re.findall(r"<script>((?:(?!</script>).)*)</script>\s*<script data-goatcounter=", page, re.S)
+            self.assertEqual(len(scripts), 1, name)
+            script = scripts[0]
+            self.assertIn('searchParams.delete("campaign")', script, name)
+            self.assertIn("history.replaceState(", script, name)
+            for event in ("load", "error"):
+                self.assertRegex(script, rf'addEventListener\("{event}", \w+, true\)', name)
+            self.assertIn('"visibilitychange"', script, name)
+            for banned in ("location.href =", "location.search =", "location.replace(", "location.assign(", "setTimeout"):
+                self.assertNotIn(banned, script, name)
+
     def test_shipped_fonts_carry_their_license(self):
         # The SIL Open Font License asks that its text travel with every copy of the font.
         for font in (ROOT / "assets").rglob("*"):

@@ -691,10 +691,11 @@ class RenderHomeTest(unittest.TestCase):
                 for text in ("Illustration", "Paper figure", "× speed", "Real time"):
                     self.assertNotIn(text, page)
         # The page's own script file and the visit counter, plus two small scripts in the head: the one-line class
-        # setter the slideshow's layout needs, and the wait for the page's fonts.
+        # setter the slideshow's layout needs, and the wait for the page's fonts; and one before the counter, which
+        # takes the campaign tag out of the address once counted (test_campaign_tag_leaves_the_address_once_counted).
         self.assertEqual([t.get("src") for t in tags(self.page, "script") if t.get("src")],
                          [versioned("assets/js/home.js"), versioned("assets/js/count.js")])
-        self.assertEqual(self.page.count("<script>"), 2)
+        self.assertEqual(self.page.count("<script>"), 3)
 
     def test_experience(self):
         xp = section(self.xp, "experience")
